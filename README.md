@@ -13,8 +13,10 @@ please follow these steps:
   3. Publish locally: `sbt "publish-local"`.
   4. Clone this here repo in a separate folder: `git clone git@github.com:manojo/functadelic.git`.
   5. Profit:
-        $ cd functadelic
-        $ sbt
-        > test
+  ```
+    $ cd functadelic
+    $ sbt
+    > test
+  ```
 
 Hope you have fun!
