@@ -74,21 +74,69 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
       that.apply(folded, comb)
     }
 
-    def ++(that: FoldLeft[A, S]) = concat(that)
+    def ++(that: FoldLeft[A, S]) = this concat that
+
+    /**
+     * append
+     */
+    def append(elem: Rep[A]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+      val folded: Rep[S] = this.apply(z, comb)
+      comb(folded, elem)
+    }
+
+    def :+(elem: Rep[A]) = this append elem
 
 
     /**
      * groupBy
      * What if HashMaps are also foldLefts?
      * In that case, the type of elements passing through them are key-value pairs,
-     * of type [K, FoldLeft[A, S]]. That's right, the values are also foldLefts, let's
-     * hope we get rid of them later.
+     * of type [K, FoldLeft[A, S2]]. That's right, the values are also foldLefts, let's
+     * hope we get rid of them later. We need a different sink type S2 for the inner values.
+     * When we call `groupBy`, we specify what this guy will be.
      *
-     * And we need to have a new sink type as well (S2)
+     * The outer sink type remains the same because it is eventually ``specialized''
+     *
      *
      */
-    //def groupBy[K: Manifest, S2: Manifest](f: A => K): FoldLeft[[K, FoldLeft[A, S]], S2]
+    /*
+    def groupBy[K: Manifest, S2: Manifest](f: Rep[A] => Rep[K]) = FoldLeft[[K, FoldLeft[A, S2]], S] { (z: Rep[S], comb: Comb[[K, FoldLeft[A, S2]], S]) =>
 
+      this.apply(
+        z,
+        (acc: Rep[S], elem: Rep[A]) => {
+          val key: Rep[K] = f(elem)
+
+          //type Comb[A, S] = (Rep[S], Rep[A]) => Rep[S]
+          //type Comb[[K, FoldLeft[A, S2]], S] = (Rep[S], Rep[[K, FoldLeft[A, S2]]]) => Rep[S]
+
+
+
+          comb(acc, (key, FoldLeft.create(elem, )))
+
+        }
+      )
+
+
+      this.apply(Map[K, List[A]].empty, (acc: Map[K, List[A]], elem: A) => {
+        val k = f(elem)
+        acc + (k -> acc(k) ++ elem)
+      })
+
+      this.apply(Map[K, FoldLeft[A, S2]].empty, (acc: Map[K, FoldLeft[A, S2]], elem: A)) => {
+        val k = f(elem)
+        val fld: FoldLeft[A, S2] = acc(k)
+        acc + (k -> fold append elem)
+      }
+
+      //this.apply(FoldLeft[])
+
+
+
+      //val map =
+
+    }
+    */
   }
 
   /**

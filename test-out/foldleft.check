@@ -1,5 +1,5 @@
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class foldLeftId extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -26,12 +26,12 @@ x19
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(1, 2, 3)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class map extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -59,12 +59,12 @@ x20
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(2, 4, 6)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class mapmap extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -93,12 +93,12 @@ x21
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(3, 5, 7)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class mapmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -124,12 +124,12 @@ x19
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(3, 5, 7, 9, 11)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class filterRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -160,12 +160,12 @@ x20
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(1, 3, 5)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class filtermapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -197,12 +197,12 @@ x21
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(3, 9, 15)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class flatMapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -239,12 +239,12 @@ x30
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class flatMapmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -282,12 +282,12 @@ x31
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(2, 2, 4, 2, 4, 6, 2, 4, 6, 8, 2, 4, 6, 8, 10)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class flatMapfiltermapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -332,12 +332,12 @@ x34
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(3, 3, 3, 9, 3, 9, 3, 9, 15)
 /*****************************************
-  Emitting Generated Code
+  Emitting Generated Code                  
 *******************************************/
 class mapconcatmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -379,7 +379,42 @@ x35
 }
 }
 /*****************************************
-  End of Generated Code
+  End of Generated Code                  
 *******************************************/
 compilation: ok
 List(6, 12, 18, 24, 30, 3, 6, 9, 12, 15)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapappendmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
+def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
+var x4: Int = x0
+val x3 = List()
+var x5: scala.collection.immutable.List[Int] = x3
+val x19 = while ({val x6 = x4
+val x7 = x6 <= x1
+x7}) {
+val x9 = x5
+val x10 = x4
+val x11 = x10 * 2
+val x12 = x11 * 3
+val x13 = List(x12)
+val x14 = x9 ::: x13
+x5 = x14
+val x16 = x10 + 1
+x4 = x16
+()
+}
+val x20 = x5
+val x2 = x1 + 1
+val x21 = x2 * 3
+val x22 = List(x21)
+val x23 = x20 ::: x22
+x23
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+List(6, 12, 18, 24, 30, 18)
