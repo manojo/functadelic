@@ -107,6 +107,17 @@ trait FoldLeftProg extends FoldLefts with Equal {
     filtered.map(_ * unit(3)).apply(List[Int](), (ls, x) => ls ++ List(x))
   }
 
+  /**
+   * map concat map over a range
+   */
+  def mapconcatmapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
+    val xs = FoldLeft.fromRange[List[Int]](a, b)
+    val ys = FoldLeft.fromRange[List[Int]](a, b)
+
+    val mapped = xs map (_ * unit(2))
+    ((mapped ++ ys) map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
+  }
+
 
 }
 
@@ -193,6 +204,13 @@ class FoldLeftSuite extends FileDiffSuite {
 
         val testcFlatMapfiltermapRange = compile2(flatMapfiltermapRange)
         scala.Console.println(testcFlatMapfiltermapRange(1, 5))
+        codegen.reset
+
+        codegen.emitSource2(mapconcatmapRange _, "mapconcatmapRange", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcMapconcatmapRange = compile2(mapconcatmapRange)
+        scala.Console.println(testcMapconcatmapRange(1, 5))
         codegen.reset
 
       }

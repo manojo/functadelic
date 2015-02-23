@@ -16,7 +16,8 @@ import scala.virtualization.lms.common._
  *
  */
 trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
-  with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While {
+  with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
+  /*with HashMapOps*/ {
 
   /**
    * a type alias for the combination function for
@@ -64,6 +65,30 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
         }
       )
     }
+
+    /**
+     * concat
+     */
+    def concat(that: FoldLeft[A, S]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+      val folded: Rep[S] = this.apply(z, comb)
+      that.apply(folded, comb)
+    }
+
+    def ++(that: FoldLeft[A, S]) = concat(that)
+
+
+    /**
+     * groupBy
+     * What if HashMaps are also foldLefts?
+     * In that case, the type of elements passing through them are key-value pairs,
+     * of type [K, FoldLeft[A, S]]. That's right, the values are also foldLefts, let's
+     * hope we get rid of them later.
+     *
+     * And we need to have a new sink type as well (S2)
+     *
+     */
+    //def groupBy[K: Manifest, S2: Manifest](f: A => K): FoldLeft[[K, FoldLeft[A, S]], S2]
+
   }
 
   /**

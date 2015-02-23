@@ -1,5 +1,5 @@
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class foldLeftId extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -26,12 +26,12 @@ x19
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(1, 2, 3)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class map extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -59,12 +59,12 @@ x20
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(2, 4, 6)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class mapmap extends ((Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int): scala.collection.immutable.List[Int] = {
@@ -93,12 +93,12 @@ x21
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(3, 5, 7)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class mapmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -124,12 +124,12 @@ x19
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(3, 5, 7, 9, 11)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class filterRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -160,12 +160,12 @@ x20
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(1, 3, 5)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class filtermapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -197,12 +197,12 @@ x21
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(3, 9, 15)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class flatMapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -239,12 +239,12 @@ x30
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class flatMapmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -282,12 +282,12 @@ x31
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(2, 2, 4, 2, 4, 6, 2, 4, 6, 8, 2, 4, 6, 8, 10)
 /*****************************************
-  Emitting Generated Code                  
+  Emitting Generated Code
 *******************************************/
 class flatMapfiltermapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
 def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
@@ -332,7 +332,54 @@ x34
 }
 }
 /*****************************************
-  End of Generated Code                  
+  End of Generated Code
 *******************************************/
 compilation: ok
 List(3, 3, 3, 9, 3, 9, 3, 9, 15)
+/*****************************************
+  Emitting Generated Code
+*******************************************/
+class mapconcatmapRange extends ((Int, Int)=>(scala.collection.immutable.List[Int])) {
+def apply(x0:Int, x1:Int): scala.collection.immutable.List[Int] = {
+var x3: Int = x0
+val x2 = List()
+var x4: scala.collection.immutable.List[Int] = x2
+val x18 = while ({val x5 = x3
+val x6 = x5 <= x1
+x6}) {
+val x8 = x4
+val x9 = x3
+val x10 = x9 * 2
+val x11 = x10 * 3
+val x12 = List(x11)
+val x13 = x8 ::: x12
+x4 = x13
+val x15 = x9 + 1
+x3 = x15
+()
+}
+val x19 = x4
+var x20: Int = x0
+var x21: scala.collection.immutable.List[Int] = x19
+val x34 = while ({val x22 = x20
+val x23 = x22 <= x1
+x23}) {
+val x25 = x21
+val x26 = x20
+val x27 = x26 * 3
+val x28 = List(x27)
+val x29 = x25 ::: x28
+x21 = x29
+val x31 = x26 + 1
+x20 = x31
+()
+}
+val x35 = x21
+x35
+}
+}
+/*****************************************
+  End of Generated Code
+*******************************************/
+compilation: ok
+List(6, 12, 18, 24, 30, 3, 6, 9, 12, 15)
