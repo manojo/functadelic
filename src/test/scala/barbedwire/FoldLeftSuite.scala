@@ -12,7 +12,7 @@ import java.io.FileOutputStream
  * Basic test suite for foldleft
  */
 
-trait FoldLeftProg extends FoldLefts {
+trait FoldLeftProg extends FoldLefts with Equal {
 
   /**
    * simple foldLeft back into a list
@@ -110,15 +110,27 @@ trait FoldLeftProg extends FoldLefts {
 
 }
 
+/**
+ * A trait that mixes all the relevant Exp traits that are required for this example
+ * The corresponding codegen trait as well
+ */
+trait FoldLeftExp extends ListOpsExpOpt with IfThenElseExpOpt with BooleanOpsExpOpt with VariablesExpOpt
+   with OrderingOpsExp with NumericOpsExpOpt with PrimitiveOpsExpOpt with WhileExp with EqualExpOpt
+
+trait FoldLeftGen extends ScalaGenListOps with ScalaGenIfThenElse with ScalaGenBooleanOps with ScalaGenVariables
+   with ScalaGenOrderingOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenWhile with ScalaGenEqual {
+  val IR: FoldLeftExp
+}
+
 class FoldLeftSuite extends FileDiffSuite {
 
   val prefix = "test-out/"
 
   def testFoldLeft = {
     withOutFile(prefix + "foldleft") {
-      new FoldLeftProg with ScalaOpsPkgExp with WhileExp with MyScalaCompile { self =>
+      new FoldLeftProg with FoldLeftExp with MyScalaCompile { self =>
 
-        val codegen = new ScalaCodeGenPkg with ScalaGenWhile { val IR: self.type = self }
+        val codegen = new FoldLeftGen { val IR: self.type = self }
 
         codegen.emitSource(foldLeftId _, "foldLeftId", new java.io.PrintWriter(System.out))
         codegen.reset

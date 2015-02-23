@@ -15,7 +15,8 @@ import scala.virtualization.lms.common._
  *    def foldLeft[A, B](z: B, comb: (B, A) => A)(xs: List[A]) : B
  *
  */
-trait FoldLefts extends ScalaOpsPkg with LiftVariables with While {
+trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
+  with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While {
 
   /**
    * a type alias for the combination function for
@@ -26,15 +27,13 @@ trait FoldLefts extends ScalaOpsPkg with LiftVariables with While {
   type Comb[A, S] = (Rep[S], Rep[A]) => Rep[S]
 
   /**
-   * We do not want to explicitly materialize
-   * a staged stream at any point. So
+   * foldLeft is basically a pair of a zero value and a combination function
    */
   abstract class FoldLeft[A: Manifest, S: Manifest] extends ((Rep[S], Comb[A, S]) => Rep[S]) {
 
     /**
      * map
      */
-
     def map[B: Manifest](f: Rep[A] => Rep[B]) = FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
       this.apply(
         z,
@@ -65,7 +64,6 @@ trait FoldLefts extends ScalaOpsPkg with LiftVariables with While {
         }
       )
     }
-
   }
 
   /**
