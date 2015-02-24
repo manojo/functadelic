@@ -17,7 +17,7 @@ import scala.virtualization.lms.common._
  */
 trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
   with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
-  /*with HashMapOps*/ {
+  /*with TupleOps with HashMapOps*/ {
 
   /**
    * a type alias for the combination function for
@@ -86,6 +86,30 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
 
     def :+(elem: Rep[A]) = this append elem
 
+    /**
+     * partition
+     * This will create code what will run through the original fold twice
+     * once for the positive predicate, once for the negative.
+     */
+    def partition(p: Rep[A] => Rep[Boolean]): (FoldLeft[A, S], FoldLeft[A, S]) = {
+      val trues = this filter p
+      val falses = this filter (a => !p(a))
+      (trues, falses)
+    }
+
+    /**
+    def partitionBis(p: Rep[A] => Rep[Boolean]): (FoldLeft[A, S], FoldLeft[A, S]) = {
+      //ghost foldLefts
+      val trues = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) => z }
+      val falses = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) => z }
+
+      this.apply(
+        (trues, falses),
+        (acc, elem) => if (p(elem)) (acc._1 :+ elem, acc._2) else (acc._1, acc._2 :+ elem)
+      )
+    }
+    */
+
 
     /**
      * groupBy
@@ -99,6 +123,19 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
      *
      *
      */
+    /*
+    def groupBy[K: Manifest, S2: Manifest](f: Rep[A] => Rep[K])(elemAt: (Rep[S], Rep[K]) => FoldLeft[A, S2]) =
+      FoldLeft[(K, FoldLeft[A, S2]), S] { (z: Rep[S], comb: Comb[(K, FoldLeft[A, S2]), S]) =>
+
+        this.apply(
+          z,
+          (acc: Rep[S], elem: Rep[A]) => {
+            val k = f(elem)
+            val fld = elemAt(acc, k)
+            comb(acc, make_tuple2((k, fld :+ elem)))
+          }
+        )
+    }*/
     /*
     def groupBy[K: Manifest, S2: Manifest](f: Rep[A] => Rep[K]) = FoldLeft[[K, FoldLeft[A, S2]], S] { (z: Rep[S], comb: Comb[[K, FoldLeft[A, S2]], S]) =>
 
@@ -126,10 +163,17 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
       this.apply(Map[K, FoldLeft[A, S2]].empty, (acc: Map[K, FoldLeft[A, S2]], elem: A)) => {
         val k = f(elem)
         val fld: FoldLeft[A, S2] = acc(k)
-        acc + (k -> fold append elem)
+        acc + (k -> fld append elem)
       }
 
-      //this.apply(FoldLeft[])
+      FoldLeft[[K, FoldLeft[A, S2]], S] = (z, comb)
+      this.apply(z, (acc: S, elem: A)) => {
+        val k = f(elem)
+        val fld: FoldLeft[A, S2] = acc(k) <-- This line is messed up y'all!!!!
+        comb(acc, fld append elem)
+      }
+      // add a function (S, K) => FoldLeft[A, S2]
+
 
 
 

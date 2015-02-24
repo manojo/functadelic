@@ -128,6 +128,14 @@ trait FoldLeftProg extends FoldLefts with Equal {
     ((mapped :+ (b + unit(1))) map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
   }
 
+  /**
+   * partition concat
+   */
+  def partitionconcatRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
+    val xs = FoldLeft.fromRange[List[Int]](a, b)
+    val (evens, odds) = xs.partition(_ % unit(2) == unit(0))
+    (odds ++ evens).apply(List[Int](), (ls, x) => ls ++ List(x))
+  }
 
 }
 
@@ -228,6 +236,13 @@ class FoldLeftSuite extends FileDiffSuite {
 
         val testcMapappendmapRange = compile2(mapappendmapRange)
         scala.Console.println(testcMapappendmapRange(1, 5))
+        codegen.reset
+
+        codegen.emitSource2(partitionconcatRange _, "partitionconcatRange", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcPartitionconcatRange = compile2(partitionconcatRange)
+        scala.Console.println(testcPartitionconcatRange(1, 10))
         codegen.reset
 
       }
