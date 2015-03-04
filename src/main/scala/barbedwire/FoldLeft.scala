@@ -1,7 +1,7 @@
 package barbedwire
 
 import scala.virtualization.lms.common._
-
+import lms.util._
 
 /**
  * An implementation of foldr/build-like fusion
@@ -17,7 +17,7 @@ import scala.virtualization.lms.common._
  */
 trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
   with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
-  /*with TupleOps with HashMapOps*/ {
+  with EitherOps {
 
   /**
    * a type alias for the combination function for
@@ -90,6 +90,8 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
      * partition
      * This will create code what will run through the original fold twice
      * once for the positive predicate, once for the negative.
+     *
+     * see the following related post: http://manojo.github.io/2015/03/03/staged-foldleft-partition/
      */
     def partition(p: Rep[A] => Rep[Boolean]): (FoldLeft[A, S], FoldLeft[A, S]) = {
       val trues = this filter p
@@ -98,89 +100,66 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
     }
 
     /**
-    def partitionBis(p: Rep[A] => Rep[Boolean]): (FoldLeft[A, S], FoldLeft[A, S]) = {
-      //ghost foldLefts
-      val trues = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) => z }
-      val falses = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) => z }
-
-      this.apply(
-        (trues, falses),
-        (acc, elem) => if (p(elem)) (acc._1 :+ elem, acc._2) else (acc._1, acc._2 :+ elem)
-      )
-    }
-    */
-
-
-    /**
-     * groupBy
-     * What if HashMaps are also foldLefts?
-     * In that case, the type of elements passing through them are key-value pairs,
-     * of type [K, FoldLeft[A, S2]]. That's right, the values are also foldLefts, let's
-     * hope we get rid of them later. We need a different sink type S2 for the inner values.
-     * When we call `groupBy`, we specify what this guy will be.
-     *
-     * The outer sink type remains the same because it is eventually ``specialized''
-     *
-     *
+     * partition, that produces a FoldLeft over `Either` instead of
+     * two `FoldLeft`s
      */
-    /*
-    def groupBy[K: Manifest, S2: Manifest](f: Rep[A] => Rep[K])(elemAt: (Rep[S], Rep[K]) => FoldLeft[A, S2]) =
-      FoldLeft[(K, FoldLeft[A, S2]), S] { (z: Rep[S], comb: Comb[(K, FoldLeft[A, S2]), S]) =>
-
-        this.apply(
-          z,
-          (acc: Rep[S], elem: Rep[A]) => {
-            val k = f(elem)
-            val fld = elemAt(acc, k)
-            comb(acc, make_tuple2((k, fld :+ elem)))
-          }
-        )
-    }*/
-    /*
-    def groupBy[K: Manifest, S2: Manifest](f: Rep[A] => Rep[K]) = FoldLeft[[K, FoldLeft[A, S2]], S] { (z: Rep[S], comb: Comb[[K, FoldLeft[A, S2]], S]) =>
-
+    def partitionBis(p: Rep[A] => Rep[Boolean]) = FoldLeft[Either[A, A], S] { (z: Rep[S], comb: Comb[Either[A, A], S]) =>
       this.apply(
         z,
-        (acc: Rep[S], elem: Rep[A]) => {
-          val key: Rep[K] = f(elem)
-
-          //type Comb[A, S] = (Rep[S], Rep[A]) => Rep[S]
-          //type Comb[[K, FoldLeft[A, S2]], S] = (Rep[S], Rep[[K, FoldLeft[A, S2]]]) => Rep[S]
-
-
-
-          comb(acc, (key, FoldLeft.create(elem, )))
-
-        }
+        (acc, elem) => if (p(elem)) comb(acc, left[A, A](elem)) else comb(acc, right[A, A](elem))
       )
+    }
+/*
+    def partitionBis(p: Rep[A] => Rep[Boolean]): FoldLeft[A, (S, S)] = {
 
 
-      this.apply(Map[K, List[A]].empty, (acc: Map[K, List[A]], elem: A) => {
-        val k = f(elem)
-        acc + (k -> acc(k) ++ elem)
-      })
-
-      this.apply(Map[K, FoldLeft[A, S2]].empty, (acc: Map[K, FoldLeft[A, S2]], elem: A)) => {
-        val k = f(elem)
-        val fld: FoldLeft[A, S2] = acc(k)
-        acc + (k -> fld append elem)
+      /**
+       * an identity fold that does really nothing so far.
+       * We want to return this guy, so that further generations
+       * can do stuff with this dude.
+       */
+      val inner = FoldLeft[(A, A), (S, S)] { (z: Rep[(S, S)], comb: Comb[(A, A), (S, S)]) =>
+        z
       }
 
-      FoldLeft[[K, FoldLeft[A, S2]], S] = (z, comb)
-      this.apply(z, (acc: S, elem: A)) => {
-        val k = f(elem)
-        val fld: FoldLeft[A, S2] = acc(k) <-- This line is messed up y'all!!!!
-        comb(acc, fld append elem)
+      FoldLeft[A, (S, S)] { (z: Rep[(S, S)], comb: Comb[A, (S, S)]) =>
+        /** let's not care about z._1 */
+        this.apply(z._1) { (acc, elem) => if p(elem) (acc._1, ) else () }
       }
-      // add a function (S, K) => FoldLeft[A, S2]
 
-
-
-
-      //val map =
+      inner
 
     }
-    */
+*/
+  }
+
+  /**
+   * Nested foldLeft. Let's try to represent the result of a partition function
+   * as a nested foldLeft
+   * types of elements it sees: (FoldLeft[A, S], FoldLeft[B, S])
+   * What does it fold to? Well prolly nothing. Let's check it out y'all
+   * Attn: we might need to add extra type parameters for the trues and falses
+   * We want to manipulate `trues` and `falses` so that we can further map over them
+   * Not possible with current type signature
+   */
+  case class TwoFldLefts[A: Manifest, S: Manifest](trues: FoldLeft[A, S], falses: FoldLeft[A, S], p: Rep[A] => Rep[Boolean]) {
+    def fromList(ls: Rep[List[A]])(z1: Rep[S], comb1: Comb[A, S], z2: Rep[S], comb2: Comb[A, S]) = {
+      var tmpList = ls
+
+      var tmp1 = z1
+      var tmp2 = z2
+
+      while(!tmpList.isEmpty) {
+        if (p(tmpList.head)) {
+          tmp1 = comb1(tmp1, tmpList.head)
+        } else {
+          tmp2 = comb2(tmp2, tmpList.head)
+        }
+        tmpList = tmpList.tail
+      }
+
+      (tmp1, tmp2)
+    }
   }
 
   /**

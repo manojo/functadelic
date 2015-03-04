@@ -1,0 +1,32 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class eitherfoldleft extends ((Int)=>(EitherIntInt)) {
+def apply(x0:Int): EitherIntInt = {
+val x1 = null.asInstanceOf[Int]
+val x3 = x0 * 2
+val x4 = new EitherIntInt(x3,x1,true)
+x4
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+EitherIntInt(6,0,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class eitherfoldright extends ((Int)=>(EitherIntInt)) {
+def apply(x0:Int): EitherIntInt = {
+val x1 = null.asInstanceOf[Int]
+val x3 = x0 * 3
+val x4 = new EitherIntInt(x1,x3,false)
+x4
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+EitherIntInt(0,9,false)

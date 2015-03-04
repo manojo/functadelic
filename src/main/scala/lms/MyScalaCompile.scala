@@ -41,7 +41,12 @@ trait MyScalaCompile extends ScalaCompile {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource2(f, className, new PrintWriter(source))
-    compileAny(className, staticData, source.toString).asInstanceOf[(A, B) => R]
+
+    //a bit of a hack to generate data structures
+    val dataStructWriter = new StringWriter()
+    codegen.emitDataStructures(new PrintWriter(dataStructWriter))
+
+    compileAny(className, staticData, dataStructWriter.toString + source.toString).asInstanceOf[(A, B) => R]
   }
 
   def compile2s[A, B, R](f: (Exp[A], Exp[B]) => Exp[R], source: StringWriter)(implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {

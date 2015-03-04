@@ -1,0 +1,103 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionmapsome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 * 2
+val x3 = new OptionInt(x2,true)
+x3
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(6,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionmapnone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+x2
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionflatmapsome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 * 2
+val x3 = new OptionInt(x2,true)
+x3
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(6,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionflatmapnone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+x2
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionfiltersome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x2 = x0 == 3
+val x3 = true && x2
+val x6 = if (x3) {
+x0
+} else {
+val x4 = null.asInstanceOf[Int]
+x4
+}
+val x7 = if (x3) {
+true
+} else {
+false
+}
+val x8 = new OptionInt(x6,x7)
+x8
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(3,true)
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionfilternone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+x2
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
