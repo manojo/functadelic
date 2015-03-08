@@ -5,6 +5,9 @@ import scala.virtualization.lms.internal.Effects
 import lms._
 import lms.util._
 
+//only importing this to access the type
+import java.util.HashMap
+
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.FileOutputStream
@@ -13,7 +16,7 @@ import java.io.FileOutputStream
  * Basic test suite for foldleft
  */
 
-trait FoldLeftProg extends FoldLefts with Equal with MyTupleOps {
+trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
 
   /**
    * simple foldLeft back into a list
@@ -150,7 +153,9 @@ trait FoldLeftProg extends FoldLefts with Equal with MyTupleOps {
     val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
     xs.apply(
       make_tuple2((List[Int](), List[Int]())),
-      (acc, elem) => if (elem % unit(2) == unit(0)) make_tuple2((acc._1 ++ List(elem), acc._2)) else make_tuple2((acc._1, acc._2 ++ List(elem)))
+      (acc, elem) =>
+        if (elem % unit(2) == unit(0)) make_tuple2((acc._1 ++ List(elem), acc._2))
+        else make_tuple2((acc._1, acc._2 ++ List(elem)))
     )
   }
 
@@ -188,7 +193,20 @@ trait FoldLeftProg extends FoldLefts with Equal with MyTupleOps {
     )
   }
 
+  /**
+   * groupWith followed by sum
+   */
+  def groupwithsum(a: Rep[Int], b: Rep[Int]): Rep[HashMap[Int, Int]] = {
+    val xs = FoldLeft.fromRange[HashMap[Int, Int]](a, b)
+    val grouped = xs.groupWith(x => x % unit(3))
 
+    grouped.apply(
+      HashMap[Int, Int](),
+      (dict, x) =>
+        if (dict.contains(x._1)) { dict.update(x._1, dict(x._1) + x._2); dict }
+        else { dict.update(x._1, x._2); dict }
+    )
+  }
 }
 
 /**
@@ -197,11 +215,11 @@ trait FoldLeftProg extends FoldLefts with Equal with MyTupleOps {
  */
 trait FoldLeftExp extends ListOpsExpOpt with IfThenElseExpOpt with BooleanOpsExpOpt with VariablesExpOpt
    with OrderingOpsExp with NumericOpsExpOpt with PrimitiveOpsExpOpt with WhileExp with EqualExpOpt
-   with EitherOpsExp
+   with EitherOpsExp with HashMapOpsExp
 
 trait FoldLeftGen extends ScalaGenListOps with ScalaGenIfThenElse with ScalaGenBooleanOps with ScalaGenVariables
    with ScalaGenOrderingOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenWhile
-   with ScalaGenEqual with ScalaGenEitherOps {
+   with ScalaGenEqual with ScalaGenEitherOps with ScalaGenHashMapOps {
   val IR: FoldLeftExp
 }
 
@@ -337,6 +355,13 @@ class FoldLeftSuite extends FileDiffSuite {
 
         val testcPartitionbismap2listpair = compile2(partitionbismap2listpair)
         scala.Console.println(testcPartitionbismap2listpair(1, 10))
+        codegen.reset
+
+        codegen.emitSource2(groupwithsum _, "groupwithsum", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcGroupwithsum = compile2(groupwithsum)
+        scala.Console.println(testcGroupwithsum(1, 10))
         codegen.reset
 
       }

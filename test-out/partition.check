@@ -237,3 +237,73 @@ x34
 *******************************************/
 compilation: ok
 Tuple2ListIntListInt(List(4, 8, 12, 16, 20),List(3, 9, 15, 21, 27))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(4)=Reflect(NewVar(Sym(2)),Summary(false,false,false,false,true,false,List(Sym(2)),List(Sym(2)),List(),List()),List(Sym(2)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(15)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(14)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(15)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(14)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(17)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(9)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(17)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(9)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(19)=Reflect(IfThenElse(Sym(12),Block(Sym(16)),Block(Sym(18))),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(20)=Reflect(Assign(Variable(Sym(4)),Sym(19)),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(Sym(4)),List(Sym(4))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(24)=Reflect(While(Block(Sym(7)),Block(Sym(23))),Summary(false,false,false,false,false,false,List(Sym(3), Sym(4), Sym(2)),List(Sym(3)),List(Sym(8), Sym(4), Sym(3)),List()),List(Sym(2), Sym(3), Sym(4)))
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class groupwithsum extends ((Int, Int)=>(java.util.HashMap[Int, Int])) {
+def apply(x0:Int, x1:Int): java.util.HashMap[Int, Int] = {
+val x2 = new java.util.HashMap[Int,Int]()
+var x3: Int = x0
+var x4: java.util.HashMap[Int, Int] = x2
+val x24 = while ({val x5 = x3
+val x6 = x5 <= x1
+x6}) {
+val x8 = x4
+val x9 = x3
+val x10 = x9 % 3
+val x12 = x8.containsKey(x10)
+val x19 = if (x12) {
+val x13 = x8.get(x10)
+val x14 = x13 + x9
+val x15 = x8.put(x10, x14)
+x8
+} else {
+val x17 = x8.put(x10, x9)
+x8
+}
+x4 = x19
+val x21 = x9 + 1
+x3 = x21
+()
+}
+val x25 = x4
+x25
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+error: illegal sharing of mutable objects Sym(2)
+at Sym(4)=Reflect(NewVar(Sym(2)),Summary(false,false,false,false,true,false,List(Sym(2)),List(Sym(2)),List(),List()),List(Sym(2)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(15)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(14)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(15)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(14)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(17)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(9)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(17)=Reflect(HashMapUpdate(Sym(8),Sym(10),Sym(9)),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(19)=Reflect(IfThenElse(Sym(12),Block(Sym(16)),Block(Sym(18))),Summary(false,false,false,false,false,false,List(Sym(2)),List(Sym(2)),List(Sym(8)),List(Sym(8))),List(Sym(8)))
+error: illegal sharing of mutable objects Sym(2)
+at Sym(20)=Reflect(Assign(Variable(Sym(4)),Sym(19)),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(Sym(4)),List(Sym(4))),List(Sym(8)))
+error: write to non-mutable Sym(8) -> Some(TP(Sym(8),Reflect(ReadVar(Variable(Sym(4))),Summary(false,false,false,false,false,false,List(Sym(4), Sym(2)),List(Sym(4), Sym(2)),List(),List()),List())))
+at Sym(24)=Reflect(While(Block(Sym(7)),Block(Sym(23))),Summary(false,false,false,false,false,false,List(Sym(3), Sym(4), Sym(2)),List(Sym(3)),List(Sym(8), Sym(4), Sym(3)),List()),List(Sym(2), Sym(3), Sym(4)))
+compilation: ok
+{0=18, 1=22, 2=15}
