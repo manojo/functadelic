@@ -6,7 +6,7 @@ import lms._
 import lms.util._
 
 //only importing this to access the type
-import java.util.HashMap
+import scala.collection.immutable.HashMap
 
 import java.io.PrintWriter
 import java.io.StringWriter
