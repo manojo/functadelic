@@ -9,16 +9,15 @@ import scala.reflect.SourceContext
 import java.io.PrintWriter
 
 /**
- * Inspired from TupleOps is the delite-develop branch
+ * Inspired from TupleOps in the delite-develop branch of LMS
  */
 
 trait EitherOps extends Base with IfThenElse with BooleanOps with Equal {
   import scala.language.implicitConversions
 
-  implicit def repToEitherOps[A: Manifest, B: Manifest](a: Rep[Either[A, B]]) = new EitherOpsCls(a)
   implicit def make_either[A: Manifest, B: Manifest](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]]
 
-  class EitherOpsCls[A: Manifest, B: Manifest](o: Rep[Either[A, B]]) {
+  implicit class EitherOpsCls[A: Manifest, B: Manifest](o: Rep[Either[A, B]]) {
 
     /**
      * the "pattern" match

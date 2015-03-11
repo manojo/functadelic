@@ -15,12 +15,11 @@ import java.io.PrintWriter
 trait OptionOps extends Base with IfThenElse with BooleanOps with Equal {
   import scala.language.implicitConversions
 
-  implicit def repToOptionOps[T: Manifest](a: Rep[Option[T]]) = new OptionOpsCls(a)
   implicit def make_opt[A: Manifest](o: Option[Rep[A]])(implicit pos: SourceContext): Rep[Option[A]]
 
   def none[T: Manifest](): Rep[Option[T]]
 
-  class OptionOpsCls[A: Manifest](o: Rep[Option[A]]) {
+  implicit class OptionOpsCls[A: Manifest](o: Rep[Option[A]]) {
     def map[B: Manifest](f: Rep[A] => Rep[B]) = option_map(o, f)
     def isDefined: Rep[Boolean] = option_isDefined(o)
     def get: Rep[A] = option_get(o)

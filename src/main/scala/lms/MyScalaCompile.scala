@@ -37,7 +37,8 @@ trait MyScalaCompile extends ScalaCompile {
     cons.newInstance(staticData.map(_._2.asInstanceOf[AnyRef]): _*)
   }
 
-  def compile2[A, B, R](f: (Exp[A], Exp[B]) => Exp[R])(implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
+  def compile2[A, B, R](f: (Exp[A], Exp[B]) => Exp[R])
+                       (implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource2(f, className, new PrintWriter(source))
@@ -49,28 +50,49 @@ trait MyScalaCompile extends ScalaCompile {
     compileAny(className, staticData, dataStructWriter.toString + source.toString).asInstanceOf[(A, B) => R]
   }
 
-  def compile2s[A, B, R](f: (Exp[A], Exp[B]) => Exp[R], source: StringWriter)(implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
+  def compile2s[A, B, R](f: (Exp[A], Exp[B]) => Exp[R], source: StringWriter)
+                        (implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
+
     val className = freshClass
     //val source = new StringWriter()
     val staticData = codegen.emitSource2(f, className, new PrintWriter(source))
     compileAny(className, staticData, source.toString).asInstanceOf[(A, B) => R]
   }
 
-  def compile3[A, B, C, R](f: (Exp[A], Exp[B], Exp[C]) => Exp[R])(implicit mA: Manifest[A], mB: Manifest[B], mC: Manifest[C], mR: Manifest[R]): (A, B, C) => R = {
+  def compile3[A, B, C, R](f: (Exp[A], Exp[B], Exp[C]) => Exp[R])
+                          (implicit mA: Manifest[A],
+                           mB: Manifest[B],
+                           mC: Manifest[C],
+                           mR: Manifest[R]
+                          ): (A, B, C) => R = {
+
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource3(f, className, new PrintWriter(source))
     compileAny(className, staticData, source.toString).asInstanceOf[(A, B, C) => R]
   }
 
-  def compile4[A, B, C, D, R](f: (Exp[A], Exp[B], Exp[C], Exp[D]) => Exp[R])(implicit mA: Manifest[A], mB: Manifest[B], mC: Manifest[C], mD: Manifest[D], mR: Manifest[R]): (A, B, C, D) => R = {
+  def compile4[A, B, C, D, R](f: (Exp[A], Exp[B], Exp[C], Exp[D]) => Exp[R])
+                             (implicit mA: Manifest[A],
+                              mB: Manifest[B],
+                              mC: Manifest[C],
+                              mD: Manifest[D],
+                              mR: Manifest[R]
+                             ): (A, B, C, D) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource4(f, className, new PrintWriter(source))
     compileAny(className, staticData, source.toString).asInstanceOf[(A, B, C, D) => R]
   }
 
-  def compile5[A, B, C, D, E, R](f: (Exp[A], Exp[B], Exp[C], Exp[D], Exp[E]) => Exp[R])(implicit mA: Manifest[A], mB: Manifest[B], mC: Manifest[C], mD: Manifest[D], mE: Manifest[E], mR: Manifest[R]): (A, B, C, D, E) => R = {
+  def compile5[A, B, C, D, E, R](f: (Exp[A], Exp[B], Exp[C], Exp[D], Exp[E]) => Exp[R])
+                                (implicit mA: Manifest[A],
+                                 mB: Manifest[B],
+                                 mC: Manifest[C],
+                                 mD: Manifest[D],
+                                 mE: Manifest[E],
+                                 mR: Manifest[R]
+                                ): (A, B, C, D, E) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource5(f, className, new PrintWriter(source))
