@@ -43,7 +43,7 @@ trait OptionOps extends Base with IfThenElse with BooleanOps with Equal {
 }
 
 trait OptionOpsExp extends OptionOps with IfThenElseExpOpt with BooleanOpsExpOpt with StructOpsExpOpt
-  with EqualExpOpt with CastingOpsExp {
+    with EqualExpOpt with CastingOpsExp {
   import scala.language.implicitConversions
   implicit def make_opt[A: Manifest](o: Option[Rep[A]])(implicit pos: SourceContext): Exp[Option[A]] =
     struct(classTag[Option[A]],

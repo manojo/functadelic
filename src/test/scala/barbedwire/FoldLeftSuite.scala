@@ -16,7 +16,7 @@ import java.io.FileOutputStream
  * Basic test suite for foldleft
  */
 
-trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
+trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
 
   /**
    * simple foldLeft back into a list
@@ -79,7 +79,6 @@ trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
     filtered.map(_ * unit(3)).apply(List[Int](), (ls, x) => ls ++ List(x))
   }
 
-
   /**
    * flatMap over a range
    */
@@ -138,7 +137,7 @@ trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
   def partitionmapRange(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
     val xs = FoldLeft.fromRange[List[Int]](a, b)
     val (evens, odds) = xs.partition(_ % unit(2) == unit(0))
-    val (mappedEvens, mappedOdds) = (evens map (_ * unit(2)) , odds map (_ * unit(3)))
+    val (mappedEvens, mappedOdds) = (evens map (_ * unit(2)), odds map (_ * unit(3)))
     val evenList = (evens map (_ * unit(2))).apply(List[Int](), (ls, x) => ls ++ List(x))
     val oddList = (odds map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
 
@@ -203,8 +202,8 @@ trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
     grouped.apply(
       HashMap[Int, Int](),
       (dict, x) =>
-        if (dict.contains(x._1)) { dict.update(x._1, dict(x._1) + x._2); dict }
-        else { dict.update(x._1, x._2); dict }
+        if (dict.contains(x._1)) { dict + (x._1, dict(x._1) + x._2) }
+        else { dict + (x._1, x._2) }
     )
   }
 }
@@ -214,12 +213,12 @@ trait FoldLeftProg extends FoldLefts with Equal with HashMapOps {
  * The corresponding codegen trait as well
  */
 trait FoldLeftExp extends ListOpsExpOpt with IfThenElseExpOpt with BooleanOpsExpOpt with VariablesExpOpt
-   with OrderingOpsExp with NumericOpsExpOpt with PrimitiveOpsExpOpt with WhileExp with EqualExpOpt
-   with EitherOpsExp with HashMapOpsExp
+  with OrderingOpsExp with NumericOpsExpOpt with PrimitiveOpsExpOpt with WhileExp with EqualExpOpt
+  with EitherOpsExp with MyHashMapOpsExp
 
 trait FoldLeftGen extends ScalaGenListOps with ScalaGenIfThenElse with ScalaGenBooleanOps with ScalaGenVariables
-   with ScalaGenOrderingOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenWhile
-   with ScalaGenEqual with ScalaGenEitherOps with ScalaGenHashMapOps {
+    with ScalaGenOrderingOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenWhile
+    with ScalaGenEqual with ScalaGenEitherOps with MyScalaGenHashMapOps {
   val IR: FoldLeftExp
 }
 

@@ -40,22 +40,21 @@ object LambdaCalculus {
 
   val id: D = lam { x => x }
 
-
   /**
    * Boolean expressions
    */
-  val tru: D = lam { x => lam { y => x }}
-  val fls: D = lam { x => lam { y => y }}
+  val tru: D = lam { x => lam { y => x } }
+  val fls: D = lam { x => lam { y => y } }
 
-  val and = lam { x => lam { y => x(y)(fls) }}
-  val or  = lam { x => lam { y => x(tru)(y) }}
+  val and = lam { x => lam { y => x(y)(fls) } }
+  val or = lam { x => lam { y => x(tru)(y) } }
 
   /**
    * Church numerals
    */
 
-  val zero: D = lam { s => lam { z => z }}
-  val succ: D = lam { n => lam { s => lam { z => s(n)(s)(z) }}}
+  val zero: D = lam { s => lam { z => z } }
+  val succ: D = lam { n => lam { s => lam { z => s(n)(s)(z) } } }
 
   def main(args: Array[String]) {
     println(id('v))

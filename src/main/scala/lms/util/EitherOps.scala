@@ -48,7 +48,7 @@ trait EitherOps extends Base with IfThenElse with BooleanOps with Equal {
 }
 
 trait EitherOpsExp extends EitherOps with IfThenElseExpOpt with BooleanOpsExpOpt with StructOpsExpOpt
-  with CastingOpsExp with EqualExpOpt {
+    with CastingOpsExp with EqualExpOpt {
 
   import scala.language.implicitConversions
 

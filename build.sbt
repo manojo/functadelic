@@ -1,4 +1,4 @@
-name := "random-scala"
+name := "functadelic"
 
 scalaVersion := "2.10.2"
 
@@ -18,3 +18,5 @@ scalacOptions ++= Seq(
   //"-feature",
   //"-Yinline-warnings"
 )
+
+defaultScalariformSettings

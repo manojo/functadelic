@@ -40,14 +40,14 @@ trait Folds {
    * sum with foldRight
    */
   def sum(ls: List[Int]): Int = foldRight(0) {
-    (x: Int, acc: Int) => x  + acc
+    (x: Int, acc: Int) => x + acc
   }(ls)
 
   /**
    * filter.
    */
   def filter[A](ls: List[A], p: A => Boolean): List[A] = foldRight(List[A]()) {
-    (x: A, acc: List[A]) => if(p(x)) x :: acc else acc
+    (x: A, acc: List[A]) => if (p(x)) x :: acc else acc
   }(ls)
 
   /**
@@ -60,7 +60,7 @@ trait Folds {
   /**
    * concat
    */
-  def concat[A](xs: List[A], ys: List[A]): List[A] = foldRight(ys){
+  def concat[A](xs: List[A], ys: List[A]): List[A] = foldRight(ys) {
     (x: A, acc: List[A]) => x :: acc
   }(xs)
 
@@ -90,16 +90,15 @@ trait Folds {
     val done = (zs: List[B]) => List[(A, B)]()
 
     val comp = (x: A, acc: List[B] => List[(A, B)]) => {
-      zs: List[B] => zs match {
-        case Nil => Nil
-        case z :: zs2 => (x, z) :: acc(zs2)
-      }
+      zs: List[B] =>
+        zs match {
+          case Nil => Nil
+          case z :: zs2 => (x, z) :: acc(zs2)
+        }
     }
 
-    (foldRight(done)(comp)(xs)) (ys)
-}
-
-
+    (foldRight(done)(comp)(xs))(ys)
+  }
 
   /**
    * The build function, as per
@@ -146,7 +145,6 @@ trait Bla {
     case x :: xs => f(x, foldRight(z)(f)(xs))
   }
 
-
   def map[A, B](ls: List[A], f: A => B): List[B] = {
     val mapBuilder = (b: ListBuilder[B]) =>
       foldRight(b.nil)((elem: A, acc) => b.cons(f(elem), acc))(ls)
@@ -160,7 +158,7 @@ object HelloFolds extends Folds {
   def main(args: Array[String]) {
     println("Hello Folds")
 
-    val reverse = foldLeft(List[Int]()){
+    val reverse = foldLeft(List[Int]()) {
       (acc: List[Int], x: Int) => x :: acc
     } _
 

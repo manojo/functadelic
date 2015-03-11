@@ -17,8 +17,8 @@ import lms.util._
  *
  */
 trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
-  with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
-  with EitherOps with MyTupleOps {
+    with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
+    with EitherOps with MyTupleOps {
 
   /**
    * a type alias for the combination function for
@@ -46,7 +46,7 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
     /**
      * filter
      */
-    def filter(p: Rep[A] => Rep[Boolean]) = FoldLeft[A, S] {  (z: Rep[S], comb: Comb[A, S]) =>
+    def filter(p: Rep[A] => Rep[Boolean]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
       this.apply(
         z,
         (acc: Rep[S], elem: Rep[A]) =>

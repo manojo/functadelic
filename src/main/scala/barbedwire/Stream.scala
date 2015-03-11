@@ -1,25 +1,25 @@
 package barbedwire
 
 /**
-  * A scala implementation of streams described in the 'stream fusion' paper by
-  * Duncan Coutts et al.
-  *
-  * see related post: http://manojo.github.io/2015/02/11/shortcut-fusion-part2
-  */
+ * A scala implementation of streams described in the 'stream fusion' paper by
+ * Duncan Coutts et al.
+ *
+ * see related post: http://manojo.github.io/2015/02/11/shortcut-fusion-part2
+ */
 
 trait Streams {
 
   /** ADT for a Stepper */
-  abstract class Step[A,S]
-  case class Done[A,S]() extends Step[A,S]
-  case class Yield[A,S](a: A, s: S) extends Step[A,S]
-  case class Skip[A,S](s: S) extends Step[A,S]
+  abstract class Step[A, S]
+  case class Done[A, S]() extends Step[A, S]
+  case class Yield[A, S](a: A, s: S) extends Step[A, S]
+  case class Skip[A, S](s: S) extends Step[A, S]
 
   /**
    * The stream class
    * @param A: the type of elements that the Stream sees
    */
-  abstract class Stream[A]{ self =>
+  abstract class Stream[A] { self =>
 
     /**
      * Type of the seed given to a stream
@@ -130,14 +130,15 @@ trait Streams {
       type S = (self.S, b.S)
       def seed = (self.seed, b.seed)
 
-      def stepper(s: S) = s match { case (sa, sb) =>
+      def stepper(s: S) = s match {
+        case (sa, sb) =>
 
-        (self.stepper(sa), b.stepper(sb)) match {
-          case (Done(), Done()) => Done()
-          case (Yield(a, sa2), Yield(b, sb2)) => Yield((a, b), (sa2, sb2))
-          case (Yield(_, _), Skip(sb2)) => Skip((sa, sb2))
-          case (Skip(sa2), Yield(_, _)) => Skip((sa2, sb))
-        }
+          (self.stepper(sa), b.stepper(sb)) match {
+            case (Done(), Done()) => Done()
+            case (Yield(a, sa2), Yield(b, sb2)) => Yield((a, b), (sa2, sb2))
+            case (Yield(_, _), Skip(sb2)) => Skip((sa, sb2))
+            case (Skip(sa2), Yield(_, _)) => Skip((sa2, sb))
+          }
       }
 
     }

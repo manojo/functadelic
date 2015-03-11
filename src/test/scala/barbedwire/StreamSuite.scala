@@ -6,8 +6,8 @@ package barbedwire
 import org.scalatest.FunSuite
 
 /**
-  * Test suite for Streams
-  */
+ * Test suite for Streams
+ */
 
 class StreamSuite extends FunSuite with Streams {
 
@@ -27,8 +27,8 @@ class StreamSuite extends FunSuite with Streams {
 
   test("filtering over streams is the same as filtering over lists") {
     assert {
-      toStream((1 to 10).toList).filter( _ % 2 == 1).unStream ==
-      (1 to 10).toList.filter(_ % 2 == 1)
+      toStream((1 to 10).toList).filter(_ % 2 == 1).unStream ==
+        (1 to 10).toList.filter(_ % 2 == 1)
     }
   }
 
@@ -46,9 +46,9 @@ class StreamSuite extends FunSuite with Streams {
     val ls = (1 to 10).toList
     val ls2 = (1 to 10).toList
 
-    val ls3 = toStream(ls).zip(toStream(ls2)).map{ case (a, b) => a + b }.unStream
+    val ls3 = toStream(ls).zip(toStream(ls2)).map { case (a, b) => a + b }.unStream
 
-    assert(ls3 == (ls zip ls2).map{ case (a, b) => a + b })
+    assert(ls3 == (ls zip ls2).map { case (a, b) => a + b })
 
   }
 

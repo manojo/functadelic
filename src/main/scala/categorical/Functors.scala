@@ -144,7 +144,7 @@ trait Categorical {
   /**
    * summing a list
    */
-  def sumList(ls: IntList): Int = fold[IntListF, Int]{
+  def sumList(ls: IntList): Int = fold[IntListF, Int] {
     case NilF => 0
     case ConsF(n, x) => n + x
   }(ls)(intListFunctor)
@@ -154,7 +154,6 @@ trait Categorical {
    */
   val emptyIntList: IntList = Fix[IntListF](NilF)
   def cons(n: Int, ls: IntList): IntList = Fix[IntListF](ConsF(n, ls))
-
 
 }
 

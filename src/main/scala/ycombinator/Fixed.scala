@@ -13,7 +13,8 @@ trait Fixed {
     def apply(x: Rec): T = f(x)
   }
 
-  /** the recursively typed definition of fix
+  /**
+   * the recursively typed definition of fix
    * fix = \f: T -> T.
    * (\x:(uA. A -> T) f (x x))(\x:(uA. A -> T) f (x x))
    *
@@ -49,7 +50,7 @@ object FixCombinator extends Fixed {
 
   def bla = fix(g)
 
-  def main(args:Array[String]) {
+  def main(args: Array[String]) {
     println("Hello Fixed")
     println(bla(3))
   }
