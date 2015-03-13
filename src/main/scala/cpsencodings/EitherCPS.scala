@@ -9,21 +9,23 @@ package cpsencodings
  *
  * See example of partition for lists for an intuition.
  */
-abstract class EitherCPS[A, B, X] extends ((A => X, B => X) => X) {
-  def fold[C, D](lmap: A => C, rmap: B => D) = EitherCPS[C, D, X] {
-    (l: C => X, r: D => X) => this.apply(
-      (a: A) => l(lmap(a)),
-      (b: B) => r(rmap(b))
+abstract class EitherCPS[A, B] { self =>
+  def map[C, D](lmap: A => C, rmap: B => D) = new EitherCPS[C, D] {
+    def apply[X](lf: C => X, rf: D => X) =  self.apply(
+      (a: A) => lf(lmap(a)),
+      (b: B) => rf(rmap(b))
     )
   }
+
+  def apply[X](lf: A => X, rf: B => X): X
 }
 
-case class LeftCPS[A, B, X](a: A) extends EitherCPS[A, B, X] {
-  def apply(left: A => X, right: B => X) = left(a)
+case class LeftCPS[A, B](a: A) extends EitherCPS[A, B] {
+  def apply[X](left: A => X, right: B => X) = left(a)
 }
 
-case class RightCPS[A, B, X](b: B) extends EitherCPS[A, B, X] {
-  def apply(left: A => X, right: B => X) = right(b)
+case class RightCPS[A, B](b: B) extends EitherCPS[A, B] {
+  def apply[X](left: A => X, right: B => X) = right(b)
 }
 
 /**
@@ -31,30 +33,22 @@ case class RightCPS[A, B, X](b: B) extends EitherCPS[A, B, X] {
  */
 object EitherCPS {
 
-  def apply[A, B, X](f: (A => X, B => X) => X) = new EitherCPS[A, B, X] {
-    def apply(left: A => X, right: B => X) = f(left, right)
-  }
-
   /**
    * partition on lists, using EitherCPS
    */
-  def partition[A](p: A => Boolean)(ls: List[A]): (List[A], List[A]) = {
-    val tmp = ls.foldLeft(List[EitherCPS[A, A, A]]()) { (acc, elem) =>
-      if (p(elem)) acc ++ List(LeftCPS[A, A, A](elem))
-      else acc ++ List(RightCPS[A, A, A](elem))
-    }
-
-    tmp.foldLeft((List[A](), List[A]())) { case ((l, r), elem) => elem match {
-      case e @ LeftCPS(a) => (l ++ List(e(a => a, b => b)), r)
-      case e @ RightCPS(b) => (l, r ++ List(e(a => a, b => b)))
-    }}
-  }
+  def partition[A](p: A => Boolean)(ls: List[A]): List[EitherCPS[A, A]] =
+    ls map (x => if (p(x)) LeftCPS[A, A](x) else RightCPS[A, A](x))
 
   def main(args: Array[String]) {
     println("Watchout!")
 
     val ls = (1 to 10).toList
-    println(partition[Int](_ % 2 == 0)(ls))
+    val partitioned = partition[Int](_ % 2 == 0)(ls)
+    val mapped: List[EitherCPS[Double, Int]] = partitioned map (_ map (x => x.toDouble, y => y))
+
+
+
+    //println(partition[Int](_ % 2 == 0)(ls))
 
   }
 

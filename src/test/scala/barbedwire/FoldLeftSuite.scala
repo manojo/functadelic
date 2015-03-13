@@ -193,6 +193,22 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
   }
 
   /**
+   * partition bis map, folded into a pair of lists
+   * using EitherCPS
+   */
+  def partitioncpsmap2listpair(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
+    val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
+    val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
+    val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
+    mapped.apply(
+      (List[Int](), List[Int]()),
+      (ls, x) =>
+        if (x.isLeft) (ls._1 ++ List(x.getLeft), ls._2)
+        else (ls._1, ls._2 ++ List(x.getRight))
+    )
+  }
+
+  /**
    * groupWith followed by sum
    */
   def groupwithsum(a: Rep[Int], b: Rep[Int]): Rep[HashMap[Int, Int]] = {

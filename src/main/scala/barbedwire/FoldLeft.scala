@@ -18,7 +18,9 @@ import lms.util._
  */
 trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
     with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
-    with EitherOps with MyTupleOps {
+    with EitherOps with MyTupleOps with EitherCPSOps {
+
+  import EitherCPS._
 
   /**
    * a type alias for the combination function for
@@ -111,6 +113,21 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
         (acc, elem) => if (p(elem)) comb(acc, left[A, A](elem)) else comb(acc, right[A, A](elem))
       )
     }
+
+
+    /**
+     * partition, that produces a FoldLeft over `EitherCPS` instead of
+     * two `FoldLeft`s. The important thing is to keep the one
+     * FoldLeft abstraction. The CPS encoding is used so as to avoid creating Either objects
+     */
+    //def partitionCPS[X: Manifest](p: Rep[A] => Rep[Boolean]) = FoldLeft[EitherCPS[A, A, X], S] { (z: Rep[S], comb: Comb[EitherCPS[A, A, X], S]) =>
+    //  this.apply(
+    //    z,
+    //    (acc, elem) =>
+    //      if (p(elem)) comb(acc, LeftCPS[A, A, X](elem))
+    //      else comb(acc, RightCPS[A, A, X](elem))
+    //  )
+    //}
 
     /**
      * groupWith

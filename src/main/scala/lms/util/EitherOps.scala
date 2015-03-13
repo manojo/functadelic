@@ -25,9 +25,9 @@ trait EitherOps extends Base with IfThenElse with BooleanOps with Equal {
     def isLeft: Rep[Boolean] = struct_isLeft(o)
 
     /**
-     * fold function as defined in the Scala API for Either
+     * map on Either
      */
-    def fold[C: Manifest, D: Manifest](l: Rep[A] => Rep[C], r: Rep[B] => Rep[D]): Rep[Either[C, D]] =
+    def map[C: Manifest, D: Manifest](l: Rep[A] => Rep[C], r: Rep[B] => Rep[D]): Rep[Either[C, D]] =
       if (o.isLeft) left[C, D](l(o.getLeft)) else right[C, D](r(o.getRight))
 
     def getLeft: Rep[A] = struct_getLeft(o)
