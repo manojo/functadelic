@@ -105,14 +105,27 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
     /**
      * partition, that produces a FoldLeft over `Either` instead of
      * two `FoldLeft`s. The important thing is to keep the one
-     * FoldLeft abstraction
+     * FoldLeft abstraction.
+     * This can be rewritten using `map`.
+     * see the following related post: http://manojo.github.io/2015/03/12/staged-foldleft-groupby/
      */
-    def partitionBis(p: Rep[A] => Rep[Boolean]) = FoldLeft[Either[A, A], S] { (z: Rep[S], comb: Comb[Either[A, A], S]) =>
-      this.apply(
-        z,
-        (acc, elem) => if (p(elem)) comb(acc, left[A, A](elem)) else comb(acc, right[A, A](elem))
-      )
-    }
+    def partitionBis(p: Rep[A] => Rep[Boolean]) =
+      FoldLeft[Either[A, A], S] { (z: Rep[S], comb: Comb[Either[A, A], S]) =>
+        this.apply(
+          z,
+          (acc, elem) =>
+            if (p(elem)) comb(acc, left[A, A](elem))
+            else comb(acc, right[A, A](elem))
+        )
+      }
+
+
+    /**
+     * The implementation using `map` generates worse code. To be investigated more closely
+     *
+     *FoldLeft[Either[A, A], S] =
+     * this map (elem => if (p(elem)) left[A, A](elem) else right[A, A](elem))
+     */
 
 
     /**
@@ -133,13 +146,12 @@ trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
      * groupWith
      * takes a function which computes some grouping property
      * does not create groups just yet, just propagates key-value pairs
+     *
+     * can be rewritten using `map`.
+     * see the following related post: http://manojo.github.io/2015/03/12/staged-foldleft-groupby/
      */
-    def groupWith[K: Manifest](f: Rep[A] => Rep[K]) = FoldLeft[(K, A), S] { (z: Rep[S], comb: Comb[(K, A), S]) =>
-      this.apply(
-        z,
-        (acc, elem) => comb(acc, make_tuple2(f(elem), elem))
-      )
-    }
+    def groupWith[K: Manifest](f: Rep[A] => Rep[K]): FoldLeft[(K, A), S]  =
+      this map (elem => make_tuple2(f(elem), elem))
 
   }
 

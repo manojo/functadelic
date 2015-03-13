@@ -173,7 +173,7 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
   def partitionbismap(a: Rep[Int], b: Rep[Int]): Rep[List[Either[Int, Int]]] = {
     val xs = FoldLeft.fromRange[List[Either[Int, Int]]](a, b)
     val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
-    val mapped = partitioned map { x => x.fold(_ * unit(2), _ * unit(3)) }
+    val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
     mapped.apply(List[Either[Int, Int]](), (ls, x) => ls ++ List(x))
   }
 
@@ -183,7 +183,7 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
   def partitionbismap2listpair(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
     val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
     val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
-    val mapped = partitioned map { x => x.fold(_ * unit(2), _ * unit(3)) }
+    val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
     mapped.apply(
       (List[Int](), List[Int]()),
       (ls, x) =>

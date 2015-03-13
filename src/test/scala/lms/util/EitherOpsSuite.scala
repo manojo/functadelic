@@ -10,16 +10,16 @@ import java.io.FileOutputStream
 
 trait EitherProg extends EitherOps with PrimitiveOps with NumericOps {
 
-  //fold on left
+  //map on left
   def eitherfoldleft(in: Rep[Int]): Rep[Either[Int, Int]] = {
     val s = left[Int, Int](in)
-    s.fold(x => x * unit(2), x => x * unit(3))
+    s.map(x => x * unit(2), x => x * unit(3))
   }
 
-  //fold on right
+  //map on right
   def eitherfoldright(in: Rep[Int]): Rep[Either[Int, Int]] = {
     val s = right[Int, Int](in)
-    s.fold(x => x * unit(2), x => x * unit(3))
+    s.map(x => x * unit(2), x => x * unit(3))
   }
 }
 
