@@ -44,9 +44,8 @@ object EitherCPS {
 
     val ls = (1 to 10).toList
     val partitioned = partition[Int](_ % 2 == 0)(ls)
-    val mapped: List[EitherCPS[Double, Int]] = partitioned map (_ map (x => x.toDouble, y => y))
-
-
+    val mapped: List[EitherCPS[Double, Int]] =
+      partitioned map (_ map (x => x.toDouble, y => y))
 
     //println(partition[Int](_ % 2 == 0)(ls))
 

@@ -132,4 +132,3 @@ trait ScalaGenReaderOps
     with ScalaGenVariables {
   val IR: StringReaderOpsExp
 }
-
