@@ -16,9 +16,19 @@ import lms.util._
  *    def foldLeft[A, B](z: B, comb: (B, A) => A)(xs: List[A]) : B
  *
  */
-trait FoldLefts extends ListOps with IfThenElse with BooleanOps with Variables
-    with OrderingOps with NumericOps with PrimitiveOps with LiftVariables with While
-    with EitherOps with MyTupleOps with EitherCPSOps {
+trait FoldLefts
+  extends ListOps
+  with IfThenElse
+  with BooleanOps
+  with Variables
+  with OrderingOps
+  with NumericOps
+  with PrimitiveOps
+  with LiftVariables
+  with While
+  with EitherOps
+  with MyTupleOps
+  with EitherCPSOps {
 
   import EitherCPS._
 

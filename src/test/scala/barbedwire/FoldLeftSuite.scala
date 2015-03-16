@@ -228,13 +228,31 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
  * A trait that mixes all the relevant Exp traits that are required for this example
  * The corresponding codegen trait as well
  */
-trait FoldLeftExp extends ListOpsExpOpt with IfThenElseExpOpt with BooleanOpsExpOpt with VariablesExpOpt
-  with OrderingOpsExp with NumericOpsExpOpt with PrimitiveOpsExpOpt with WhileExp with EqualExpOpt
-  with EitherOpsExp with MyHashMapOpsExp
+trait FoldLeftExp
+  extends ListOpsExpOpt
+  with IfThenElseExpOpt
+  with BooleanOpsExpOpt
+  with VariablesExpOpt
+  with OrderingOpsExp
+  with NumericOpsExpOpt
+  with PrimitiveOpsExpOpt
+  with WhileExp
+  with EqualExpOpt
+  with EitherOpsExp
+  with MyHashMapOpsExp
 
-trait FoldLeftGen extends ScalaGenListOps with ScalaGenIfThenElse with ScalaGenBooleanOps with ScalaGenVariables
-    with ScalaGenOrderingOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenWhile
-    with ScalaGenEqual with ScalaGenEitherOps with MyScalaGenHashMapOps {
+trait FoldLeftGen
+  extends ScalaGenListOps
+  with ScalaGenIfThenElse
+  with ScalaGenBooleanOps
+  with ScalaGenVariables
+  with ScalaGenOrderingOps
+  with ScalaGenNumericOps
+  with ScalaGenPrimitiveOps
+  with ScalaGenWhile
+  with ScalaGenEqual
+  with ScalaGenEitherOps
+  with MyScalaGenHashMapOps {
   val IR: FoldLeftExp
 }
 
