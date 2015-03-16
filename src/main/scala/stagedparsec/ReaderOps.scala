@@ -42,14 +42,14 @@ trait ReaderOps extends Base {
 }
 
 trait StringReaderOps
-  extends ReaderOps
-  with ArrayOps
-  with OrderingOps
-  with NumericOps
-  with PrimitiveOps
-  with While
-  with LiftVariables
-  with BooleanOps {
+    extends ReaderOps
+    with ArrayOps
+    with OrderingOps
+    with NumericOps
+    with PrimitiveOps
+    with While
+    with LiftVariables
+    with BooleanOps {
 
   type Elem = Char
   type Input = StringReader
@@ -76,14 +76,14 @@ trait StringReaderOps
 }
 
 trait StringReaderOpsExp
-  extends StringReaderOps
-  with ArrayOpsExpOpt
-  with OrderingOpsExp
-  with NumericOpsExpOpt
-  with PrimitiveOpsExpOpt
-  with StructOpsExpOptCommon
-  with WhileExp
-  with BooleanOpsExpOpt {
+    extends StringReaderOps
+    with ArrayOpsExpOpt
+    with OrderingOpsExp
+    with NumericOpsExpOpt
+    with PrimitiveOpsExpOpt
+    with StructOpsExpOptCommon
+    with WhileExp
+    with BooleanOpsExpOpt {
 
   //A bit of a hack: manifest[StringReader] causes a nullPointerException
   //possibly due to a bug in Scala
@@ -120,16 +120,16 @@ trait ReaderGenBase extends GenericCodegen with BaseGenStructOps {
 }
 
 trait ScalaGenReaderOps
-  extends ScalaGenBase
-  with ReaderGenBase
-  with ScalaGenArrayOps
-  with ScalaGenOrderingOps
-  with ScalaGenNumericOps
-  with ScalaGenPrimitiveOps
-  with ScalaGenStructOps
-  with ScalaGenWhile
-  with ScalaGenBooleanOps
-  with ScalaGenVariables {
-    val IR: StringReaderOpsExp
+    extends ScalaGenBase
+    with ReaderGenBase
+    with ScalaGenArrayOps
+    with ScalaGenOrderingOps
+    with ScalaGenNumericOps
+    with ScalaGenPrimitiveOps
+    with ScalaGenStructOps
+    with ScalaGenWhile
+    with ScalaGenBooleanOps
+    with ScalaGenVariables {
+  val IR: StringReaderOpsExp
 }
 

@@ -17,18 +17,18 @@ import lms.util._
  *
  */
 trait FoldLefts
-  extends ListOps
-  with IfThenElse
-  with BooleanOps
-  with Variables
-  with OrderingOps
-  with NumericOps
-  with PrimitiveOps
-  with LiftVariables
-  with While
-  with EitherOps
-  with MyTupleOps
-  with EitherCPSOps {
+    extends ListOps
+    with IfThenElse
+    with BooleanOps
+    with Variables
+    with OrderingOps
+    with NumericOps
+    with PrimitiveOps
+    with LiftVariables
+    with While
+    with EitherOps
+    with MyTupleOps
+    with EitherCPSOps {
 
   import EitherCPS._
 
@@ -129,14 +129,12 @@ trait FoldLefts
         )
       }
 
-
     /**
      * The implementation using `map` generates worse code. To be investigated more closely
      *
-     *FoldLeft[Either[A, A], S] =
+     * FoldLeft[Either[A, A], S] =
      * this map (elem => if (p(elem)) left[A, A](elem) else right[A, A](elem))
      */
-
 
     /**
      * partition, that produces a FoldLeft over `EitherCPS` instead of
@@ -160,7 +158,7 @@ trait FoldLefts
      * can be rewritten using `map`.
      * see the following related post: http://manojo.github.io/2015/03/12/staged-foldleft-groupby/
      */
-    def groupWith[K: Manifest](f: Rep[A] => Rep[K]): FoldLeft[(K, A), S]  =
+    def groupWith[K: Manifest](f: Rep[A] => Rep[K]): FoldLeft[(K, A), S] =
       this map (elem => make_tuple2(f(elem), elem))
 
   }

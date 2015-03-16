@@ -11,7 +11,7 @@ package cpsencodings
  */
 abstract class EitherCPS[A, B] { self =>
   def map[C, D](lmap: A => C, rmap: B => D) = new EitherCPS[C, D] {
-    def apply[X](lf: C => X, rf: D => X) =  self.apply(
+    def apply[X](lf: C => X, rf: D => X) = self.apply(
       (a: A) => lf(lmap(a)),
       (b: B) => rf(rmap(b))
     )

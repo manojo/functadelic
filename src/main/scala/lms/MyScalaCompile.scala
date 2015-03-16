@@ -63,8 +63,7 @@ trait MyScalaCompile extends ScalaCompile {
                           (implicit mA: Manifest[A],
                            mB: Manifest[B],
                            mC: Manifest[C],
-                           mR: Manifest[R]
-                          ): (A, B, C) => R = {
+                           mR: Manifest[R]): (A, B, C) => R = {
 
     val className = freshClass
     val source = new StringWriter()
@@ -77,8 +76,7 @@ trait MyScalaCompile extends ScalaCompile {
                               mB: Manifest[B],
                               mC: Manifest[C],
                               mD: Manifest[D],
-                              mR: Manifest[R]
-                             ): (A, B, C, D) => R = {
+                              mR: Manifest[R]): (A, B, C, D) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource4(f, className, new PrintWriter(source))
@@ -91,8 +89,7 @@ trait MyScalaCompile extends ScalaCompile {
                                  mC: Manifest[C],
                                  mD: Manifest[D],
                                  mE: Manifest[E],
-                                 mR: Manifest[R]
-                                ): (A, B, C, D, E) => R = {
+                                 mR: Manifest[R]): (A, B, C, D, E) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource5(f, className, new PrintWriter(source))

@@ -20,21 +20,19 @@ trait EitherCPSOps extends Base with BooleanOps {
    * A CPS encoding of Either: Either is a construct that takes a value
    * of type A or B and eventually produces a value of type X
    */
-  abstract class EitherCPS[A: Manifest, B: Manifest, X: Manifest] extends
-      ((Rep[A] => Rep[X], Rep[B] => Rep[X]) => Rep[X]) {
+  abstract class EitherCPS[A: Manifest, B: Manifest, X: Manifest]
+      extends ((Rep[A] => Rep[X], Rep[B] => Rep[X]) => Rep[X]) {
 
     def isLeft: Rep[Boolean]
 
     def map[C: Manifest, D: Manifest](lmap: Rep[A] => Rep[C], rmap: Rep[B] => Rep[D])
-        = EitherCPS[C, D, X](
-
-      (l: Rep[C] => Rep[X], r: Rep[D] => Rep[X]) => this.apply(
-        (a: Rep[A]) => l(lmap(a)),
-        (b: Rep[B]) => r(rmap(b))
-      ),
-
-      this.isLeft
-    )
+      = EitherCPS[C, D, X](
+        (l: Rep[C] => Rep[X], r: Rep[D] => Rep[X]) => this.apply(
+          (a: Rep[A]) => l(lmap(a)),
+          (b: Rep[B]) => r(rmap(b))
+        ),
+        this.isLeft
+      )
   }
 
   /**
@@ -61,4 +59,3 @@ trait EitherCPSOps extends Base with BooleanOps {
     )
   }
 }
-
