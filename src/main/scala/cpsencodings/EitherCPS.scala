@@ -47,7 +47,11 @@ object EitherCPS {
     val mapped: List[EitherCPS[Double, Int]] =
       partitioned map (_ map (x => x.toDouble, y => y))
 
-    //println(partition[Int](_ % 2 == 0)(ls))
+    val (leftList, rightList) = mapped.foldLeft((List[Double](), List[Int]())) {
+      case ((accL, accR), elem) => elem.apply(d => (d :: accL, accR) , i => (accL, i :: accR))
+    }
+
+    println((leftList, rightList))
 
   }
 
