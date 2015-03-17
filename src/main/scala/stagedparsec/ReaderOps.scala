@@ -11,7 +11,7 @@ import scala.language.implicitConversions
 /**
  * an implementation of `Reader` as staged struct
  * based on a previous implementation in
- * `https://github.com/manojo/experiments/`
+ * https://github.com/manojo/experiments/
  */
 
 /**
@@ -119,7 +119,7 @@ trait ReaderGenBase extends GenericCodegen with BaseGenStructOps {
   }
 }
 
-trait ScalaGenReaderOps
+trait ScalaGenStringReaderOps
     extends ScalaGenBase
     with ReaderGenBase
     with ScalaGenArrayOps

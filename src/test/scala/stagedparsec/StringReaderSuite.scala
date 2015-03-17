@@ -46,7 +46,7 @@ class StringReaderSuite extends FileDiffSuite {
         with MiscOpsExp
         with MyScalaCompile { self =>
 
-        val codegen = new ScalaGenReaderOps with ScalaGenMiscOps { val IR: self.type = self }
+        val codegen = new ScalaGenStringReaderOps with ScalaGenMiscOps { val IR: self.type = self }
 
         codegen.emitSource(testFirst _, "testFirst", new java.io.PrintWriter(System.out))
         codegen.reset
