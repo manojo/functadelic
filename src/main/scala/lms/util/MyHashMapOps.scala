@@ -40,23 +40,26 @@ trait MyHashMapOps extends Base {
   }
 
   def hashmap_new[K: Manifest, V: Manifest]()(implicit pos: SourceContext): Rep[HashMap[K, V]]
-  def hashmap_apply[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K])(
-    implicit pos: SourceContext): Rep[V]
+  def hashmap_apply[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K])
+                                             (implicit pos: SourceContext): Rep[V]
 
-  def hashmap_updated[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K], v: Rep[V])(
-    implicit pos: SourceContext): Rep[HashMap[K, V]]
+  def hashmap_updated[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K], v: Rep[V])
+                                               (implicit pos: SourceContext): Rep[HashMap[K, V]]
 
-  def hashmap_contains[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], i: Rep[K])(
-    implicit pos: SourceContext): Rep[Boolean]
-  def hashmap_size[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext): Rep[Int]
-  def hashmap_values[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext): Rep[Iterable[V]]
+  def hashmap_contains[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], i: Rep[K])
+                                                (implicit pos: SourceContext): Rep[Boolean]
 
-  def hashmap_keyset[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext): Rep[Set[K]]
-  def hashmap_keys[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext): Rep[Iterable[K]]
+  def hashmap_size[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                            (implicit pos: SourceContext): Rep[Int]
+
+  def hashmap_values[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                              (implicit pos: SourceContext): Rep[Iterable[V]]
+
+  def hashmap_keyset[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                              (implicit pos: SourceContext): Rep[Set[K]]
+
+  def hashmap_keys[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                            (implicit pos: SourceContext): Rep[Iterable[K]]
 }
 
 trait MyHashMapOpsExp extends MyHashMapOps with EffectExp {
@@ -93,23 +96,33 @@ trait MyHashMapOpsExp extends MyHashMapOps with EffectExp {
    * creating an immutable HashMap so no need to wrap an effect around it
    */
   def hashmap_new[K: Manifest, V: Manifest]()(implicit pos: SourceContext) = HashMapNew[K, V]()
-  def hashmap_apply[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]], k: Exp[K])(
-    implicit pos: SourceContext) = HashMapApply(m, k)
+  def hashmap_apply[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]], k: Exp[K])
+                                             (implicit pos: SourceContext) =
+    HashMapApply(m, k)
 
-  def hashmap_updated[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K], v: Rep[V])(
-    implicit pos: SourceContext) = HashMapUpdated(m, k, v)
+  def hashmap_updated[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]], k: Rep[K], v: Rep[V])
+                                               (implicit pos: SourceContext) =
+    HashMapUpdated(m, k, v)
 
-  def hashmap_contains[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]], i: Exp[K])(
-    implicit pos: SourceContext) = HashMapContains(m, i)
-  def hashmap_size[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]])(
-    implicit pos: SourceContext) = HashMapSize(m)
-  def hashmap_values[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]])(
-    implicit pos: SourceContext) = HashMapValues(m)
+  def hashmap_contains[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]], i: Exp[K])
+                                                (implicit pos: SourceContext) =
+    HashMapContains(m, i)
 
-  def hashmap_keyset[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext) = HashMapKeySet(m)
-  def hashmap_keys[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])(
-    implicit pos: SourceContext) = HashMapKeys(m)
+  def hashmap_size[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]])
+                                            (implicit pos: SourceContext) =
+    HashMapSize(m)
+
+  def hashmap_values[K: Manifest, V: Manifest](m: Exp[HashMap[K, V]])
+                                              (implicit pos: SourceContext) =
+     HashMapValues(m)
+
+  def hashmap_keyset[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                              (implicit pos: SourceContext) =
+    HashMapKeySet(m)
+
+  def hashmap_keys[K: Manifest, V: Manifest](m: Rep[HashMap[K, V]])
+                                            (implicit pos: SourceContext) =
+    HashMapKeys(m)
 
 }
 
