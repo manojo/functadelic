@@ -11,13 +11,13 @@ import java.io.FileOutputStream
 trait EitherProg extends EitherOps with PrimitiveOps with NumericOps {
 
   //map on left
-  def eitherfoldleft(in: Rep[Int]): Rep[Either[Int, Int]] = {
+  def eithermapleft(in: Rep[Int]): Rep[Either[Int, Int]] = {
     val s = left[Int, Int](in)
     s.map(x => x * unit(2), x => x * unit(3))
   }
 
   //map on right
-  def eitherfoldright(in: Rep[Int]): Rep[Either[Int, Int]] = {
+  def eithermapright(in: Rep[Int]): Rep[Either[Int, Int]] = {
     val s = right[Int, Int](in)
     s.map(x => x * unit(2), x => x * unit(3))
   }
@@ -35,18 +35,18 @@ class EitherOpsSuite extends FileDiffSuite {
         val codegen = new ScalaGenEitherOps with ScalaGenPrimitiveOps
           with ScalaGenNumericOps with lms.ScalaGenStructOps { val IR: self.type = self }
 
-        codegen.emitSource(eitherfoldleft _, "eitherfoldleft", new java.io.PrintWriter(System.out))
+        codegen.emitSource(eithermapleft _, "eithermapleft", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcEitherfoldleft = compile(eitherfoldleft)
-        scala.Console.println(testcEitherfoldleft(3))
+        val testcEithermapleft = compile(eithermapleft)
+        scala.Console.println(testcEithermapleft(3))
         codegen.reset
 
-        codegen.emitSource(eitherfoldright _, "eitherfoldright", new java.io.PrintWriter(System.out))
+        codegen.emitSource(eithermapright _, "eithermapright", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcEitherfoldright = compile(eitherfoldright)
-        scala.Console.println(testcEitherfoldright(3))
+        val testcEithermapright = compile(eithermapright)
+        scala.Console.println(testcEithermapright(3))
         codegen.reset
 
       }

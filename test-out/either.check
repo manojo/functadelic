@@ -1,7 +1,7 @@
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
-class eitherfoldleft extends ((Int)=>(EitherIntInt)) {
+class eithermapleft extends ((Int)=>(EitherIntInt)) {
 def apply(x0:Int): EitherIntInt = {
 val x1 = null.asInstanceOf[Int]
 val x3 = x0 * 2
@@ -17,7 +17,7 @@ EitherIntInt(6,0,true)
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
-class eitherfoldright extends ((Int)=>(EitherIntInt)) {
+class eithermapright extends ((Int)=>(EitherIntInt)) {
 def apply(x0:Int): EitherIntInt = {
 val x1 = null.asInstanceOf[Int]
 val x3 = x0 * 3
