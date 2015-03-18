@@ -20,19 +20,22 @@ trait EitherCPSOps extends Base with BooleanOps {
    * A CPS encoding of Either: Either is a construct that takes a value
    * of type A or B and eventually produces a value of type X
    */
-  abstract class EitherCPS[A: Manifest, B: Manifest, X: Manifest]
-      extends ((Rep[A] => Rep[X], Rep[B] => Rep[X]) => Rep[X]) {
+  abstract class EitherCPS[A: Manifest, B: Manifest] { self =>
+
+    def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X]
 
     def isLeft: Rep[Boolean]
 
     def map[C: Manifest, D: Manifest](lmap: Rep[A] => Rep[C], rmap: Rep[B] => Rep[D])
-      = EitherCPS[C, D, X](
-        (l: Rep[C] => Rep[X], r: Rep[D] => Rep[X]) => this.apply(
-          (a: Rep[A]) => l(lmap(a)),
-          (b: Rep[B]) => r(rmap(b))
-        ),
-        this.isLeft
-      )
+      = new EitherCPS[C, D] {
+
+        def isLeft = self.isLeft
+
+        def apply[X: Manifest](lf: Rep[C] => Rep[X], rf: Rep[D] => Rep[X]) = self.apply(
+          a => lf(lmap(a)),
+          b => rf(rmap(b))
+        )
+      }
   }
 
   /**
@@ -40,22 +43,20 @@ trait EitherCPSOps extends Base with BooleanOps {
    */
   object EitherCPS {
 
-    def apply[A: Manifest, B: Manifest, X: Manifest](
-      f: (Rep[A] => Rep[X], Rep[B] => Rep[X]) => Rep[X],
-      isL: Rep[Boolean]
-    ) = new EitherCPS[A, B, X] {
-      def apply(left: Rep[A] => Rep[X], right: Rep[B] => Rep[X]) = f(left, right)
-      def isLeft: Rep[Boolean] = isL
+    def LeftCPS[A: Manifest, B: Manifest](a: Rep[A]) = new EitherCPS[A, B] {
+
+      def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
+        lf(a)
+
+      def isLeft = unit(true)
     }
 
-    def LeftCPS[A: Manifest, B: Manifest, X: Manifest](a: Rep[A]) = EitherCPS(
-      (l: Rep[A] => Rep[X], r: Rep[B] => Rep[X]) => l(a),
-      unit(true)
-    )
+    def RightCPS[A: Manifest, B: Manifest](b: Rep[B]) = new EitherCPS[A, B] {
 
-    def RightCPS[A: Manifest, B: Manifest, X: Manifest](b: Rep[B]) = EitherCPS(
-      (l: Rep[A] => Rep[X], r: Rep[B] => Rep[X]) => r(b),
-      unit(false)
-    )
+      def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
+        rf(b)
+
+      def isLeft = unit(false)
+    }
   }
 }
