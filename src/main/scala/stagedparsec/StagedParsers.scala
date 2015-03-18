@@ -23,7 +23,7 @@ trait StagedParsers
     /**
      * The flatMap operation
      */
-    private def flatMap[U: Manifest](f: Rep[T] => Parser[U]) = Parser[U] { input: Rep[Input] =>
+    private def flatMap[U: Manifest](f: Rep[T] => Parser[U]) = Parser[U] { input =>
       val tmp = this(input)
       if (tmp.isEmpty) Failure[U](input)
       else {
@@ -73,8 +73,8 @@ trait StagedParsers
     /**
      * The map operation
      */
-    def map[U: Manifest](f: Rep[T] => Rep[U]) = Parser[U] { pos =>
-      this(pos) map f
+    def map[U: Manifest](f: Rep[T] => Rep[U]) = Parser[U] { input =>
+      this(input) map f
     }
 
   }
@@ -83,9 +83,11 @@ trait StagedParsers
    * a 'conditional' parser
    * lifts conditional expressions to parser level
    */
-  def __ifThenElse[A: Manifest](cond: Rep[Boolean], thenp: => Parser[A], elsep: => Parser[A]): Parser[A] = Parser[A] {
-    in => if (cond) thenp(in) else elsep(in)
-  }
+  def __ifThenElse[A: Manifest](
+    cond: Rep[Boolean],
+    thenp: => Parser[A],
+    elsep: => Parser[A]
+  ): Parser[A] = Parser[A] { input => if (cond) thenp(input) else elsep(input) }
 
   /**
    * companion object for apply function
