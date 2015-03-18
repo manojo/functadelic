@@ -79,14 +79,15 @@ trait CharParsersProg extends CharParsers {
     phrase(parser, StringReader(in))
   }
 
-  /*
-  //digit to int
-  def test8(in: Rep[Array[Char]]): Rep[Option[Int]] = {
-    val parser = digit2Int
-    phrase(parser, StringReader(in))
+
+  /**
+   * digit to int
+   */
+  def digit2IntParser(in: Rep[Array[Char]]): Rep[Option[Int]] = {
+    phrase(digit2Int, StringReader(in))
   }
 
-
+  /*
   //or
   def test9(in: Rep[Array[Char]]): Rep[Option[Char]] = {
     val parser = letter | digit
@@ -238,40 +239,15 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcIgnoreRight("h2llo".toArray)) //failing right
         codegen.reset
 
+        codegen.emitSource(digit2IntParser _, "digit2IntParser", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcDigit2IntParser = compile(digit2IntParser)
+        scala.Console.println(testcDigit2IntParser("3".toArray))
+        codegen.reset
+
 
 /*
-        codegen.emitSource(test5 _, "test5", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testc5 = compile(test5)
-        scala.Console.println(testc5("hello".toArray)) //succeeding a ~ b
-        scala.Console.println(testc5("1ello".toArray)) //failing left
-        scala.Console.println(testc5("h2llo".toArray)) //failing right
-        codegen.reset
-
-        codegen.emitSource(test6 _, "test6", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testc6 = compile(test6)
-        scala.Console.println(testc6("hello".toArray))
-        codegen.reset
-
-        codegen.emitSource(test7 _, "test7", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testc7 = compile(test7)
-        scala.Console.println(testc7("hello".toArray))
-        codegen.reset
-
-        //digit2Int
-        codegen.emitSource(test8 _, "test8", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testc8 = compile(test8)
-        scala.Console.println(testc8("1ello".toArray))
-        scala.Console.println(testc8("hello".toArray))
-        codegen.reset
-
         codegen.emitSource(test9 _, "test9", new java.io.PrintWriter(System.out))
         codegen.reset
 
