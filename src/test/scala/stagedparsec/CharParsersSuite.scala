@@ -9,7 +9,7 @@ import java.io.StringWriter
 import java.io.FileOutputStream
 
 
-trait CharParsersProg extends CharParsers {
+trait CharParsersProg extends CharParsers with Equal {
 
   import Parser._
 
@@ -87,6 +87,18 @@ trait CharParsersProg extends CharParsers {
     phrase(digit2Int, StringReader(in))
   }
 
+  /**
+   * flatMapParser
+   */
+  def flatMapParser(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+    val parser = letter >> { x: Rep[Char] =>
+      if (x == unit('a')) accept(unit('b'))
+      else accept(unit('d'))
+    }
+
+    phrase(parser, StringReader(in))
+  }
+
   /*
   //or
   def test9(in: Rep[Array[Char]]): Rep[Option[Char]] = {
@@ -145,15 +157,6 @@ trait CharParsersProg extends CharParsers {
     phrase(parser, StringReader(in))
   }
 
-  //bind
-  def testBind(in: Rep[Array[Char]]): Rep[Option[String]] = {
-    val parser = letter >> { x: Rep[Char] =>
-      if (x == unit('a')) accept(unit('b')) ^^ { y: Rep[Char] => x + unit(", ") + y }
-      else accept(unit('d')) ^^ { y: Rep[Char] => x + unit(", ") + y }
-    }
-
-    phrase(parser, StringReader(in))
-  }
   */
 }
 
@@ -245,6 +248,18 @@ class CharParsersSuite extends FileDiffSuite {
         val testcDigit2IntParser = compile(digit2IntParser)
         scala.Console.println(testcDigit2IntParser("3".toArray))
         codegen.reset
+
+        codegen.emitSource(flatMapParser _, "flatMapParser", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcFlatMapParser = compile(flatMapParser)
+        scala.Console.println(testcFlatMapParser("ab".toArray))
+        scala.Console.println(testcFlatMapParser("ad".toArray))
+        scala.Console.println(testcFlatMapParser("cb".toArray))
+        scala.Console.println(testcFlatMapParser("cd".toArray))
+        codegen.reset
+
+
 
 
 /*

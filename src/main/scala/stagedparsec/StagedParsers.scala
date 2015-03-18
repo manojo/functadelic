@@ -20,9 +20,24 @@ trait StagedParsers
   abstract class Parser[+T: Manifest]
       extends (Rep[Input] => Rep[ParseResult[T]]) {
 
+    /**
+     * The flatMap operation
+     */
+    private def flatMap[U: Manifest](f: Rep[T] => Parser[U]) = Parser[U] { input: Rep[Input] =>
+      val tmp = this(input)
+      if (tmp.isEmpty) Failure[U](input)
+      else {
+        val x = f(tmp.get).apply(tmp.next)
+        if (x.isEmpty) Failure[U](input) else x
+      }
+    }
+
+    def >>[U: Manifest](f: Rep[T] => Parser[U]) = flatMap(f)
 
     /**
      * The concat operation
+     * implementing with `flatMap` produces worse code
+     * TODO: check the reason
      */
     def ~[U: Manifest](that: Parser[U]) = Parser[(T, U)] { input =>
       val x = this(input)
@@ -62,6 +77,14 @@ trait StagedParsers
       this(pos) map f
     }
 
+  }
+
+  /**
+   * a 'conditional' parser
+   * lifts conditional expressions to parser level
+   */
+  def __ifThenElse[A: Manifest](cond: Rep[Boolean], thenp: => Parser[A], elsep: => Parser[A]): Parser[A] = Parser[A] {
+    in => if (cond) thenp(in) else elsep(in)
   }
 
   /**
