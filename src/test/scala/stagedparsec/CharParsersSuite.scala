@@ -54,13 +54,14 @@ trait CharParsersProg extends CharParsers {
     val parser = digit
     phrase(parser, StringReader(in))
   }
-/*
+
   //two letters
-  def test5(in: Rep[Array[Char]]): Rep[Option[(Char, Char)]] = {
+  def twoLetters(in: Rep[Array[Char]]): Rep[Option[(Char, Char)]] = {
     val parser = letter ~ letter
     phrase(parser, StringReader(in))
   }
 
+  /*
   //ignoring left result
   def test6(in: Rep[Array[Char]]): Rep[Option[Char]] = {
     val parser = letter ~> letter
@@ -157,6 +158,9 @@ class CharParsersSuite extends FileDiffSuite {
       /**
        * Attention: Need to mix in Fat versions of StructOps as well as IfthenElse
        * for optimisations on FatIfs and so on.
+       * Note: We are also using our own version of IfThenElseGenFat
+       * to generate variables instead of tuples and boundary ends
+       * of conditional expressions.
        */
       new CharParsersProg
           with CharParsersExp
@@ -164,7 +168,7 @@ class CharParsersSuite extends FileDiffSuite {
           with StructOpsFatExpOptCommon
           with MyScalaCompile { self =>
 
-        val codegen = new ScalaGenCharParsers with ScalaGenFatStructOps with ScalaGenIfThenElseFat {
+        val codegen = new ScalaGenCharParsers with ScalaGenFatStructOps with MyScalaGenIfThenElseFat {
           val IR: self.type = self
         }
 
@@ -200,15 +204,16 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcDigitParser("1".toArray))
         codegen.reset
 
+        codegen.emitSource(twoLetters _, "twoLetters", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcTwoLetters = compile(twoLetters)
+        scala.Console.println(testcTwoLetters("hello".toArray)) //succeeding a ~ b
+        scala.Console.println(testcTwoLetters("1ello".toArray)) //failing left
+        scala.Console.println(testcTwoLetters("h2llo".toArray)) //failing right
+        codegen.reset
+
 /*
-        codegen.emitSource(test4 _, "test4", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testc4 = compile(test4)
-        scala.Console.println(testc4("12".toArray))
-        scala.Console.println(testc4("hello".toArray))
-        codegen.reset
-
         codegen.emitSource(test5 _, "test5", new java.io.PrintWriter(System.out))
         codegen.reset
 

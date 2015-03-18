@@ -9,7 +9,7 @@ import lms.util._
  * as input elements
  */
 trait CharParsers
-    extends Parsers
+    extends StagedParsers
     with CharOps
     with StringReaderOps {
 
@@ -41,26 +41,26 @@ trait CharParsers
     (c >= unit('a') && c <= unit('z')) ||
     (c >= unit('A') && c <= unit('Z'))
 
-  def letter: Parser[Char] = acceptIf((c: Rep[Char]) => isLetter(c))
-  def letterIdx = acceptIfIdx((c: Rep[Char]) => isLetter(c))
+  def letter: Parser[Char] = acceptIf(isLetter)
+  def letterIdx = acceptIfIdx(isLetter)
 
   def isDigit(c: Rep[Char]): Rep[Boolean] =
     c >= unit('0') && c <= unit('9')
 
-  def digit: Parser[Char] = acceptIf(isDigit(_))
-  //def digit2Int: Parser[Int] = digit ^^ { c: Rep[Char] => (c - unit('0')).toInt }
-  //def digitIdx = acceptIfIdx((c: Rep[Char]) => isDigit(c))
+  def digit: Parser[Char] = acceptIf(isDigit)
+  def digit2Int: Parser[Int] = digit map (c => (c - unit('0')).toInt)
+  def digitIdx = acceptIfIdx(isDigit)
 
 }
 
 trait CharParsersExp
     extends CharParsers
-    with ParsersExp
+    with StagedParsersExp
     with CharOpsExp
     with StringReaderOpsExp
 
 trait ScalaGenCharParsers
-    extends ScalaGenParsers
+    extends ScalaGenStagedParsers
     with ScalaGenCharOps
     with ScalaGenStringReaderOps {
   val IR: CharParsersExp

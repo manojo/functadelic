@@ -10,7 +10,7 @@ import lms.util._
  * https://github.com/manojo/experiments/
  */
 
-trait Parsers
+trait StagedParsers
     extends ParseResultOps
     with OptionOps
     with ReaderOps
@@ -34,6 +34,13 @@ trait Parsers
       }
     }
 
+    /**
+     * The map operation
+     */
+    def map[U: Manifest](f: Rep[T] => Rep[U]) = Parser[U] { pos =>
+      this(pos) map f
+    }
+
   }
 
   /**
@@ -55,8 +62,8 @@ trait Parsers
   }
 }
 
-trait ParsersExp
-    extends Parsers
+trait StagedParsersExp
+    extends StagedParsers
     with ParseResultOpsExp
     with OptionOpsExp
     with MyTupleOpsExp
@@ -65,12 +72,12 @@ trait ParsersExp
     with EqualExpOpt
 
 
-trait ScalaGenParsers
+trait ScalaGenStagedParsers
     extends ScalaGenParseResultOps
     with ScalaGenOptionOps
     with ScalaGenMyTupleOps
     with ScalaGenIfThenElse
     with ScalaGenBooleanOps
     with ScalaGenEqual {
-  val IR: ParsersExp
+  val IR: StagedParsersExp
 }
