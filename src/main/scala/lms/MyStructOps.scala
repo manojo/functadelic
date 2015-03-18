@@ -455,7 +455,13 @@ trait BaseGenFatStructOps extends GenericFatCodegen {
       TTP(ss, phis map (_.rhs), SimpleFatIfThenElse(c, us, vs))
     }
 
-    def fatif(s: Sym[Unit], o: Def[Unit], c: Exp[Boolean], a: Block[Unit], b: Block[Unit]) = fatphi(s) match {
+    def fatif(
+      s: Sym[Unit],
+      o: Def[Unit],
+      c: Exp[Boolean],
+      a: Block[Unit],
+      b: Block[Unit]
+    ) = fatphi(s) match {
       case Some(TTP(ss, oo, SimpleFatIfThenElse(c2, us, vs))) =>
         assert(c == c2)
         TTP(s :: ss, o :: oo, SimpleFatIfThenElse(c, a :: us, b :: vs))
@@ -523,7 +529,10 @@ trait ScalaGenStructOps extends ScalaGenBase with BaseGenStructOps {
       stream.print("case class " + name + "(")
       // stream.println(elems.map(e => e._1 + ": " + remap(e._2)).mkString(", ") + ")")
       // XXX: DIRTY HACK HERE
-      stream.println(elems.map(e => e._1 + ": " + (if (e._1 == "data") "Any" else remap(e._2))).mkString(", ") + ")")
+      stream.println(
+        (elems map { e =>
+          e._1 + ": " + (if (e._1 == "data") "Any" else remap(e._2))
+        }).mkString(", ") + ")")
     }
     stream.flush()
     super.emitDataStructures(stream)
