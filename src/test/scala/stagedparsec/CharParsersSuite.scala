@@ -55,30 +55,37 @@ trait CharParsersProg extends CharParsers {
     phrase(parser, StringReader(in))
   }
 
-  //two letters
+  /**
+   * two letters
+   */
   def twoLetters(in: Rep[Array[Char]]): Rep[Option[(Char, Char)]] = {
     val parser = letter ~ letter
     phrase(parser, StringReader(in))
   }
 
-  /*
-  //ignoring left result
-  def test6(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+  /**
+   * ignore left result
+   */
+  def ignoreLeft(in: Rep[Array[Char]]): Rep[Option[Char]] = {
     val parser = letter ~> letter
     phrase(parser, StringReader(in))
   }
 
-  //ignoring right result
-  def test7(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+  /**
+   * ignore right result
+   */
+  def ignoreRight(in: Rep[Array[Char]]): Rep[Option[Char]] = {
     val parser = letter <~ letter
     phrase(parser, StringReader(in))
   }
 
+  /*
   //digit to int
   def test8(in: Rep[Array[Char]]): Rep[Option[Int]] = {
     val parser = digit2Int
     phrase(parser, StringReader(in))
   }
+
 
   //or
   def test9(in: Rep[Array[Char]]): Rep[Option[Char]] = {
@@ -212,6 +219,25 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcTwoLetters("1ello".toArray)) //failing left
         scala.Console.println(testcTwoLetters("h2llo".toArray)) //failing right
         codegen.reset
+
+        codegen.emitSource(ignoreLeft _, "ignoreLeft", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcIgnoreLeft = compile(ignoreLeft)
+        scala.Console.println(testcIgnoreLeft("hello".toArray)) //succeeding a ~ b
+        scala.Console.println(testcIgnoreLeft("1ello".toArray)) //failing left
+        scala.Console.println(testcIgnoreLeft("h2llo".toArray)) //failing right
+        codegen.reset
+
+        codegen.emitSource(ignoreRight _, "ignoreRight", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcIgnoreRight = compile(ignoreRight)
+        scala.Console.println(testcIgnoreRight("hello".toArray)) //succeeding a ~ b
+        scala.Console.println(testcIgnoreRight("1ello".toArray)) //failing left
+        scala.Console.println(testcIgnoreRight("h2llo".toArray)) //failing right
+        codegen.reset
+
 
 /*
         codegen.emitSource(test5 _, "test5", new java.io.PrintWriter(System.out))
