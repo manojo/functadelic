@@ -30,8 +30,6 @@ trait FoldLefts
     with MyTupleOps
     with EitherCPSOps {
 
-  import EitherCPS._
-
   /**
    * a type alias for the combination function for
    * foldLeft
@@ -48,54 +46,59 @@ trait FoldLefts
     /**
      * map
      */
-    def map[B: Manifest](f: Rep[A] => Rep[B]) = FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
-      this.apply(
-        z,
-        (acc: Rep[S], elem: Rep[A]) => comb(acc, f(elem))
-      )
-    }
+    def map[B: Manifest](f: Rep[A] => Rep[B]) =
+      FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
+        this.apply(
+          z,
+          (acc: Rep[S], elem: Rep[A]) => comb(acc, f(elem))
+        )
+      }
 
     /**
      * filter
      */
-    def filter(p: Rep[A] => Rep[Boolean]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-      this.apply(
-        z,
-        (acc: Rep[S], elem: Rep[A]) =>
-          if (p(elem)) comb(acc, elem) else acc
-      )
-    }
+    def filter(p: Rep[A] => Rep[Boolean]) =
+      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+        this.apply(
+          z,
+          (acc: Rep[S], elem: Rep[A]) =>
+            if (p(elem)) comb(acc, elem) else acc
+        )
+      }
 
     /**
      * flatMap
      */
-    def flatMap[B: Manifest](f: Rep[A] => FoldLeft[B, S]) = FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
-      this.apply(
-        z,
-        (acc: Rep[S], elem: Rep[A]) => {
-          val nestedFld = f(elem)
-          nestedFld.apply(acc, comb)
-        }
-      )
-    }
+    def flatMap[B: Manifest](f: Rep[A] => FoldLeft[B, S]) =
+      FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
+        this.apply(
+          z,
+          (acc: Rep[S], elem: Rep[A]) => {
+            val nestedFld = f(elem)
+            nestedFld.apply(acc, comb)
+          }
+        )
+      }
 
     /**
      * concat
      */
-    def concat(that: FoldLeft[A, S]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-      val folded: Rep[S] = this.apply(z, comb)
-      that.apply(folded, comb)
-    }
+    def concat(that: FoldLeft[A, S]) =
+      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+        val folded: Rep[S] = this.apply(z, comb)
+        that.apply(folded, comb)
+      }
 
     def ++(that: FoldLeft[A, S]) = this concat that
 
     /**
      * append
      */
-    def append(elem: Rep[A]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-      val folded: Rep[S] = this.apply(z, comb)
-      comb(folded, elem)
-    }
+    def append(elem: Rep[A]) =
+      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+        val folded: Rep[S] = this.apply(z, comb)
+        comb(folded, elem)
+      }
 
     def :+(elem: Rep[A]) = this append elem
 
@@ -141,14 +144,11 @@ trait FoldLefts
      * two `FoldLeft`s. The important thing is to keep the one
      * FoldLeft abstraction. The CPS encoding is used so as to avoid creating Either objects
      */
-    //def partitionCPS[X: Manifest](p: Rep[A] => Rep[Boolean]) = FoldLeft[EitherCPS[A, A, X], S] { (z: Rep[S], comb: Comb[EitherCPS[A, A, X], S]) =>
-    //  this.apply(
-    //    z,
-    //    (acc, elem) =>
-    //      if (p(elem)) comb(acc, LeftCPS[A, A, X](elem))
-    //      else comb(acc, RightCPS[A, A, X](elem))
-    //  )
-    //}
+    def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherBis[A, A], S] =
+      this map { elem =>
+        either_conditional(p(elem), mkLeft[A, A](elem), mkRight[A, A](elem))
+      }
+
 
     /**
      * groupWith
@@ -172,41 +172,44 @@ trait FoldLefts
     /**
      * helper function for ease of use
      */
-    def apply[A: Manifest, S: Manifest](f: (Rep[S], Comb[A, S]) => Rep[S]) = new FoldLeft[A, S] {
-      def apply(z: Rep[S], comb: Comb[A, S]): Rep[S] = f(z, comb)
-    }
+    def apply[A: Manifest, S: Manifest](f: (Rep[S], Comb[A, S]) => Rep[S]) =
+      new FoldLeft[A, S] {
+        def apply(z: Rep[S], comb: Comb[A, S]): Rep[S] = f(z, comb)
+      }
 
     /**
      * create a fold from list
      */
-    def fromList[A: Manifest, S: Manifest](ls: Rep[List[A]]) = FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
+    def fromList[A: Manifest, S: Manifest](ls: Rep[List[A]]) =
+      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
 
-      var tmpList = ls
-      var tmp = z
+        var tmpList = ls
+        var tmp = z
 
-      while (!tmpList.isEmpty) {
-        tmp = comb(tmp, tmpList.head)
-        tmpList = tmpList.tail
+        while (!tmpList.isEmpty) {
+          tmp = comb(tmp, tmpList.head)
+          tmpList = tmpList.tail
+        }
+
+        tmp
       }
-
-      tmp
-    }
 
     /**
      * create a fold from a range
      */
-    def fromRange[S: Manifest](a: Rep[Int], b: Rep[Int]) = FoldLeft[Int, S] { (z: Rep[S], comb: Comb[Int, S]) =>
+    def fromRange[S: Manifest](a: Rep[Int], b: Rep[Int]) =
+      FoldLeft[Int, S] { (z: Rep[S], comb: Comb[Int, S]) =>
 
-      var tmpInt = a
-      var tmp = z
+        var tmpInt = a
+        var tmp = z
 
-      while (tmpInt <= b) {
-        tmp = comb(tmp, tmpInt)
-        tmpInt = tmpInt + 1
+        while (tmpInt <= b) {
+          tmp = comb(tmp, tmpInt)
+          tmpInt = tmpInt + 1
+        }
+
+        tmp
       }
-
-      tmp
-    }
 
   }
 }

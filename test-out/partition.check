@@ -275,3 +275,50 @@ x23
 *******************************************/
 compilation: ok
 Map(0 -> 18, 1 -> 22, 2 -> 15)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class partitioncpsmap2listpair extends ((Int, Int)=>(Tuple2ListIntListInt)) {
+def apply(x0:Int, x1:Int): Tuple2ListIntListInt = {
+var x4: Int = x0
+val x2 = List()
+val x3 = new Tuple2ListIntListInt(x2,x2)
+var x5: Tuple2ListIntListInt = x3
+val x32 = while ({val x6 = x4
+val x7 = x6 <= x1
+x7}) {
+val x9 = x5
+val x10 = x4
+val x11 = x10 % 2
+val x12 = x11 == 0
+val x27 = if (x12) {
+val x19 = x9._2
+val x18 = x9._1
+val x17 = x10 * 2
+val x20 = List(x17)
+val x21 = x18 ::: x20
+val x22 = new Tuple2ListIntListInt(x21,x19)
+x22
+} else {
+val x18 = x9._1
+val x19 = x9._2
+val x23 = x10 * 3
+val x24 = List(x23)
+val x25 = x19 ::: x24
+val x26 = new Tuple2ListIntListInt(x18,x25)
+x26
+}
+x5 = x27
+val x29 = x10 + 1
+x4 = x29
+()
+}
+val x33 = x5
+x33
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+Tuple2ListIntListInt(List(4, 8, 12, 16, 20),List(3, 9, 15, 21, 27))

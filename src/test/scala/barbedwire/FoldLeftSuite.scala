@@ -198,13 +198,15 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    */
   def partitioncpsmap2listpair(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
     val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
-    val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
+    val partitioned = (xs.partitionCPS(_ % unit(2) == unit(0)))
     val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
     mapped.apply(
       (List[Int](), List[Int]()),
-      (ls, x) =>
-        if (x.isLeft) (ls._1 ++ List(x.getLeft), ls._2)
-        else (ls._1, ls._2 ++ List(x.getRight))
+      (ls, elem) =>
+        elem.apply(
+          l => (ls._1 ++ List(l), ls._2),
+          r => (ls._1, ls._2 ++ List(r))
+        )
     )
   }
 
@@ -240,6 +242,7 @@ trait FoldLeftExp
   with EqualExpOpt
   with EitherOpsExp
   with MyHashMapOpsExp
+  with EitherCPSOpsExp
 
 trait FoldLeftGen
   extends ScalaGenListOps
@@ -395,6 +398,13 @@ class FoldLeftSuite extends FileDiffSuite {
 
         val testcGroupwithsum = compile2(groupwithsum)
         scala.Console.println(testcGroupwithsum(1, 10))
+        codegen.reset
+
+        codegen.emitSource2(partitioncpsmap2listpair _, "partitioncpsmap2listpair", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcPartitioncpsmap2listpair = compile2(partitioncpsmap2listpair)
+        scala.Console.println(testcPartitioncpsmap2listpair(1, 10))
         codegen.reset
 
       }
