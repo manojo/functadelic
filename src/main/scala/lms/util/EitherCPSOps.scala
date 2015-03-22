@@ -14,6 +14,9 @@ import java.io.PrintWriter
  *
  * Extending BaseExp just to be able to extend `Def`.
  * This allows us to have a Rep[EitherBis]
+ *
+ * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
+ * details
  */
 trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
   import scala.language.implicitConversions

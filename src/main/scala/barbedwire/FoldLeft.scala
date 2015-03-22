@@ -142,7 +142,11 @@ trait FoldLefts
     /**
      * partition, that produces a FoldLeft over `EitherCPS` instead of
      * two `FoldLeft`s. The important thing is to keep the one
-     * FoldLeft abstraction. The CPS encoding is used so as to avoid creating Either objects
+     * FoldLeft abstraction. The CPS encoding is used so as to avoid creating
+     * Either objects
+     *
+     * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
+     * details
      */
     def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherBis[A, A], S] =
       this map { elem =>
