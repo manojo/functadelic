@@ -23,7 +23,7 @@ trait CharParsersProg extends CharParsers with Equal {
 
   /**
    * simple acceptIf filter, special character
-   * Note: this will codegen correctly if used in conjuntion
+   * Note: this will codegen correctly if used in conjunction
    * with ScalaGenCharOps.
    */
   def acceptIfSpec(in: Rep[Array[Char]]): Rep[Option[Char]] = {
