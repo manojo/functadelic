@@ -46,19 +46,43 @@ trait BaseParsers { this: Signature =>
     /**
      * or: yields all results from this, concatenated to all results of that
      */
-    def | (that: Parser[T]) = Parser[T] { subword => this(subword) ++ that(subword) }
+    def | (that: => Parser[T]) = Parser[T] { subword => this(subword) ++ that(subword) }
+
+    /**
+     * generalised version of `concat`.
+     * see https://github.com/manojo/lamp-dp-mt/blob/master/src/test/legacy/vanilla/BDPCombinators.scala
+     * for more details
+     */
+    def concat[U](lL:Int, lU:Int, rL:Int, rU:Int)(that: => Parser[U]) = Parser[(T,U)] {
+      case (i, j) if (i < j) =>
+
+        val min_k = if (rU == 0) i + lL else Math.max(i + lL, j - rU)
+        val max_k = if (lU == 0) j - rL else Math.min(j - rL, i + lU)
+
+        for {
+          k <- (min_k to max_k).toList
+          x <- this((i, k))
+          y <- that((k, j))
+        } yield (x, y)
+
+      case _ => Nil
+    }
+
+    /**
+     * many versions of concat.
+     * see http://bibiserv.techfak.uni-bielefeld.de/adp/ps/GIE-MEY-STE-2004.pdf page 42
+     * for more details
+     */
+    def ~~~ [U](that: => Parser[U]) = concat(0, 0, 0, 0)(that)
+    def ~~+ [U](that: => Parser[U]) = concat(0, 0, 1, 0)(that)
+    def +~~ [U](that: => Parser[U]) = concat(1, 0, 0, 0)(that)
+    def +~+ [U](that: => Parser[U]) = concat(1, 0, 1, 0)(that)
 
     /**
      * concat: computes the cross product of all possible combinations
      * of `this` and `that` over the subword length
      */
-    def ~ [U](that: Parser[U]) = Parser[(T, U)] { case (i, j) =>
-      for {
-        k <- (i + 1 until j).toList
-        left <- this(i, k)
-        right <- that(k + 1, j)
-      } yield (left, right)
-    }
+    def ~ [U](that: => Parser[U]) = this +~+ that
 
     /**
      * aggregate: run a function on all elements of a list
