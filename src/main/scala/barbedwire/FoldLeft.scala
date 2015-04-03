@@ -148,9 +148,9 @@ trait FoldLefts
      * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
      * details
      */
-    def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherBis[A, A], S] =
+    def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherCPS[A, A], S] =
       this map { elem =>
-        either_conditional(p(elem), mkLeft[A, A](elem), mkRight[A, A](elem))
+        if (p(elem)) mkLeft[A, A](elem) else mkRight[A, A](elem)
       }
 
 

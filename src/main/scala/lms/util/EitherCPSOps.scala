@@ -13,7 +13,7 @@ import java.io.PrintWriter
  * To see whether CPS encoding + code gen generates good code.
  *
  * Extending BaseExp just to be able to extend `Def`.
- * This allows us to have a Rep[EitherBis]
+ * This allows us to have a Rep[EitherCPS]
  *
  * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
  * details
@@ -67,19 +67,13 @@ trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
   }
 
   /**
-   * A ghost type, called `EitherBis`
-   * to distinguish from the other `Either`
-   */
-  class EitherBis[A, B]
-
-  /**
    * Pimping my ride, so I can write DSL style code at the interface
    */
-  implicit class EitherBisCls[A: Manifest, B: Manifest](e: Rep[EitherBis[A, B]]) {
+  implicit class EitherCPSCls[A: Manifest, B: Manifest](e: Rep[EitherCPS[A, B]]) {
     def map[C: Manifest, D: Manifest](
       lmap: Rep[A] => Rep[C],
       rmap: Rep[B] => Rep[D]
-    ): Rep[EitherBis[C, D]] = eitherCPS_map(e, lmap, rmap)
+    ): Rep[EitherCPS[C, D]] = eitherCPS_map(e, lmap, rmap)
 
     def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X] =
       either_apply(e, lf, rf)
@@ -88,29 +82,36 @@ trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
   /**
    * interface-level functions
    */
-  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherBis[A, B]]
-  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherBis[A, B]]
+  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherCPS[A, B]]
+  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherCPS[A, B]]
 
   def eitherCPS_map[A: Manifest, B: Manifest, C: Manifest, D: Manifest](
-    e: Rep[EitherBis[A, B]],
+    e: Rep[EitherCPS[A, B]],
     lmap: Rep[A] => Rep[C],
     rmap: Rep[B] => Rep[D]
-  ): Rep[EitherBis[C, D]]
+  ): Rep[EitherCPS[C, D]]
 
   def either_apply[A: Manifest, B: Manifest, X: Manifest](
-    e: Rep[EitherBis[A, B]],
+    e: Rep[EitherCPS[A, B]],
     lf: Rep[A] => Rep[X],
     rf: Rep[B] => Rep[X]
   ): Rep[X]
 
   def either_conditional[A: Manifest, B: Manifest](
     cond: Rep[Boolean],
-    thenp: => Rep[EitherBis[A, B]],
-    elsep: => Rep[EitherBis[A, B]]
-  ): Rep[EitherBis[A, B]]
+    thenp: => Rep[EitherCPS[A, B]],
+    elsep: => Rep[EitherCPS[A, B]]
+  ): Rep[EitherCPS[A, B]]
+
+  def __ifThenElse[A: Manifest, B: Manifest](
+    cond: Rep[Boolean],
+    thenp: => Rep[EitherCPS[A, B]],
+    elsep: => Rep[EitherCPS[A, B]]
+  ) = either_conditional(cond, thenp, elsep)
 }
 
-trait EitherCPSOpsExp extends EitherCPSOps
+trait EitherCPSOpsExp
+    extends EitherCPSOps
     with BaseExp
     with IfThenElseExpOpt
     with BooleanOpsExpOpt
@@ -119,32 +120,32 @@ trait EitherCPSOpsExp extends EitherCPSOps
   import EitherCPS._
 
   /**
-   * The wrapper acts as a Rep[EitherBis[A, B]]
+   * The wrapper acts as a Rep[EitherCPS[A, B]]
    */
-  case class EitherWrapper[A, B](e: EitherCPS[A, B]) extends Def[EitherBis[A, B]]
+  case class EitherWrapper[A, B](e: EitherCPS[A, B]) extends Def[EitherCPS[A, B]]
 
-  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherBis[A, B]] =
+  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherCPS[A, B]] =
     EitherWrapper(LeftCPS[A, B](a))
 
-  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherBis[A, B]] =
+  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherCPS[A, B]] =
     EitherWrapper(RightCPS[A, B](b))
 
   /**
    * Both the functions below will misbehave if we have some other representation
-   * of `EitherBis`. Which may be uncool at codegen time. But then again,
+   * of `EitherCPS`. Which may be uncool at codegen time. But then again,
    * if that happens, we are probably doing something wrong-ish, so it's kind
    * of a sanity check
    */
   def eitherCPS_map[A: Manifest, B: Manifest, C: Manifest, D: Manifest](
-    e: Rep[EitherBis[A, B]],
+    e: Rep[EitherCPS[A, B]],
     lmap: Rep[A] => Rep[C],
     rmap: Rep[B] => Rep[D]
-  ): Rep[EitherBis[C, D]] = e match {
+  ): Rep[EitherCPS[C, D]] = e match {
     case Def(EitherWrapper(sth)) => EitherWrapper(sth map (lmap, rmap))
   }
 
   def either_apply[A: Manifest, B: Manifest, X: Manifest](
-    e: Rep[EitherBis[A, B]],
+    e: Rep[EitherCPS[A, B]],
     lf: Rep[A] => Rep[X],
     rf: Rep[B] => Rep[X]
   ): Rep[X] = e match {
@@ -152,7 +153,7 @@ trait EitherCPSOpsExp extends EitherCPSOps
   }
 
   /**
-   * a 'conditional' parser
+   * a 'conditional' either
    * lifts conditional expressions to Either level
    *
    * Note: this implementation works only because we are
@@ -161,9 +162,9 @@ trait EitherCPSOpsExp extends EitherCPSOps
    */
   def either_conditional[A: Manifest, B: Manifest](
     cond: Rep[Boolean],
-    thenp: => Rep[EitherBis[A, B]],
-    elsep: => Rep[EitherBis[A, B]]
-  ): Rep[EitherBis[A, B]] = (thenp, elsep) match { //stricting them here
+    thenp: => Rep[EitherCPS[A, B]],
+    elsep: => Rep[EitherCPS[A, B]]
+  ): Rep[EitherCPS[A, B]] = (thenp, elsep) match { //stricting them here
     case (Def(EitherWrapper(t)), Def(EitherWrapper(e))) =>
       EitherWrapper(conditional(cond, t, e))
   }
