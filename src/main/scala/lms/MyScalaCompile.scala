@@ -37,6 +37,19 @@ trait MyScalaCompile extends ScalaCompile {
     cons.newInstance(staticData.map(_._2.asInstanceOf[AnyRef]): _*)
   }
 
+  override def compile[A, R](f: Exp[A] => Exp[R])
+                       (implicit mA: Manifest[A], mR: Manifest[R]): A => R = {
+    val className = freshClass
+    val source = new StringWriter()
+    val staticData = codegen.emitSource(f, className, new PrintWriter(source))
+
+    //a bit of a hack to generate data structures
+    val dataStructWriter = new StringWriter()
+    codegen.emitDataStructures(new PrintWriter(dataStructWriter))
+
+    compileAny(className, staticData, dataStructWriter.toString + source.toString).asInstanceOf[A => R]
+  }
+
   def compile2[A, B, R](f: (Exp[A], Exp[B]) => Exp[R])
                        (implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
     val className = freshClass

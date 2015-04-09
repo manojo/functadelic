@@ -41,37 +41,35 @@ trait FoldLefts
   /**
    * foldLeft is basically a pair of a zero value and a combination function
    */
-  abstract class FoldLeft[A: Manifest, S: Manifest] extends ((Rep[S], Comb[A, S]) => Rep[S]) {
+  abstract class FoldLeft[A: Manifest] { self =>
+
+    def apply[S: Manifest](z: Rep[S], comb: Comb[A, S]): Rep[S]
 
     /**
      * map
      */
-    def map[B: Manifest](f: Rep[A] => Rep[B]) =
-      FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
-        this.apply(
+    def map[B: Manifest](f: Rep[A] => Rep[B]) = new FoldLeft[B] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[B, S]) = self.apply(
           z,
           (acc: Rep[S], elem: Rep[A]) => comb(acc, f(elem))
         )
-      }
+    }
 
     /**
      * filter
      */
-    def filter(p: Rep[A] => Rep[Boolean]) =
-      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-        this.apply(
+    def filter(p: Rep[A] => Rep[Boolean]) = new FoldLeft[A] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[A, S]) = self.apply(
           z,
-          (acc: Rep[S], elem: Rep[A]) =>
-            if (p(elem)) comb(acc, elem) else acc
+          (acc: Rep[S], elem: Rep[A]) => if (p(elem)) comb(acc, elem) else acc
         )
-      }
+    }
 
     /**
      * flatMap
      */
-    def flatMap[B: Manifest](f: Rep[A] => FoldLeft[B, S]) =
-      FoldLeft[B, S] { (z: Rep[S], comb: Comb[B, S]) =>
-        this.apply(
+    def flatMap[B: Manifest](f: Rep[A] => FoldLeft[B]) = new FoldLeft[B] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[B, S]) = self.apply(
           z,
           (acc: Rep[S], elem: Rep[A]) => {
             val nestedFld = f(elem)
@@ -83,22 +81,24 @@ trait FoldLefts
     /**
      * concat
      */
-    def concat(that: FoldLeft[A, S]) =
-      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-        val folded: Rep[S] = this.apply(z, comb)
+    def concat(that: FoldLeft[A]) = new FoldLeft[A] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[A, S]) = {
+        val folded: Rep[S] = self.apply(z, comb)
         that.apply(folded, comb)
       }
+    }
 
-    def ++(that: FoldLeft[A, S]) = this concat that
+    def ++(that: FoldLeft[A]) = this concat that
 
     /**
      * append
      */
-    def append(elem: Rep[A]) =
-      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-        val folded: Rep[S] = this.apply(z, comb)
+    def append(elem: Rep[A]) = new FoldLeft[A] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[A, S]) = {
+        val folded: Rep[S] = self.apply(z, comb)
         comb(folded, elem)
       }
+    }
 
     def :+(elem: Rep[A]) = this append elem
 
@@ -109,7 +109,7 @@ trait FoldLefts
      *
      * see the following related post: http://manojo.github.io/2015/03/03/staged-foldleft-partition/
      */
-    def partition(p: Rep[A] => Rep[Boolean]): (FoldLeft[A, S], FoldLeft[A, S]) = {
+    def partition(p: Rep[A] => Rep[Boolean]): (FoldLeft[A], FoldLeft[A]) = {
       val trues = this filter p
       val falses = this filter (a => !p(a))
       (trues, falses)
@@ -122,22 +122,14 @@ trait FoldLefts
      * This can be rewritten using `map`.
      * see the following related post: http://manojo.github.io/2015/03/12/staged-foldleft-groupby/
      */
-    def partitionBis(p: Rep[A] => Rep[Boolean]) =
-      FoldLeft[Either[A, A], S] { (z: Rep[S], comb: Comb[Either[A, A], S]) =>
-        this.apply(
+    def partitionBis(p: Rep[A] => Rep[Boolean]) = new FoldLeft[Either[A, A]] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[Either[A, A], S]) = self.apply(
           z,
-          (acc, elem) =>
+          (acc: Rep[S], elem: Rep[A]) =>
             if (p(elem)) comb(acc, left[A, A](elem))
             else comb(acc, right[A, A](elem))
         )
       }
-
-    /**
-     * The implementation using `map` generates worse code. To be investigated more closely
-     *
-     * FoldLeft[Either[A, A], S] =
-     * this map (elem => if (p(elem)) left[A, A](elem) else right[A, A](elem))
-     */
 
     /**
      * partition, that produces a FoldLeft over `EitherCPS` instead of
@@ -148,7 +140,7 @@ trait FoldLefts
      * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
      * details
      */
-    def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherCPS[A, A], S] =
+    def partitionCPS(p: Rep[A] => Rep[Boolean]): FoldLeft[EitherCPS[A, A]] =
       this map { elem =>
         if (p(elem)) mkLeft[A, A](elem) else mkRight[A, A](elem)
       }
@@ -162,7 +154,7 @@ trait FoldLefts
      * can be rewritten using `map`.
      * see the following related post: http://manojo.github.io/2015/03/12/staged-foldleft-groupby/
      */
-    def groupWith[K: Manifest](f: Rep[A] => Rep[K]): FoldLeft[(K, A), S] =
+    def groupWith[K: Manifest](f: Rep[A] => Rep[K]): FoldLeft[(K, A)] =
       this map (elem => make_tuple2(f(elem), elem))
 
   }
@@ -174,19 +166,10 @@ trait FoldLefts
   object FoldLeft {
 
     /**
-     * helper function for ease of use
-     */
-    def apply[A: Manifest, S: Manifest](f: (Rep[S], Comb[A, S]) => Rep[S]) =
-      new FoldLeft[A, S] {
-        def apply(z: Rep[S], comb: Comb[A, S]): Rep[S] = f(z, comb)
-      }
-
-    /**
      * create a fold from list
      */
-    def fromList[A: Manifest, S: Manifest](ls: Rep[List[A]]) =
-      FoldLeft[A, S] { (z: Rep[S], comb: Comb[A, S]) =>
-
+    def fromList[A: Manifest](ls: Rep[List[A]]) = new FoldLeft[A] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[A, S]): Rep[S] = {
         var tmpList = ls
         var tmp = z
 
@@ -197,13 +180,13 @@ trait FoldLefts
 
         tmp
       }
+    }
 
     /**
      * create a fold from a range
      */
-    def fromRange[S: Manifest](a: Rep[Int], b: Rep[Int]) =
-      FoldLeft[Int, S] { (z: Rep[S], comb: Comb[Int, S]) =>
-
+    def fromRange(a: Rep[Int], b: Rep[Int]) = new FoldLeft[Int] {
+      def apply[S: Manifest](z: Rep[S], comb: Comb[Int, S]) = {
         var tmpInt = a
         var tmp = z
 
@@ -214,6 +197,7 @@ trait FoldLefts
 
         tmp
       }
+    }
 
   }
 }

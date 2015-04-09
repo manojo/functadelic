@@ -16,16 +16,16 @@ import java.io.FileOutputStream
  * Basic test suite for foldleft
  */
 
-trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
+trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps with StringOps {
 
   /**
    * simple foldLeft back into a list
    */
   def foldLeftId(in: Rep[Int]): Rep[List[Int]] = {
     val xs = List(unit(1), unit(2), unit(3))
-    val fld = FoldLeft.fromList[Int, List[Int]](xs)
+    val fld = FoldLeft.fromList[Int](xs)
 
-    fld.apply(List[Int](), (ls, x) => ls ++ List(x))
+    fld.apply[List[Int]](List[Int](), (ls, x) => ls ++ List(x))
 
   }
 
@@ -34,9 +34,9 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    */
   def map(in: Rep[Int]): Rep[List[Int]] = {
     val xs = List(unit(1), unit(2), unit(3))
-    val mapped = FoldLeft.fromList[Int, List[Int]](xs) map (_ * unit(2))
+    val mapped = FoldLeft.fromList[Int](xs) map (_ * unit(2))
 
-    mapped.apply(List[Int](), (ls, x) => ls ++ List(x))
+    mapped.apply[List[Int]](List[Int](), (ls, x) => ls ++ List(x))
   }
 
   /**
@@ -45,101 +45,117 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
   def mapmap(in: Rep[Int]): Rep[List[Int]] = {
     val xs = List(unit(1), unit(2), unit(3))
 
-    val mapped = FoldLeft.fromList[Int, List[Int]](xs) map (_ * unit(2))
-    (mapped map (_ + unit(1))).apply(List[Int](), (ls, x) => ls ++ List(x))
+    val mapped = FoldLeft.fromList[Int](xs) map (_ * unit(2))
+    (mapped map (_ + unit(1))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * map map over a range
    */
   def mapmapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
+    val xs = FoldLeft.fromRange(a, b)
     val mapped = xs map (_ * unit(2))
-    (mapped map (_ + unit(1))).apply(List[Int](), (ls, x) => ls ++ List(x))
+    (mapped map (_ + unit(1))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * filter over a range
    */
   def filterRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
+    val xs = FoldLeft.fromRange(a, b)
     val filtered = xs filter (_ % unit(2) == unit(1))
-    filtered.apply(List[Int](), (ls, x) => ls ++ List(x))
+    filtered.apply[List[Int]](List[Int](), (ls, x) => ls ++ List(x))
   }
 
   /**
    * filter map over a range
    */
   def filtermapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
+    val xs = FoldLeft.fromRange(a, b)
     val filtered = xs filter (_ % unit(2) == unit(1))
-    filtered.map(_ * unit(3)).apply(List[Int](), (ls, x) => ls ++ List(x))
+    filtered.map(_ * unit(3)).apply[List[Int]](List[Int](), (ls, x) => ls ++ List(x))
   }
 
   /**
    * flatMap over a range
    */
   def flatMapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
-    val flatMapped = xs flatMap (i => FoldLeft.fromRange[List[Int]](unit(1), i))
-    flatMapped.apply(List[Int](), (ls, x) => ls ++ List(x))
+    val xs = FoldLeft.fromRange(a, b)
+    val flatMapped = xs flatMap (i => FoldLeft.fromRange(unit(1), i))
+    flatMapped.apply[List[Int]](List[Int](), (ls, x) => ls ++ List(x))
   }
 
   /**
    * flatMap map over a range
    */
   def flatMapmapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
-    val flatMapped = xs flatMap (i => FoldLeft.fromRange[List[Int]](unit(1), i))
-    flatMapped.map(_ * unit(2)).apply(List[Int](), (ls, x) => ls ++ List(x))
+    val xs = FoldLeft.fromRange(a, b)
+    val flatMapped = xs flatMap (i => FoldLeft.fromRange(unit(1), i))
+    flatMapped.map(_ * unit(2)).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * flatMap filter map over a range
    */
   def flatMapfiltermapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
-    val flatMapped = xs flatMap (i => FoldLeft.fromRange[List[Int]](unit(1), i))
+    val xs = FoldLeft.fromRange(a, b)
+    val flatMapped = xs flatMap (i => FoldLeft.fromRange(unit(1), i))
     val filtered = flatMapped filter (_ % unit(2) == unit(1))
-    filtered.map(_ * unit(3)).apply(List[Int](), (ls, x) => ls ++ List(x))
+    filtered.map(_ * unit(3)).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * map concat map over a range
    */
   def mapconcatmapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-    val ys = FoldLeft.fromRange[List[Int]](a, b)
-
+    val xs = FoldLeft.fromRange(a, b)
+    val ys = FoldLeft.fromRange(a, b)
     val mapped = xs map (_ * unit(2))
-    ((mapped ++ ys) map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
+    ((mapped ++ ys) map (_ * unit(3))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * map append map over a range
    */
   def mapappendmapRange(a: Rep[Int], b: Rep[Int]): Rep[List[Int]] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
-
+    val xs = FoldLeft.fromRange(a, b)
     val mapped = xs map (_ * unit(2))
-    ((mapped :+ (b + unit(1))) map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
+    ((mapped :+ (b + unit(1))) map (_ * unit(3))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * partition map
    */
   def partitionmapRange(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
-    val xs = FoldLeft.fromRange[List[Int]](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val (evens, odds) = xs.partition(_ % unit(2) == unit(0))
     val (mappedEvens, mappedOdds) = (evens map (_ * unit(2)), odds map (_ * unit(3)))
-    val evenList = (evens map (_ * unit(2))).apply(List[Int](), (ls, x) => ls ++ List(x))
-    val oddList = (odds map (_ * unit(3))).apply(List[Int](), (ls, x) => ls ++ List(x))
+    val evenList = (evens map (_ * unit(2))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
+    val oddList = (odds map (_ * unit(3))).apply[List[Int]](
+      List[Int](),
+      (ls, x) => ls ++ List(x)
+    )
 
     make_tuple2(evenList, oddList)
   }
@@ -149,8 +165,8 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    * Just to see what happens
    */
   def multifoldleftRange(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
-    val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
-    xs.apply(
+    val xs = FoldLeft.fromRange(a, b)
+    xs.apply[(List[Int], List[Int])](
       make_tuple2((List[Int](), List[Int]())),
       (acc, elem) =>
         if (elem % unit(2) == unit(0)) make_tuple2((acc._1 ++ List(elem), acc._2))
@@ -162,29 +178,35 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    *  partition bis. Just a really basic fold with nothing more
    */
   def partitionbis(a: Rep[Int], b: Rep[Int]): Rep[List[Either[Int, Int]]] = {
-    val xs = FoldLeft.fromRange[List[Either[Int, Int]]](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
-    partitioned.apply(List[Either[Int, Int]](), (ls, x) => ls ++ List(x))
+    partitioned.apply[List[Either[Int, Int]]](
+      List[Either[Int, Int]](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * partition bis map.
    */
   def partitionbismap(a: Rep[Int], b: Rep[Int]): Rep[List[Either[Int, Int]]] = {
-    val xs = FoldLeft.fromRange[List[Either[Int, Int]]](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
     val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
-    mapped.apply(List[Either[Int, Int]](), (ls, x) => ls ++ List(x))
+    mapped.apply[List[Either[Int, Int]]](
+      List[Either[Int, Int]](),
+      (ls, x) => ls ++ List(x)
+    )
   }
 
   /**
    * partition bis map, folded into a pair of lists
    */
   def partitionbismap2listpair(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
-    val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val partitioned = (xs.partitionBis(_ % unit(2) == unit(0)))
     val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
-    mapped.apply(
+    mapped.apply[(List[Int], List[Int])](
       (List[Int](), List[Int]()),
       (ls, x) =>
         if (x.isLeft) (ls._1 ++ List(x.getLeft), ls._2)
@@ -197,10 +219,10 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    * using EitherCPS
    */
   def partitioncpsmap2listpair(a: Rep[Int], b: Rep[Int]): Rep[(List[Int], List[Int])] = {
-    val xs = FoldLeft.fromRange[(List[Int], List[Int])](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val partitioned = (xs.partitionCPS(_ % unit(2) == unit(0)))
     val mapped = partitioned map { x => x.map(_ * unit(2), _ * unit(3)) }
-    mapped.apply(
+    mapped.apply[(List[Int], List[Int])](
       (List[Int](), List[Int]()),
       (ls, elem) =>
         elem.apply(
@@ -214,15 +236,39 @@ trait FoldLeftProg extends FoldLefts with Equal with MyHashMapOps {
    * groupWith followed by sum
    */
   def groupwithsum(a: Rep[Int], b: Rep[Int]): Rep[HashMap[Int, Int]] = {
-    val xs = FoldLeft.fromRange[HashMap[Int, Int]](a, b)
+    val xs = FoldLeft.fromRange(a, b)
     val grouped = xs.groupWith(x => x % unit(3))
 
-    grouped.apply(
+    grouped.apply[HashMap[Int, Int]](
       HashMap[Int, Int](),
       (dict, x) =>
         if (dict.contains(x._1)) { dict + (x._1, dict(x._1) + x._2) }
         else { dict + (x._1, x._2) }
     )
+  }
+
+  /**
+   * reverseIndex example
+   * input: a list of (name, movies) representing the movies a person likes
+   * output: a map of (movie, count) representing how many people like a movie
+   */
+  def reverseIndex(ls: Rep[List[(String, List[String])]]): Rep[HashMap[String, Int]] = {
+    val fld = FoldLeft.fromList[(String, List[String])](ls)
+
+    val flattened = fld flatMap { elem =>
+      val nestedFld = FoldLeft.fromList[String](elem._2)
+      nestedFld map { movie => make_tuple2(elem._1, movie) }
+    }
+
+    val grouped = flattened.groupWith { elem => elem._2 }
+
+    grouped.apply[HashMap[String, Int]](
+      HashMap[String, Int](),
+      (dict, x) =>
+        if (dict.contains(x._1)) { dict + (x._1, dict(x._1) + unit(1)) }
+        else { dict + (x._1, unit(1)) }
+    )
+
   }
 }
 
@@ -411,5 +457,27 @@ class FoldLeftSuite extends FileDiffSuite {
     }
 
     assertFileEqualsCheck(prefix + "partition")
+  }
+
+  def testReverseIndex = {
+    withOutFile(prefix + "reverse-index") {
+      new FoldLeftProg
+      with FoldLeftExp
+      with MyTupleOpsExp
+      with StringOpsExp
+      with MyScalaCompile { self =>
+
+        val codegen = new FoldLeftGen
+                      with ScalaGenMyTupleOps
+                      with ScalaGenStringOps { val IR: self.type = self }
+
+        codegen.emitSource(reverseIndex _, "reverseIndex", new java.io.PrintWriter(System.out))
+        codegen.emitDataStructures(new java.io.PrintWriter(System.out))
+        codegen.reset
+
+      }
+    }
+
+    assertFileEqualsCheck(prefix + "reverse-index")
   }
 }
