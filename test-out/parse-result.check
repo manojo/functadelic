@@ -1,0 +1,122 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class conditional extends ((Array[Char], Boolean)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Boolean): OptionInt = {
+var x6: Int = 0
+var x7: Boolean = false
+if (x1) {
+x6 = 1
+x7 = false
+} else {
+x6 = 0
+x7 = true
+}
+var x13: Int = 0
+var x14: Boolean = false
+if (x7) {
+val x9 = null.asInstanceOf[Int]
+x13 = x9
+x14 = false
+} else {
+x13 = x6
+x14 = true
+}
+val x15 = new OptionInt(x13,x14)
+x15
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(1,true)
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class conditionalMap extends ((Array[Char], Boolean)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Boolean): OptionInt = {
+var x7: Boolean = false
+var x6: Int = 0
+if (x1) {
+x7 = false
+x6 = 1
+} else {
+x7 = true
+x6 = 0
+}
+var x12: Int = 0
+var x13: Boolean = false
+if (x7) {
+x12 = 0
+x13 = true
+} else {
+val x9 = x6 * 2
+x12 = x9
+x13 = false
+}
+var x19: Int = 0
+var x20: Boolean = false
+if (x13) {
+val x15 = null.asInstanceOf[Int]
+x19 = x15
+x20 = false
+} else {
+x19 = x12
+x20 = true
+}
+val x21 = new OptionInt(x19,x20)
+x21
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(2,true)
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class conditionalMapHand extends ((Array[Char], Boolean)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Boolean): OptionInt = {
+var x7: Boolean = false
+var x6: Int = 0
+if (x1) {
+x7 = false
+x6 = 1
+} else {
+x7 = true
+x6 = 0
+}
+var x12: Int = 0
+var x13: Boolean = false
+if (x7) {
+x12 = 0
+x13 = true
+} else {
+val x9 = x6 * 2
+x12 = x9
+x13 = false
+}
+var x19: Int = 0
+var x20: Boolean = false
+if (x13) {
+val x15 = null.asInstanceOf[Int]
+x19 = x15
+x20 = false
+} else {
+x19 = x12
+x20 = true
+}
+val x21 = new OptionInt(x19,x20)
+x21
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(2,true)
+OptionInt(0,false)
