@@ -28,7 +28,7 @@ trait StagedParsers
       if (tmp.isEmpty) Failure[U](input)
       else {
         val x = f(tmp.get).apply(tmp.next)
-        if (x.isEmpty) Failure[U](input) else x
+        x //if (x.isEmpty) Failure[U](input) else x
       }
     }
 
@@ -36,31 +36,23 @@ trait StagedParsers
 
     /**
      * The concat operation
-     * implementing with `flatMap` produces worse code
-     * TODO: check the reason
      */
-    def ~[U: Manifest](that: Parser[U]) = Parser[(T, U)] { input =>
-      val x = this(input)
-      if (x.isEmpty) Failure[(T, U)](input)
-      else {
-        val y = that(x.next)
-        if (y.isEmpty) Failure[(T, U)](input)
-        else Success(make_tuple2(x.get, y.get), y.next)
-      }
-    }
+    def ~[U: Manifest](that: Parser[U]): Parser[(T, U)] =
+      for (l <- this; r <- that) yield make_tuple2(l, r)
 
     /**
      * get right hand side result
      */
-    def ~>[U: Manifest](that: => Parser[U]) = Parser[U] { input =>
-      val x = this(input)
-      if (x.isEmpty) Failure[U](input) else that(x.next)
-    }
+    def ~>[U: Manifest](that: => Parser[U]): Parser[U] =
+      this flatMap { l => that }
 
     /**
      * get left hand side result
      */
-    def <~[U: Manifest](that: => Parser[U]) = Parser[T] { input =>
+    def <~[U: Manifest](that: => Parser[U]): Parser[T] =
+      for (l <- this; r <- that) yield l
+
+    /* = Parser[T] { input =>
       val x = this(input)
 
       if (x.isEmpty) x
@@ -68,7 +60,7 @@ trait StagedParsers
         val y = that(x.next)
         if (y.isEmpty) Failure[T](input) else Success(x.get, y.next)
       }
-    }
+    }*/
 
     /**
      * The map operation

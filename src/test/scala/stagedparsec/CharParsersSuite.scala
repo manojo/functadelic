@@ -64,6 +64,15 @@ trait CharParsersProg extends CharParsers with Equal {
   }
 
   /**
+   * two letters Bis,
+   * uses the alternate implementation of `~`, called `seq`
+   */
+//  def twoLetters(in: Rep[Array[Char]]): Rep[Option[(Char, Char)]] = {
+//    val parser = letter ~ letter
+//    phrase(parser, StringReader(in))
+//  }
+
+  /**
    * ignore left result
    */
   def ignoreLeft(in: Rep[Array[Char]]): Rep[Option[Char]] = {
