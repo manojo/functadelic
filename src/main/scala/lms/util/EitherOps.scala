@@ -12,7 +12,12 @@ import java.io.PrintWriter
  * Inspired from TupleOps in the delite-develop branch of LMS
  */
 
-trait EitherOps extends Base with IfThenElse with BooleanOps with Equal {
+trait EitherOps
+    extends Base
+    with IfThenElse
+    with BooleanOps
+    with Equal {
+
   import scala.language.implicitConversions
 
   implicit def make_either[A: Manifest, B: Manifest](o: Either[Rep[A], Rep[B]])(implicit pos: SourceContext): Rep[Either[A, B]]
@@ -46,8 +51,13 @@ trait EitherOps extends Base with IfThenElse with BooleanOps with Equal {
 
 }
 
-trait EitherOpsExp extends EitherOps with IfThenElseExpOpt with BooleanOpsExpOpt with StructOpsExpOpt
-    with CastingOpsExp with EqualExpOpt {
+trait EitherOpsExp
+    extends EitherOps
+    with IfThenElseExp
+    with BooleanOpsExp
+    with StructExp
+    with CastingOpsExp
+    with EqualExp {
 
   import scala.language.implicitConversions
 
@@ -80,7 +90,14 @@ trait EitherOpsExp extends EitherOps with IfThenElseExpOpt with BooleanOpsExpOpt
   def struct_getRight[A: Manifest, B: Manifest](e: Rep[Either[A, B]]): Rep[B] = field[B](e, "right")
 }
 
-trait EitherGenBase extends GenericCodegen with BaseGenStructOps {
+trait EitherOpsExpOpt
+    extends EitherOpsExp
+    with IfThenElseExpOpt
+    with BooleanOpsExpOpt
+    with StructExpOpt
+    with EqualExpOpt
+
+trait EitherGenBase extends GenericCodegen with BaseGenStruct {
   val IR: EitherOpsExp
 
   override def remap[A](m: Manifest[A]) = m.erasure.getSimpleName match {
@@ -89,9 +106,9 @@ trait EitherGenBase extends GenericCodegen with BaseGenStructOps {
   }
 }
 
-trait ScalaGenEitherOps extends ScalaGenBase with EitherGenBase with ScalaGenStructOps
+trait ScalaGenEitherOps extends ScalaGenBase with EitherGenBase with ScalaGenStruct
   with ScalaGenCastingOps with ScalaGenEqual with ScalaGenIfThenElse { val IR: EitherOpsExp }
 
-trait CGenEitherOps extends CGenBase with EitherGenBase with CGenStructOps with CGenCastingOps
+trait CGenEitherOps extends CGenBase with EitherGenBase with CGenStruct with CGenCastingOps
   with CGenEqual with CGenIfThenElse { val IR: EitherOpsExp }
 

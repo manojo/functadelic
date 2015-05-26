@@ -26,10 +26,7 @@ trait StagedParsers
     private def flatMap[U: Manifest](f: Rep[T] => Parser[U]) = Parser[U] { input =>
       val tmp = this(input)
       if (tmp.isEmpty) Failure[U](input)
-      else {
-        val x = f(tmp.get).apply(tmp.next)
-        x //if (x.isEmpty) Failure[U](input) else x
-      }
+      else f(tmp.get).apply(tmp.next)
     }
 
     def >>[U: Manifest](f: Rep[T] => Parser[U]) = flatMap(f)
@@ -52,21 +49,21 @@ trait StagedParsers
     def <~[U: Manifest](that: => Parser[U]): Parser[T] =
       for (l <- this; r <- that) yield l
 
-    /* = Parser[T] { input =>
-      val x = this(input)
-
-      if (x.isEmpty) x
-      else {
-        val y = that(x.next)
-        if (y.isEmpty) Failure[T](input) else Success(x.get, y.next)
-      }
-    }*/
 
     /**
      * The map operation
      */
     def map[U: Manifest](f: Rep[T] => Rep[U]) = Parser[U] { input =>
       this(input) map f
+    }
+
+    /**
+     * alternation, aka the beast
+     */
+    def or [U >: T: Manifest](that: Parser[U]) = Parser[U] { input =>
+      val tmp = this(input)
+      if (tmp.isEmpty) that(input)
+      else tmp
     }
 
   }
@@ -105,10 +102,18 @@ trait StagedParsersExp
     with ParseResultOpsExp
     with OptionOpsExp
     with MyTupleOpsExp
+    with IfThenElseExp
+    with BooleanOpsExp
+    with EqualExp
+
+trait StagedParsersExpOpt
+    extends StagedParsersExp
+    with ParseResultOpsExpOpt
+    with OptionOpsExpOpt
+    //with MyTupleOpsExp
     with IfThenElseExpOpt
     with BooleanOpsExpOpt
     with EqualExpOpt
-
 
 trait ScalaGenStagedParsers
     extends ScalaGenParseResultOps

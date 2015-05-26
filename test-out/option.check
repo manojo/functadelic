@@ -65,19 +65,18 @@ class optionfiltersome extends ((Int)=>(OptionInt)) {
 def apply(x0:Int): OptionInt = {
 val x2 = x0 == 3
 val x3 = true && x2
-val x6 = if (x3) {
-x0
+var x7: Int = 0
+var x8: Boolean = false
+if (x3) {
+x7 = x0
+x8 = true
 } else {
 val x4 = null.asInstanceOf[Int]
-x4
+x7 = x4
+x8 = false
 }
-val x7 = if (x3) {
-true
-} else {
-false
-}
-val x8 = new OptionInt(x6,x7)
-x8
+val x9 = new OptionInt(x7,x8)
+x9
 }
 }
 /*****************************************
@@ -94,6 +93,181 @@ def apply(x0:Int): OptionInt = {
 val x1 = null.asInstanceOf[Int]
 val x2 = new OptionInt(x1,false)
 x2
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = x0 == 3
+var x6: Int = 0
+var x7: Boolean = false
+if (x1) {
+val x2 = null.asInstanceOf[Int]
+x6 = x2
+x7 = false
+} else {
+x6 = x0
+x7 = true
+}
+val x8 = new OptionInt(x6,x7)
+x8
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionConditionalBis extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = x0 == 3
+var x11: Int = 0
+var x12: Boolean = false
+if (x1) {
+x11 = x0
+x12 = true
+} else {
+val x3 = x0 == 5
+var x7: Int = 0
+var x8: Boolean = false
+if (x3) {
+x7 = x0
+x8 = true
+} else {
+val x4 = null.asInstanceOf[Int]
+x7 = x4
+x8 = false
+}
+x11 = x7
+x12 = x8
+}
+val x13 = new OptionInt(x11,x12)
+x13
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(3,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionNestedConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = x0 == 3
+var x6: Int = 0
+var x7: Boolean = false
+if (x1) {
+x6 = x0
+x7 = true
+} else {
+val x3 = null.asInstanceOf[Int]
+x6 = x3
+x7 = false
+}
+var x15: Int = 0
+var x16: Boolean = false
+if (x7) {
+x15 = x6
+x16 = x7
+} else {
+val x9 = x0 == 5
+var x11: Int = 0
+var x12: Boolean = false
+if (x9) {
+x11 = x0
+x12 = true
+} else {
+val x3 = null.asInstanceOf[Int]
+x11 = x3
+x12 = false
+}
+x15 = x11
+x16 = x12
+}
+val x17 = new OptionInt(x15,x16)
+x17
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(3,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class optionNestedConditionalBis extends ((Array[Int])=>(OptionInt)) {
+def apply(x0:Array[Int]): OptionInt = {
+val x1 = x0.length
+val x2 = 0 >= x1
+var x13: Int = 0
+var x14: Boolean = false
+if (x2) {
+val x3 = null.asInstanceOf[Int]
+x13 = x3
+x14 = false
+} else {
+val x5 = x0(0)
+val x6 = x5 == 3
+var x9: Int = 0
+var x10: Boolean = false
+if (x6) {
+x9 = x5
+x10 = true
+} else {
+val x3 = null.asInstanceOf[Int]
+x9 = x3
+x10 = false
+}
+x13 = x9
+x14 = x10
+}
+var x29: Int = 0
+var x30: Boolean = false
+if (x14) {
+x29 = x13
+x30 = x14
+} else {
+val x16 = 1 >= x1
+var x25: Int = 0
+var x26: Boolean = false
+if (x16) {
+val x3 = null.asInstanceOf[Int]
+x25 = x3
+x26 = false
+} else {
+val x17 = x0(1)
+val x18 = x17 == 5
+var x21: Int = 0
+var x22: Boolean = false
+if (x18) {
+x21 = x17
+x22 = true
+} else {
+val x3 = null.asInstanceOf[Int]
+x21 = x3
+x22 = false
+}
+x25 = x21
+x26 = x22
+}
+x29 = x25
+x30 = x26
+}
+val x31 = new OptionInt(x29,x30)
+x31
 }
 }
 /*****************************************

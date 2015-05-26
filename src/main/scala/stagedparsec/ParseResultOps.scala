@@ -58,8 +58,8 @@ trait ParseResultOps
 trait ParseResultOpsExp
     extends ParseResultOps
     with IfThenElseExp
-    with BooleanOpsExpOpt
-    with StructOpsExpOptCommon { self: ReaderOps =>
+    with BooleanOpsExp
+    with StructExp { self: ReaderOps =>
 
   def parseresult_isEmpty[A: Manifest](pr: Rep[ParseResult[A]])
                                       (implicit pos: SourceContext): Rep[Boolean] =
@@ -90,7 +90,14 @@ trait ParseResultOpsExp
     )
 }
 
-trait ParseResultGenBase extends GenericCodegen with BaseGenStructOps {
+trait ParseResultOpsExpOpt
+    extends ParseResultOpsExp
+    with IfThenElseExpOpt
+    with BooleanOpsExpOpt
+    with StructExpOptCommon
+    with EqualExpOpt { self: ReaderOps => }
+
+trait ParseResultGenBase extends GenericCodegen with BaseGenStruct {
   val IR: ParseResultOpsExp
 
   override def remap[A](m: Manifest[A]) = m.erasure.getSimpleName match {
@@ -102,7 +109,7 @@ trait ParseResultGenBase extends GenericCodegen with BaseGenStructOps {
 trait ScalaGenParseResultOps
     extends ScalaGenBase
     with ParseResultGenBase
-    with ScalaGenStructOps
+    with ScalaGenStruct
     with ScalaGenIfThenElse
     with ScalaGenBooleanOps {
   val IR: ParseResultOpsExp

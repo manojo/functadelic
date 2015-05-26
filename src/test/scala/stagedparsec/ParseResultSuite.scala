@@ -47,6 +47,29 @@ trait ParseResultProg
     if (mapped.isEmpty) none[Int]() else Some(mapped.get)
   }
 
+  /**
+   * conditional on value followed by
+   * conditional on the option itself expression
+   * looks like the code from an alternation combinator
+   * in parsers
+   */
+/*  def parseResultNestedConditionalBis(in: Rep[Array[Char]]): Rep[Option[Int]] = {
+
+    val tmp = StringReader(in)
+    val first =
+      if (tmp.atEnd) Failure[Int](tmp)
+      else if (tmp.first == unit('c')) Success(tmp.first)
+      else Failure[Int](tmp)
+
+     if (first.isEmpty) {
+       if (tmp) None.asInstanceOf[Option[Rep[Int]]]
+       else if (in(idx2) == unit(5)) Some(in(idx2))
+       else None.asInstanceOf[Option[Rep[Int]]]
+     }
+     else first
+
+   }
+*/
 }
 
 class ParseResultSuite extends FileDiffSuite {
@@ -56,7 +79,7 @@ class ParseResultSuite extends FileDiffSuite {
   def testParseResults = {
     withOutFile(prefix + "parse-result") {
       /**
-       * Attention: Need to mix in Fat versions of StructOps as well as IfthenElse
+       * Attention: Need to mix in Fat versions of Struct as well as IfthenElse
        * for optimisations on FatIfs and so on.
        * Note: We are also using our own version of IfThenElseGenFat
        * to generate variables instead of tuples and boundary ends
@@ -66,13 +89,13 @@ class ParseResultSuite extends FileDiffSuite {
           with ParseResultOpsExp
           with StringReaderOpsExp
           with OptionOpsExp
-          with StructOpsFatExpOptCommon
+          with StructFatExpOptCommon
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenParseResultOps
             with ScalaGenStringReaderOps
             with ScalaGenOptionOps
-            with ScalaGenFatStructOps
+            with ScalaGenFatStruct
             with MyScalaGenIfThenElseFat {
           val IR: self.type = self
         }

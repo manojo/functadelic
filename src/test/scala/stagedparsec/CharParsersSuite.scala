@@ -64,15 +64,6 @@ trait CharParsersProg extends CharParsers with Equal {
   }
 
   /**
-   * two letters Bis,
-   * uses the alternate implementation of `~`, called `seq`
-   */
-//  def twoLetters(in: Rep[Array[Char]]): Rep[Option[(Char, Char)]] = {
-//    val parser = letter ~ letter
-//    phrase(parser, StringReader(in))
-//  }
-
-  /**
    * ignore left result
    */
   def ignoreLeft(in: Rep[Array[Char]]): Rep[Option[Char]] = {
@@ -105,6 +96,14 @@ trait CharParsersProg extends CharParsers with Equal {
       else accept(unit('d'))
     }
 
+    phrase(parser, StringReader(in))
+  }
+
+  /**
+   * a basic or parser: a | b
+   */
+  def orParser(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+    val parser = accept(unit('a')) or accept(unit('b'))
     phrase(parser, StringReader(in))
   }
 
@@ -176,7 +175,7 @@ class CharParsersSuite extends FileDiffSuite {
   def testCharParsers = {
     withOutFile(prefix + "char-parser") {
       /**
-       * Attention: Need to mix in Fat versions of StructOps as well as IfthenElse
+       * Attention: Need to mix in Fat versions of Struct as well as IfthenElse
        * for optimisations on FatIfs and so on.
        * Note: We are also using our own version of IfThenElseGenFat
        * to generate variables instead of tuples and boundary ends
@@ -185,10 +184,12 @@ class CharParsersSuite extends FileDiffSuite {
       new CharParsersProg
           with CharParsersExp
           with IfThenElseExpOpt
-          with StructOpsFatExpOptCommon
+          with StructFatExpOptCommon
           with MyScalaCompile { self =>
 
-        val codegen = new ScalaGenCharParsers with ScalaGenFatStructOps with MyScalaGenIfThenElseFat {
+        val codegen = new ScalaGenCharParsers
+            with ScalaGenFatStruct
+            with MyScalaGenIfThenElseFat {
           val IR: self.type = self
         }
 
@@ -268,9 +269,6 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcFlatMapParser("cd".toArray))
         codegen.reset
 
-
-
-
 /*
         codegen.emitSource(test9 _, "test9", new java.io.PrintWriter(System.out))
         codegen.reset
@@ -349,49 +347,47 @@ class CharParsersSuite extends FileDiffSuite {
       assertFileEqualsCheck(prefix + "char-parser")
     }
   }
-}
 
-  /*
-  def testOr {
+  def testOrParsers = {
     withOutFile(prefix + "or-parser") {
-      new CharParsersProg with MyScalaOpsPkgExp with CharOpsExp
-        with MyIfThenElseExpOpt with StructOpsFatExpOptCommon
-        with ParseResultOpsExp with FunctionsExp with OptionOpsExp
-        with StringStructOpsExp with BarrierOpsExp with StringReaderOpsExp with MyScalaCompile { self =>
+      /**
+       * Attention: Need to mix in Fat versions of Struct as well as IfthenElse
+       * for optimisations on FatIfs and so on.
+       * Note: We are also using our own version of IfThenElseGenFat
+       * to generate variables instead of tuples and boundary ends
+       * of conditional expressions.
+       */
+      new CharParsersProg
+          with CharParsersExp
+          with IfThenElseExp
+          with StructFatExpOptCommon
+          with MyScalaCompile { self =>
 
-        val codegen = new MyScalaCodeGenPkg with ScalaGenCharOps with ScalaGenParseResultOps
-          with ScalaGenFatStructOps with ScalaGenFunctions with ScalaGenStringStructOps
-          with ScalaGenOptionOps with ScalaGenBarrierOps with ScalaGenIfThenElseFat with ScalaGenReaderOps {
-
+        val codegen = new ScalaGenCharParsers
+            with ScalaGenFatStruct
+            with MyScalaGenIfThenElseFat {
           val IR: self.type = self
         }
 
-        codegen.emitSource(testOr2 _, "testOr2", new java.io.PrintWriter(System.out))
-        codegen.emitDataStructures(new java.io.PrintWriter(System.out))
+        codegen.emitSource(acceptIf _, "acceptIf", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcOr2 = compile(testOr2)
-        scala.Console.println(testcOr2("hello".toArray))
-        scala.Console.println(testcOr2("12".toArray))
-        scala.Console.println(testcOr2(":".toArray)) //fail case
-        scala.Console.println(testcOr2("h1".toArray)) //fail case
-        scala.Console.println(testcOr2("1d".toArray)) //fail case
+        val testcAcceptIf = compile(acceptIf)
+        scala.Console.println(testcAcceptIf("hello".toArray))
+        scala.Console.println(testcAcceptIf("ello".toArray))
         codegen.reset
 
-        codegen.emitSource(testOr3 _, "testOr3", new java.io.PrintWriter(System.out))
-        codegen.emitDataStructures(new java.io.PrintWriter(System.out))
+        codegen.emitSource(orParser _, "orParser", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcOr3 = compile(testOr3)
-        scala.Console.println(testcOr3("he3lo".toArray))
-        scala.Console.println(testcOr3("123".toArray))
-        scala.Console.println(testcOr3(":".toArray)) //fail case
-        scala.Console.println(testcOr3("he1".toArray)) //fail case
-        scala.Console.println(testcOr3("12d".toArray)) //fail case
+        val testcOrParser = compile(orParser)
+        scala.Console.println(testcOrParser("a".toArray))
+        scala.Console.println(testcOrParser("b".toArray))
+        scala.Console.println(testcOrParser("c".toArray))
         codegen.reset
 
       }
+      assertFileEqualsCheck(prefix + "or-parser")
     }
-    assertFileEqualsCheck(prefix + "or-parser")
   }
-}*/
+}

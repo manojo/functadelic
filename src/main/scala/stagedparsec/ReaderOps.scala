@@ -77,13 +77,13 @@ trait StringReaderOps
 
 trait StringReaderOpsExp
     extends StringReaderOps
-    with ArrayOpsExpOpt
+    with ArrayOpsExp
     with OrderingOpsExp
-    with NumericOpsExpOpt
-    with PrimitiveOpsExpOpt
-    with StructOpsExpOptCommon
+    with NumericOpsExp
+    with PrimitiveOpsExp
+    with StructExp
     with WhileExp
-    with BooleanOpsExpOpt {
+    with BooleanOpsExp {
 
   //A bit of a hack: manifest[StringReader] causes a nullPointerException
   //possibly due to a bug in Scala
@@ -108,7 +108,7 @@ trait StringReaderOpsExp
     field[Int](rdr, "offset")
 }
 
-trait ReaderGenBase extends GenericCodegen with BaseGenStructOps {
+trait ReaderGenBase extends GenericCodegen with BaseGenStruct {
   val IR: StringReaderOpsExp
 
   override def remap[A](m: Manifest[A]) = {
@@ -119,6 +119,14 @@ trait ReaderGenBase extends GenericCodegen with BaseGenStructOps {
   }
 }
 
+trait StringReaderOpsExpOpt
+    extends StringReaderOpsExp
+    with ArrayOpsExpOpt
+    with NumericOpsExpOpt
+    with PrimitiveOpsExpOpt
+    with StructExpOptCommon
+    with BooleanOpsExpOpt
+
 trait ScalaGenStringReaderOps
     extends ScalaGenBase
     with ReaderGenBase
@@ -126,7 +134,7 @@ trait ScalaGenStringReaderOps
     with ScalaGenOrderingOps
     with ScalaGenNumericOps
     with ScalaGenPrimitiveOps
-    with ScalaGenStructOps
+    with ScalaGenStruct
     with ScalaGenWhile
     with ScalaGenBooleanOps
     with ScalaGenVariables {

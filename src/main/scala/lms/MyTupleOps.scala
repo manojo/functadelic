@@ -45,7 +45,7 @@ trait MyTupleOps extends Base {
   def tuple5_get5[E: Manifest](t: Rep[(_, _, _, _, E)])(implicit pos: SourceContext): Rep[E]
 }
 
-trait MyTupleOpsExp extends MyTupleOps with lms.StructOpsExpOpt {
+trait MyTupleOpsExp extends MyTupleOps with StructExpOpt {
   import scala.language.implicitConversions
   implicit def make_tuple2[A: Manifest, B: Manifest](t: (Exp[A], Exp[B]))(implicit pos: SourceContext): Exp[(A, B)] = struct(classTag[(A, B)], "_1" -> t._1, "_2" -> t._2)
   implicit def make_tuple3[A: Manifest, B: Manifest, C: Manifest](t: (Exp[A], Exp[B], Exp[C]))(implicit pos: SourceContext): Exp[(A, B, C)] = struct(classTag[(A, B, C)], "_1" -> t._1, "_2" -> t._2, "_3" -> t._3)
@@ -73,7 +73,7 @@ trait MyTupleOpsExp extends MyTupleOps with lms.StructOpsExpOpt {
   object Both { def unapply[T](x: T): Some[(T, T)] = Some((x, x)) }
 }
 
-trait MyTupleGenBase extends GenericCodegen with lms.BaseGenStructOps {
+trait MyTupleGenBase extends GenericCodegen with BaseGenStruct {
   val IR: MyTupleOpsExp
 
   override def remap[A](m: Manifest[A]) = m.erasure.getSimpleName match {
@@ -85,5 +85,5 @@ trait MyTupleGenBase extends GenericCodegen with lms.BaseGenStructOps {
   }
 }
 
-trait ScalaGenMyTupleOps extends ScalaGenBase with MyTupleGenBase with lms.ScalaGenStructOps { val IR: MyTupleOpsExp }
-trait CGenMyTupleOps extends CGenBase with MyTupleGenBase with lms.CGenStructOps { val IR: MyTupleOpsExp }
+trait ScalaGenMyTupleOps extends ScalaGenBase with MyTupleGenBase with ScalaGenStruct { val IR: MyTupleOpsExp }
+trait CGenMyTupleOps extends CGenBase with MyTupleGenBase with CGenStruct { val IR: MyTupleOpsExp }

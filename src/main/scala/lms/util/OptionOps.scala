@@ -41,12 +41,16 @@ trait OptionOps extends Base with IfThenElse with BooleanOps with Equal {
 
 }
 
+/**
+ * Deliberately not mixing in the opt traits
+ * we only want them at the very end, when we generate the program
+ */
 trait OptionOpsExp
     extends OptionOps
-    with IfThenElseExpOpt
-    with BooleanOpsExpOpt
-    with StructOpsExpOpt
-    with EqualExpOpt
+    with IfThenElseExp
+    with BooleanOpsExp
+    with StructExp
+    with EqualExp
     with CastingOpsExp {
 
   import scala.language.implicitConversions
@@ -63,7 +67,7 @@ trait OptionOpsExp
     struct(classTag[Option[T]], "value" -> rep_asinstanceof(unit(null), manifest[Null], manifest[T]), "defined" -> unit(false))
 }
 
-trait OptionGenBase extends GenericCodegen with BaseGenStructOps {
+trait OptionGenBase extends GenericCodegen with BaseGenStruct {
   val IR: OptionOpsExp
 
   override def remap[A](m: Manifest[A]) = m.erasure.getSimpleName match {
@@ -72,10 +76,18 @@ trait OptionGenBase extends GenericCodegen with BaseGenStructOps {
   }
 }
 
+trait OptionOpsExpOpt
+    extends OptionOpsExp
+    with IfThenElseExpOpt
+    with BooleanOpsExpOpt
+    with StructExpOptCommon
+    with EqualExpOpt
+
+
 trait ScalaGenOptionOps
     extends ScalaGenBase
     with OptionGenBase
-    with ScalaGenStructOps
+    with ScalaGenStruct
     with ScalaGenCastingOps
     with ScalaGenIfThenElse
     with ScalaGenEqual
@@ -86,7 +98,7 @@ trait ScalaGenOptionOps
 trait CGenOptionOps
     extends CGenBase
     with OptionGenBase
-    with CGenStructOps
+    with CGenStruct
     with CGenCastingOps
     with CGenIfThenElse
     with CGenEqual

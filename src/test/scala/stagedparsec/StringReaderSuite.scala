@@ -42,7 +42,7 @@ class StringReaderSuite extends FileDiffSuite {
   def testStringReader = {
     withOutFile(prefix + "stringreader") {
       new StringReaderProg
-        with StringReaderOpsExp
+        with StringReaderOpsExpOpt
         with MiscOpsExp
         with MyScalaCompile { self =>
 

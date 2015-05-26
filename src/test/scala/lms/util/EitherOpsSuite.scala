@@ -29,11 +29,15 @@ class EitherOpsSuite extends FileDiffSuite {
 
   def testOption = {
     withOutFile(prefix + "either") {
-      new EitherProg with EitherOpsExp with PrimitiveOpsExpOpt with NumericOpsExpOpt
-        with StructOpsExpOptCommon with MyScalaCompile { self =>
+      new EitherProg
+          with EitherOpsExpOpt
+          with PrimitiveOpsExpOpt
+          with NumericOpsExpOpt
+          with StructExpOptCommon
+          with MyScalaCompile { self =>
 
         val codegen = new ScalaGenEitherOps with ScalaGenPrimitiveOps
-          with ScalaGenNumericOps with lms.ScalaGenStructOps { val IR: self.type = self }
+          with ScalaGenNumericOps with ScalaGenStruct { val IR: self.type = self }
 
         codegen.emitSource(eithermapleft _, "eithermapleft", new java.io.PrintWriter(System.out))
         codegen.reset

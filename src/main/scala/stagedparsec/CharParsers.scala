@@ -59,6 +59,11 @@ trait CharParsersExp
     with CharOpsExp
     with StringReaderOpsExp
 
+trait CharParsersExpOpt
+    extends CharParsersExp
+    with StagedParsersExpOpt
+    with StringReaderOpsExpOpt
+
 trait ScalaGenCharParsers
     extends ScalaGenStagedParsers
     with ScalaGenCharOps
