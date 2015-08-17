@@ -20,3 +20,16 @@ please follow these steps:
   ```
 
 Hope you have fun!
+
+
+LMS Coding conventions
+======================
+
+Here are some basic LMS conventions I use when writing LMS code:
+
+  * Each new `Ops` gets its own file
+  * An `Exp` trait only mixes other Exp traits that are not `Opt` trait
+  * `Opt` traits are mixed in at a later stage. If you are often going to
+    use one, create an `Opt` trait for your `Ops` which mixes the relevant
+    `Opt` traits. `Fat` optimizations should not be mixed in with the classical
+    `Opt` traits, but used independently.
