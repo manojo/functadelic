@@ -66,13 +66,15 @@ trait OptionProg
   }
 
   /**
-   * extended ifThenElse
+   * extended ifThenElse: fails if StructFatExpOptCommon
+   * is used. See https://github.com/TiarkRompf/virtualization-lms-core/issues/90
+   * for more details
    */
-  def optionConditionalBis(in: Rep[Int]): Rep[Option[Int]] = {
-    if (in == unit(3)) Some(in)
-    else if (in == unit(3)) Some(in)
-    else None.asInstanceOf[Option[Rep[Int]]]
-  }
+//  def optionConditionalBis(in: Rep[Int]): Rep[Option[Int]] = {
+//    if (in == unit(3)) Some(in)
+//    else if (in == unit(3)) Some(in)
+//    else None.asInstanceOf[Option[Rep[Int]]]
+//  }
 
   /**
    * conditional on value followed by
@@ -80,73 +82,57 @@ trait OptionProg
    * looks like the code from an alternation combinator
    * in parsers
    */
-  def optionNestedConditional(in: Rep[Int]): Rep[Int] = {
-/*
-    val first =
-      if (in == unit(3)) Some(in)
-      else None.asInstanceOf[Option[Rep[Int]]]
+//  def optionNestedConditional(in: Rep[Int]): Rep[Int] = {
+//
+//    val first =
+//      if (in == unit(3)) Some(in)
+//      else None.asInstanceOf[Option[Rep[Int]]]
+//
+//    if (first.isDefined) first
+//    else if (in == unit(3)) Some(in)
+//    else None.asInstanceOf[Option[Rep[Int]]]
+//
+//
+//    if (in == unit(3)) {
+//      val bla = Some(in)
+//      if (bla.isDefined) bla
+//      else if (in == unit(3)) Some(in)
+//      else None
+//    } else {
+//      val bla = None
+//      if (bla.isDefined) bla
+//      else if (in == unit(3)) Some(in)
+//      else None
+//    }
+//
+//    if (in == unit(3)) {
+//      unit(2)//Some(in)
+//    } else {
+//      if (in == unit(3)) unit(2) //Some(in)
+//      else unit(0)// None.asInstanceOf[Option[Rep[Int]]]
+//    }
+//  }
 
-    if (first.isDefined) first
-    else if (in == unit(3)) Some(in)
-    else None.asInstanceOf[Option[Rep[Int]]]
-
-
-    if (in == unit(3)) {
-      val bla = Some(in)
-      if (bla.isDefined) bla
-      else if (in == unit(3)) Some(in)
-      else None
-    } else {
-      val bla = None
-      if (bla.isDefined) bla
-      else if (in == unit(3)) Some(in)
-      else None
-    }
-*/
-    if (in == unit(3)) {
-      unit(2)//Some(in)
-    } else {
-      if (in == unit(3)) unit(2) //Some(in)
-      else unit(0)// None.asInstanceOf[Option[Rep[Int]]]
-    }
-
-/*
- class optionNestedConditional extends ((Int)=>(OptionInt)) {
- def apply(x0:Int): OptionInt = {
- val x1 = x0 == 3
- // TODO: use vars instead of tuples to return multiple values
- val (x6,x7) = if (x1) {
- (x0,true)
- } else {
- val x3 = null.asInstanceOf[Int]
- (x3,false)
- }
- val x8 = new OptionInt(x6,x7)
- x8
- }
- }
- */
-  }
 
   /**
    * same as above, but more elaborate
    */
-  def optionNestedConditionalBis(in: Rep[Array[Int]]): Rep[Option[Int]] = {
-
-    val idx = unit(0)
-    val first =
-      if (idx >= in.length) None.asInstanceOf[Option[Rep[Int]]]
-      else if (in(idx) == unit(3)) Some(in(idx))
-      else None.asInstanceOf[Option[Rep[Int]]]
-
-    if (first.isDefined) first
-    else {
-      if (idx >= in.length) None.asInstanceOf[Option[Rep[Int]]]
-      else if (in(idx) == unit(5)) Some(in(idx))
-      else None.asInstanceOf[Option[Rep[Int]]]
-    }
-
-  }
+//  def optionNestedConditionalBis(in: Rep[Array[Int]]): Rep[Option[Int]] = {
+//
+//    val idx = unit(0)
+//    val first =
+//      if (idx >= in.length) None.asInstanceOf[Option[Rep[Int]]]
+//      else if (in(idx) == unit(3)) Some(in(idx))
+//      else None.asInstanceOf[Option[Rep[Int]]]
+//
+//    if (first.isDefined) first
+//    else {
+//      if (idx >= in.length) None.asInstanceOf[Option[Rep[Int]]]
+//      else if (in(idx) == unit(5)) Some(in(idx))
+//      else None.asInstanceOf[Option[Rep[Int]]]
+//    }
+//
+//  }
 }
 
 class OptionOpsSuite extends FileDiffSuite {
@@ -170,7 +156,7 @@ class OptionOpsSuite extends FileDiffSuite {
           with ScalaGenNumericOps
           with ScalaGenOrderingOps
           with ScalaGenArrayOps
-          //with ScalaGenStruct
+          with ScalaGenStruct
           with ScalaGenFatStruct
           with ScalaGenIfThenElseFat { val IR: self.type = self }
           //with ScalaGenIfThenElse { val IR: self.type = self }
@@ -225,26 +211,26 @@ class OptionOpsSuite extends FileDiffSuite {
         scala.Console.println(testcOptionConditional(3))
         codegen.reset
 
-        codegen.emitSource(optionConditionalBis _, "optionConditionalBis", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testcOptionConditionalBis = compile(optionConditionalBis)
-        scala.Console.println(testcOptionConditionalBis(3))
-        codegen.reset
-
-        codegen.emitSource(optionNestedConditional _, "optionNestedConditional", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testcOptionNestedConditional = compile(optionNestedConditional)
-        scala.Console.println(testcOptionNestedConditional(3))
-        codegen.reset
-
-        codegen.emitSource(optionNestedConditionalBis _, "optionNestedConditionalBis", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testcOptionNestedConditionalBis = compile(optionNestedConditionalBis)
-        scala.Console.println(testcOptionNestedConditionalBis(scala.Array(1)))
-        codegen.reset
+//        codegen.emitSource(optionConditionalBis _, "optionConditionalBis", new java.io.PrintWriter(System.out))
+//        codegen.reset
+//
+//        val testcOptionConditionalBis = compile(optionConditionalBis)
+//        scala.Console.println(testcOptionConditionalBis(3))
+//        codegen.reset
+//
+//        codegen.emitSource(optionNestedConditional _, "optionNestedConditional", new java.io.PrintWriter(System.out))
+//        codegen.reset
+//
+//        val testcOptionNestedConditional = compile(optionNestedConditional)
+//        scala.Console.println(testcOptionNestedConditional(3))
+//        codegen.reset
+//
+//        codegen.emitSource(optionNestedConditionalBis _, "optionNestedConditionalBis", new java.io.PrintWriter(System.out))
+//        codegen.reset
+//
+//        val testcOptionNestedConditionalBis = compile(optionNestedConditionalBis)
+//        scala.Console.println(testcOptionNestedConditionalBis(scala.Array(1)))
+//        codegen.reset
 
       }
     }

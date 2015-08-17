@@ -17,10 +17,14 @@ trait OptionCPSOps
     with IfThenElse
     with BooleanOps
     with Equal
-    with LiftVariables {
+    with LiftVariables
+    with OptionOps {
   import scala.language.implicitConversions
 
-
+  /**
+   * CPS encoding for Option
+   * isDefined does not make sense for this encoding
+   */
   abstract class OptionCPS[T: Manifest] { self =>
 
     def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X]
@@ -41,8 +45,82 @@ trait OptionCPSOps
     }
 
     /**
-     * isDefined does not make sense for this encoding
+     * helper method that introduces vars and eventually yields a Rep[Option]
      */
+    def toOption: Rep[Option[T]] = {
+      import lms.ZeroVal
+      var isDefined = unit(false); var value = ZeroVal[T]
+      self.apply(
+        (_: Rep[Unit]) => unit(()),
+        x => { isDefined = unit(true); value = x }
+      )
+      if (isDefined) make_opt(scala.Some(readVar(value))) else none[T]()
+    }
+
+  }
+
+  /**
+   * A node acting as a join point for OptionCPS
+   */
+  case class OptionCPSCond[T: Manifest](
+    cond: Rep[Boolean],
+    t: OptionCPS[T],
+    e: OptionCPS[T]
+  ) extends OptionCPS[T] { self =>
+
+    /**
+     * naive apply function
+     */
+    def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
+      if (cond) t(none, some) else e(none, some)
+
+    /**
+     * overriding implementations for the usual suspects
+     * for a conditional, we don't want to inline higher order functions
+     * in each branch.
+     * For options, this is handy especially if both sides of the conditional yield
+     * a Some. Otherwise it does not really matter, because no computation is performed
+     * in the None case anyway. While codegen may be suboptimal for the latter case,
+     * it's a tradeoff worth taking.
+     */
+    import lms.ZeroVal
+
+    override def map[U: Manifest](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
+      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
+        var isDefined = unit(false); var value = ZeroVal[T]
+
+        self.apply(
+          (_: Rep[Unit]) => unit(()),
+          x => { isDefined = unit(true); value = x }
+        )
+        if (isDefined) some(f(value)) else none(unit(()))
+      }
+    }
+
+    override def flatMap[U: Manifest](f: Rep[T] => OptionCPS[U]) = new OptionCPS[U] {
+      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
+        var isDefined = unit(false); var value = ZeroVal[T]
+
+        self.apply(
+          (_: Rep[Unit]) => unit(()),
+          x => { isDefined = unit(true); value = x }
+        )
+        if (isDefined) f(value).apply(none, some) else none(unit(()))
+      }
+    }
+
+    override def filter(p: Rep[T] => Rep[Boolean]) = new OptionCPS[T] {
+      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) = {
+        var isDefined = unit(false); var value = ZeroVal[T]
+
+        self.apply(
+          (_: Rep[Unit]) => unit(()),
+          x => { isDefined = unit(true); value = x }
+        )
+        if (isDefined && p(value)) some(value) else none(unit(()))
+      }
+    }
+
   }
 
   /**
@@ -64,108 +142,10 @@ trait OptionCPSOps
      * needs a different name than __ifThenElse because the latter requires
      * Rep `then` and `else` parameters
      */
+    def conditional[T: Manifest](
+      cond: Rep[Boolean],
+      thenp: => OptionCPS[T],
+      elsep: => OptionCPS[T]
+    ): OptionCPS[T] = OptionCPSCond(cond, thenp, elsep)
   }
-
-
-  /** helpers */
-  def mkNone[T: Manifest]: Rep[OptionCPS[T]]
-  def mkSome[T: Manifest](t: Rep[T]): Rep[OptionCPS[T]]
-
-  /**
-   * pimping my ride
-   */
-  implicit class OptionWrapperCls[T: Manifest](e: Rep[OptionCPS[T]]) {
-    def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X]
-     = option_apply(e, none, some)
-  }
-
-  /**
-   * functions on Rep[OptionCPS]
-   */
-  def option_apply[X: Manifest, T: Manifest](
-    e: Rep[OptionCPS[T]],
-    none: Rep[Unit] => Rep[X],
-    some: Rep[T] => Rep[X]
-  ): Rep[X]
-
-  def __ifThenElse[T: Manifest](
-    cond: Rep[Boolean],
-    thenp: => Rep[OptionCPS[T]],
-    elsep: => Rep[OptionCPS[T]]
-  ): Rep[OptionCPS[T]]
-
-}
-
-trait OptionCPSExp
-    extends OptionCPSOps
-    with BaseExp
-    with IfThenElseExp
-    with BooleanOpsExp
-    with EqualExp {
-
-
-  /**
-   * Nodes representing OptionCPS. They act as wrappers mainly
-   * There is also a special representation for conditionals involving
-   * OptionCPS.
-   */
-  case class OptionWrapper[T](opt: OptionCPS[T]) extends Def[OptionCPS[T]]
-  case class OptionCond[T](
-    cond: Rep[Boolean],
-    t: Exp[OptionCPS[T]],
-    e: Exp[OptionCPS[T]]
-  ) extends Def[OptionCPS[T]]
-
-  /** helpers */
-  def mkNone[T: Manifest]: Rep[OptionCPS[T]] = OptionWrapper(OptionCPS.None[T])
-  def mkSome[T: Manifest](t: Rep[T]): Rep[OptionCPS[T]] = OptionWrapper(OptionCPS.Some(t))
-
-  /**
-   * Implementations of interface methods from above
-   */
-  def __ifThenElse[T: Manifest](
-    cond: Rep[Boolean],
-    thenp: => Rep[OptionCPS[T]],
-    elsep: => Rep[OptionCPS[T]]
-  ): Rep[OptionCPS[T]] = OptionCond(cond, thenp, elsep)
-
-  /**
-   * Wrapper around the apply function for OptionCPS
-   * Also useful for special handling of conditionals
-   */
-  def option_apply[X: Manifest, T: Manifest](
-    e: Rep[OptionCPS[T]],
-    none: Rep[Unit] => Rep[X],
-    some: Rep[T] => Rep[X]
-  ): Rep[X] = e match {
-
-    /* simple unwrapping */
-    case Def(OptionWrapper(opt)) => opt.apply(none, some)
-
-    /* The naive code gen for conditionals */
-    case Def(OptionCond(cond, t, e)) =>
-
-      val tmp = new OptionCPS[T] {
-        def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) = {
-          if (cond) t(none, some) else e(none, some)
-        }
-      }
-      tmp(none, some)
-
-//    case OptionCond(cond, t, e) =>
-//
-//      import lms.ZeroVal
-//      /**
-//       * we create a new EitherCPS that handles conditionals
-//       */
-//      var isDefined = false; var value = ZeroVal[T]
-//      val tmp = new EitherCPS[T] {
-//        def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) = {
-//          if (cond)
-//        }
-//      }
-
-
-  }
-
 }

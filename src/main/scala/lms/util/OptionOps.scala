@@ -54,9 +54,11 @@ trait OptionOpsExp
     with CastingOpsExp {
 
   import scala.language.implicitConversions
+  import lms.ZeroVal
+
   implicit def make_opt[A: Manifest](o: Option[Rep[A]])(implicit pos: SourceContext): Exp[Option[A]] =
     struct(classTag[Option[A]],
-      "value" -> o.getOrElse(rep_asinstanceof(unit(null), manifest[Null], manifest[A])),
+      "value" -> o.getOrElse(unit(ZeroVal[A])),
       "defined" -> unit(o.isDefined)
     )
 
@@ -64,7 +66,7 @@ trait OptionOpsExp
   def option_get[A: Manifest](o: Rep[Option[A]])(implicit pos: SourceContext): Rep[A] = field[A](o, "value")
 
   def none[T: Manifest](): Rep[Option[T]] =
-    struct(classTag[Option[T]], "value" -> rep_asinstanceof(unit(null), manifest[Null], manifest[T]), "defined" -> unit(false))
+    struct(classTag[Option[T]], "value" -> unit(ZeroVal[T]), "defined" -> unit(false))
 }
 
 trait OptionGenBase extends GenericCodegen with BaseGenStruct {
@@ -82,7 +84,6 @@ trait OptionOpsExpOpt
     with BooleanOpsExpOpt
     with StructExpOptCommon
     with EqualExpOpt
-
 
 trait ScalaGenOptionOps
     extends ScalaGenBase
