@@ -1,0 +1,64 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class singleConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+var x3: OptionInt = x2
+val x4 = x0 <= 3
+val x11 = if (x4) {
+val x8 = new OptionInt(x0,true)
+x3 = x8
+()
+} else {
+()
+}
+val x12 = x3
+x12
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+var x3: OptionInt = x2
+val x4 = x0 <= 3
+val x23 = if (x4) {
+val x5 = x0 >= 1
+val x17 = if (x5) {
+val x14 = new OptionInt(x0,true)
+x3 = x14
+()
+} else {
+()
+}
+x17
+} else {
+val x9 = x0 >= 5
+val x21 = if (x9) {
+val x14 = new OptionInt(x0,true)
+x3 = x14
+()
+} else {
+()
+}
+x21
+}
+val x24 = x3
+x24
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(5,true)
