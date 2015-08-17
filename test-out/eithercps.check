@@ -1,0 +1,198 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class singleConditional extends ((Int)=>(Int)) {
+def apply(x0:Int): Int = {
+var x1: Int = 0
+var x6: Int = 0
+var x7: Int = 0
+var x8: Boolean = true
+val x2 = x0 <= 3
+val x15 = if (x2) {
+x6 = 2
+x8 = true
+()
+} else {
+x7 = 4
+x8 = false
+()
+}
+val x16 = x8
+val x23 = if (x16) {
+val x17 = x6
+x1 = x17
+()
+} else {
+val x20 = x7
+x1 = x20
+()
+}
+val x24 = x1
+x24
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+4
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class singleConditionalBis extends ((Int)=>(Int)) {
+def apply(x0:Int): Int = {
+var x1: Int = 0
+var x6: Int = 0
+var x7: Int = 0
+var x8: Boolean = true
+val x2 = x0 <= 3
+val x15 = if (x2) {
+x1 = 2
+x8 = true
+()
+} else {
+x1 = 4
+x8 = false
+()
+}
+val x16 = x8
+val x23 = if (x16) {
+val x17 = x1
+x1 = x17
+()
+} else {
+val x20 = x1
+x1 = x20
+()
+}
+val x24 = x1
+x24
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+4
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedConditional extends ((Int)=>(Int)) {
+def apply(x0:Int): Int = {
+var x1: Int = 0
+var x9: Int = 0
+var x10: Int = 0
+var x11: Boolean = true
+val x2 = x0 <= 3
+val x36 = if (x2) {
+var x12: Int = 0
+var x13: Int = 0
+var x14: Boolean = true
+val x3 = x0 >= 1
+val x21 = if (x3) {
+x12 = 2
+x14 = true
+()
+} else {
+x13 = 3
+x14 = false
+()
+}
+val x22 = x14
+val x31 = if (x22) {
+val x23 = x12
+x9 = x23
+x11 = true
+()
+} else {
+val x27 = x13
+x10 = x27
+x11 = false
+()
+}
+x31
+} else {
+x10 = 4
+x11 = false
+()
+}
+val x37 = x11
+val x44 = if (x37) {
+val x38 = x9
+x1 = x38
+()
+} else {
+val x41 = x10
+x1 = x41
+()
+}
+val x45 = x1
+x45
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+4
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedConditionalBis extends ((Int)=>(Int)) {
+def apply(x0:Int): Int = {
+var x1: Int = 0
+var x9: Int = 0
+var x10: Int = 0
+var x11: Boolean = true
+val x2 = x0 <= 3
+val x36 = if (x2) {
+var x12: Int = 0
+var x13: Int = 0
+var x14: Boolean = true
+val x3 = x0 >= 1
+val x21 = if (x3) {
+x1 = 2
+x14 = true
+()
+} else {
+x1 = 3
+x14 = false
+()
+}
+val x22 = x14
+val x31 = if (x22) {
+val x23 = x1
+x1 = x23
+x11 = true
+()
+} else {
+val x27 = x1
+x1 = x27
+x11 = false
+()
+}
+x31
+} else {
+x1 = 4
+x11 = false
+()
+}
+val x37 = x11
+val x44 = if (x37) {
+val x38 = x1
+x1 = x38
+()
+} else {
+val x41 = x1
+x1 = x41
+()
+}
+val x45 = x1
+x45
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+4

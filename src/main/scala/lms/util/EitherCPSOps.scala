@@ -5,6 +5,7 @@ import lms._
 import scala.virtualization.lms.common._
 import scala.virtualization.lms.internal.GenericCodegen
 import scala.reflect.SourceContext
+import scala.language.implicitConversions
 
 import java.io.PrintWriter
 
@@ -18,7 +19,11 @@ import java.io.PrintWriter
  * see http://manojo.github.io/2015/03/20/cps-encoding-either/ for more
  * details
  */
-trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
+trait EitherCPSOps
+    extends Base
+    with IfThenElse
+    with BooleanOps
+    with LiftVariables {
   import scala.language.implicitConversions
 
   /**
@@ -56,13 +61,53 @@ trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
         rf(b)
     }
 
+
     def conditional[A: Manifest, B: Manifest](
       cond: Rep[Boolean],
       thenp: => EitherCPS[A, B],
       elsep: => EitherCPS[A, B]
-    ): EitherCPS[A, B] = new EitherCPS[A, B] {
-      def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
-        if (cond) thenp.apply(lf, rf) else elsep.apply(lf, rf)
+    )(implicit leftValue: Option[Var[A]],
+               rightValue: Option[Var[B]]): EitherCPS[A, B] = {
+
+      new EitherCPS[A, B] {
+        def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) = {
+
+          import lms.ZeroVal
+
+          var l = ZeroVal[A]; var r = ZeroVal[B]
+
+          var isLeft = true
+          val lCont = (a: Rep[A]) => {
+            if (leftValue.isDefined) {
+              leftValue.get = a
+            } else { l = a }
+            isLeft = true
+          }
+          //val lCont = (a: Rep[A]) => { l = a; isLeft = true }
+          val rCont = (b: Rep[B]) => {
+            if (rightValue.isDefined) {
+              rightValue.get = b
+            } else { r = b }
+            isLeft = false
+          }
+          //val rCont = (b: Rep[B]) => { r = b; isLeft = false }
+          if (cond) thenp.apply[Unit](lCont, rCont)
+          else elsep.apply[Unit](lCont, rCont)
+
+
+          if (isLeft) {
+            val leftVar =
+              if (leftValue.isDefined) leftValue.get
+              else l
+            lf(leftVar)
+          } else {
+            val rightVar =
+              if (rightValue.isDefined) rightValue.get
+              else r
+            rf(rightVar)
+          }
+        }
+      }
     }
   }
 
@@ -101,20 +146,22 @@ trait EitherCPSOps extends Base with IfThenElse with BooleanOps {
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
-  ): Rep[EitherCPS[A, B]]
+  )(implicit leftValue: Option[Var[A]],
+             rightValue: Option[Var[B]]): Rep[EitherCPS[A, B]]
 
   def __ifThenElse[A: Manifest, B: Manifest](
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
-  ) = either_conditional(cond, thenp, elsep)
+  )(implicit leftValue: Option[Var[A]],
+             rightValue: Option[Var[B]]) = either_conditional(cond, thenp, elsep)
 }
 
 trait EitherCPSOpsExp
     extends EitherCPSOps
     with BaseExp
-    with IfThenElseExpOpt
-    with BooleanOpsExpOpt
+    with IfThenElseExp
+    with BooleanOpsExp
     with EqualExp {
 
   import EitherCPS._
@@ -164,7 +211,8 @@ trait EitherCPSOpsExp
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
-  ): Rep[EitherCPS[A, B]] = (thenp, elsep) match { //stricting them here
+  )(implicit leftValue: Option[Var[A]],
+               rightValue: Option[Var[B]]): Rep[EitherCPS[A, B]] = (thenp, elsep) match { //stricting them here
     case (Def(EitherWrapper(t)), Def(EitherWrapper(e))) =>
       EitherWrapper(conditional(cond, t, e))
   }
