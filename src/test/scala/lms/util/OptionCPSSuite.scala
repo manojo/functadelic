@@ -36,6 +36,22 @@ trait OptionCPSProg
     c.apply((_: Rep[Unit]) => unit(()), x => res = make_opt(scala.Some(x)))
     res
   }
+
+  /**
+   * The same conditional expression twice
+   * to make sure that no optimization collapses the conditional
+   */
+  def nestedConditional2(in: Rep[Int]): Rep[Option[Int]] = {
+    var res = none[Int]()
+
+    val c =
+      if (in == unit(3)) mkSome(in)
+      else if (in == unit(3)) mkSome(in)
+      else mkNone[Int]
+
+    c.apply((_: Rep[Unit]) => unit(()), x => res = make_opt(scala.Some(x)))
+    res
+  }
 }
 
 class OptionCPSSuite extends FileDiffSuite {
@@ -70,6 +86,13 @@ class OptionCPSSuite extends FileDiffSuite {
 
         val testcNestedConditional = compile(nestedConditional)
         scala.Console.println(testcNestedConditional(5))
+        codegen.reset
+
+        codegen.emitSource(nestedConditional2 _, "nestedConditional2", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcNestedConditional2 = compile(nestedConditional2)
+        scala.Console.println(testcNestedConditional2(5))
         codegen.reset
 
 

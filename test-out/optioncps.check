@@ -62,3 +62,35 @@ x24
 *******************************************/
 compilation: ok
 OptionInt(5,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedConditional2 extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+val x1 = null.asInstanceOf[Int]
+val x2 = new OptionInt(x1,false)
+var x3: OptionInt = x2
+val x4 = x0 == 3
+val x17 = if (x4) {
+val x10 = new OptionInt(x0,true)
+x3 = x10
+()
+} else {
+val x15 = if (x4) {
+val x10 = new OptionInt(x0,true)
+x3 = x10
+()
+} else {
+()
+}
+x15
+}
+val x18 = x3
+x18
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
