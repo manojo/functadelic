@@ -46,7 +46,6 @@ trait OptionCPS
      * helper method that introduces vars and eventually yields a Rep[Option]
      */
     def toOption: Rep[Option[T]] = {
-      import lms.ZeroVal
       var isDefined = unit(false); var value = ZeroVal[T]
       self.apply(
         (_: Rep[Unit]) => unit(()),
@@ -81,7 +80,6 @@ trait OptionCPS
      * in the None case anyway. While codegen may be suboptimal for the latter case,
      * it's a tradeoff worth taking.
      */
-    import lms.ZeroVal
 
     override def map[U: Manifest](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
       def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {

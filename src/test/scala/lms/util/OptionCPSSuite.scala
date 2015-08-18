@@ -58,11 +58,20 @@ trait OptionCPSProg
     c.toOption
   }
 
+  /**
+   * should generate code where the notion of option
+   * has disappeard
+   */
   def mapSome(in: Rep[Int]): Rep[Option[Int]] = {
     val s = Some(in)
     s.map(x => x * unit(2)).toOption
   }
 
+  /**
+   * should generate code where the notion of option
+   * has disappeard. In particular the function passed
+   * to map is not generated
+   */
   def mapNone(in: Rep[Int]): Rep[Option[Int]] = {
     val s = None[Int]
     s.map(x => x * unit(2)).toOption
@@ -87,11 +96,19 @@ trait OptionCPSProg
     s.map(_ * unit(3)).toOption
   }
 
+  /**
+   * should generate code where the notion of option
+   * has disappeard
+   */
   def flatMapSome(in: Rep[Int]): Rep[Option[Int]] = {
     val s = Some(in)
     s.flatMap(x => Some(x * unit(2))).toOption
   }
 
+  /**
+   * should generate code where the notion of option
+   * has disappeard
+   */
   def flatMapNone(in: Rep[Int]): Rep[Option[Int]] = {
     val s = None[Int]
     s.flatMap(x => Some(x * unit(2))).toOption
