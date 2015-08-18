@@ -16,8 +16,8 @@ scalacOptions ++= Seq(
   "-Yvirtualize",
   "-P:continuations:enable",
   //"-optimize",
-  "-deprecation"
-  //"-feature",
+  "-deprecation",
+  "-feature"
   //"-Yinline-warnings"
 )
 

@@ -9,8 +9,11 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.FileOutputStream
 
+/** stupid feature import*/
+import scala.language.postfixOps
+
 trait OptionCPSProg
-    extends OptionCPSOps
+    extends OptionCPS
     with OptionOps
     with OrderingOps
     with PrimitiveOps

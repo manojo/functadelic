@@ -12,14 +12,12 @@ import java.io.PrintWriter
  * A CPS encoding of Option
  * an alternative to the struct representation
  */
-trait OptionCPSOps
+trait OptionCPS
     extends Base
     with IfThenElse
     with BooleanOps
-    with Equal
     with LiftVariables
     with OptionOps {
-  import scala.language.implicitConversions
 
   /**
    * CPS encoding for Option

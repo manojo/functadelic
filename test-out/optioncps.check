@@ -3,19 +3,26 @@
 *******************************************/
 class singleConditional extends ((Int)=>(OptionInt)) {
 def apply(x0:Int): OptionInt = {
-val x1 = null.asInstanceOf[Int]
-val x2 = new OptionInt(x1,false)
-var x3: OptionInt = x2
-val x4 = x0 <= 3
-val x11 = if (x4) {
-val x8 = new OptionInt(x0,true)
-x3 = x8
+var x2: Boolean = false
+var x3: Int = 0
+val x1 = x0 <= 3
+val x7 = if (x1) {
+x2 = true
+x3 = x0
 ()
 } else {
 ()
 }
-val x12 = x3
+val x8 = x2
+val x13 = if (x8) {
+val x9 = x3
+val x10 = new OptionInt(x9,true)
+x10
+} else {
+val x12 = new OptionInt(0,false)
 x12
+}
+x13
 }
 }
 /*****************************************
@@ -28,33 +35,40 @@ OptionInt(0,false)
 *******************************************/
 class nestedConditional extends ((Int)=>(OptionInt)) {
 def apply(x0:Int): OptionInt = {
-val x1 = null.asInstanceOf[Int]
-val x2 = new OptionInt(x1,false)
-var x3: OptionInt = x2
-val x4 = x0 <= 3
-val x23 = if (x4) {
-val x5 = x0 >= 1
-val x17 = if (x5) {
-val x14 = new OptionInt(x0,true)
-x3 = x14
+var x4: Boolean = false
+var x5: Int = 0
+val x1 = x0 <= 3
+val x16 = if (x1) {
+val x2 = x0 >= 1
+val x9 = if (x2) {
+x4 = true
+x5 = x0
 ()
 } else {
 ()
 }
-x17
+x9
 } else {
-val x9 = x0 >= 5
-val x21 = if (x9) {
-val x14 = new OptionInt(x0,true)
-x3 = x14
+val x3 = x0 >= 5
+val x14 = if (x3) {
+x4 = true
+x5 = x0
 ()
 } else {
 ()
 }
+x14
+}
+val x17 = x4
+val x22 = if (x17) {
+val x18 = x5
+val x19 = new OptionInt(x18,true)
+x19
+} else {
+val x21 = new OptionInt(0,false)
 x21
 }
-val x24 = x3
-x24
+x22
 }
 }
 /*****************************************
@@ -67,25 +81,32 @@ OptionInt(5,true)
 *******************************************/
 class nestedConditional2 extends ((Int)=>(OptionInt)) {
 def apply(x0:Int): OptionInt = {
-val x1 = null.asInstanceOf[Int]
-val x2 = new OptionInt(x1,false)
-var x3: OptionInt = x2
-val x4 = x0 == 3
-val x17 = if (x4) {
-val x10 = new OptionInt(x0,true)
-x3 = x10
+var x2: Boolean = false
+var x3: Int = 0
+val x1 = x0 == 3
+val x12 = if (x1) {
+x2 = true
+x3 = x0
 ()
 } else {
-val x15 = if (x4) {
-val x10 = new OptionInt(x0,true)
-x3 = x10
+val x10 = if (x1) {
+x2 = true
+x3 = x0
 ()
 } else {
 ()
 }
+x10
+}
+val x13 = x2
+val x18 = if (x13) {
+val x14 = x3
+val x15 = new OptionInt(x14,true)
 x15
+} else {
+val x17 = new OptionInt(0,false)
+x17
 }
-val x18 = x3
 x18
 }
 }
@@ -94,3 +115,304 @@ x18
 *******************************************/
 compilation: ok
 OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapSome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x1: Boolean = false
+var x2: Int = 0
+x1 = true
+val x3 = x0 * 2
+x2 = x3
+val x6 = x1
+val x11 = if (x6) {
+val x7 = x2
+val x8 = new OptionInt(x7,true)
+x8
+} else {
+val x10 = new OptionInt(0,false)
+x10
+}
+x11
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(10,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapNone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x1: Boolean = false
+var x2: Int = 0
+val x3 = x1
+val x8 = if (x3) {
+val x4 = x2
+val x5 = new OptionInt(x4,true)
+x5
+} else {
+val x7 = new OptionInt(0,false)
+x7
+}
+x8
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x2: Boolean = false
+var x3: Int = 0
+var x4: Boolean = false
+var x5: Int = 0
+val x1 = x0 <= 3
+val x9 = if (x1) {
+x4 = true
+x5 = x0
+()
+} else {
+()
+}
+val x10 = x4
+val x16 = if (x10) {
+val x11 = x5
+x2 = true
+val x12 = x11 * 2
+x3 = x12
+()
+} else {
+()
+}
+val x17 = x2
+val x22 = if (x17) {
+val x18 = x3
+val x19 = new OptionInt(x18,true)
+x19
+} else {
+val x21 = new OptionInt(0,false)
+x21
+}
+x22
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapConditional2 extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x3: Boolean = false
+var x4: Int = 0
+var x5: Boolean = false
+var x6: Int = 0
+val x1 = x0 <= 3
+val x13 = if (x1) {
+x5 = true
+x6 = x0
+()
+} else {
+x5 = true
+val x2 = x0 * 2
+x6 = x2
+()
+}
+val x14 = x5
+val x20 = if (x14) {
+val x15 = x6
+x3 = true
+val x16 = x15 * 3
+x4 = x16
+()
+} else {
+()
+}
+val x21 = x3
+val x26 = if (x21) {
+val x22 = x4
+val x23 = new OptionInt(x22,true)
+x23
+} else {
+val x25 = new OptionInt(0,false)
+x25
+}
+x26
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(30,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapNestedConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x4: Boolean = false
+var x5: Int = 0
+var x6: Boolean = false
+var x7: Int = 0
+val x1 = x0 <= 3
+val x16 = if (x1) {
+val x2 = x0 >= 1
+val x11 = if (x2) {
+x6 = true
+x7 = x0
+()
+} else {
+()
+}
+x11
+} else {
+x6 = true
+val x3 = x0 * 2
+x7 = x3
+()
+}
+val x17 = x6
+val x23 = if (x17) {
+val x18 = x7
+x4 = true
+val x19 = x18 * 3
+x5 = x19
+()
+} else {
+()
+}
+val x24 = x4
+val x29 = if (x24) {
+val x25 = x5
+val x26 = new OptionInt(x25,true)
+x26
+} else {
+val x28 = new OptionInt(0,false)
+x28
+}
+x29
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(30,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapSome extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x1: Boolean = false
+var x2: Int = 0
+x1 = true
+val x3 = x0 * 2
+x2 = x3
+val x6 = x1
+val x11 = if (x6) {
+val x7 = x2
+val x8 = new OptionInt(x7,true)
+x8
+} else {
+val x10 = new OptionInt(0,false)
+x10
+}
+x11
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(10,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapNone extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x1: Boolean = false
+var x2: Int = 0
+val x3 = x1
+val x8 = if (x3) {
+val x4 = x2
+val x5 = new OptionInt(x4,true)
+x5
+} else {
+val x7 = new OptionInt(0,false)
+x7
+}
+x8
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapConditional extends ((Int)=>(OptionInt)) {
+def apply(x0:Int): OptionInt = {
+var x2: Boolean = false
+var x3: Int = 0
+var x4: Boolean = false
+var x5: Int = 0
+val x1 = x0 <= 3
+val x9 = if (x1) {
+x4 = true
+x5 = x0
+()
+} else {
+()
+}
+val x10 = x4
+val x23 = if (x10) {
+val x11 = x5
+val x12 = x11 >= 1
+val x21 = if (x12) {
+x2 = true
+val x13 = x11 * 5
+x3 = x13
+()
+} else {
+x2 = true
+val x14 = x11 * 10
+x3 = x14
+()
+}
+x21
+} else {
+()
+}
+val x24 = x2
+val x29 = if (x24) {
+val x25 = x3
+val x26 = new OptionInt(x25,true)
+x26
+} else {
+val x28 = new OptionInt(0,false)
+x28
+}
+x29
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+OptionInt(15,true)
+OptionInt(0,true)

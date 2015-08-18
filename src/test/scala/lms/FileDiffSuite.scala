@@ -38,7 +38,7 @@ trait FileDiffSuite extends Suite {
     new String(buf)
   }
   def assertFileEqualsCheck(name: String): Unit = {
-    expectResult(readFile(name + ".check")) { readFile(name) }
+    assertResult(readFile(name + ".check")) { readFile(name) }
     new File(name) delete ()
   }
 }
