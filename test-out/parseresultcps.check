@@ -1,0 +1,297 @@
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class singleConditional extends ((Array[Char], Boolean)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Boolean): OptionInt = {
+var x4: Boolean = true
+var x5: Int = 0
+val x9 = if (x1) {
+x4 = false
+x5 = 1
+()
+} else {
+()
+}
+val x10 = x4
+val x15 = if (x10) {
+val x11 = new OptionInt(0,false)
+x11
+} else {
+val x12 = x5
+val x13 = new OptionInt(x12,true)
+x13
+}
+x15
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(1,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class nestedConditional extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x6: Boolean = true
+var x7: Int = 0
+val x3 = x1 <= 3
+val x18 = if (x3) {
+val x4 = x1 >= 1
+val x11 = if (x4) {
+x6 = false
+x7 = x1
+()
+} else {
+()
+}
+x11
+} else {
+val x5 = x1 >= 5
+val x16 = if (x5) {
+x6 = false
+x7 = x1
+()
+} else {
+()
+}
+x16
+}
+val x19 = x6
+val x24 = if (x19) {
+val x20 = new OptionInt(0,false)
+x20
+} else {
+val x21 = x7
+val x22 = new OptionInt(x21,true)
+x22
+}
+x24
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(5,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapSuccess extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x3: Boolean = true
+var x4: Int = 0
+x3 = false
+val x5 = x1 * 2
+x4 = x5
+val x8 = x3
+val x13 = if (x8) {
+val x9 = new OptionInt(0,false)
+x9
+} else {
+val x10 = x4
+val x11 = new OptionInt(x10,true)
+x11
+}
+x13
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(10,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapFailure extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x3: Boolean = true
+var x4: Int = 0
+val x5 = x3
+val x10 = if (x5) {
+val x6 = new OptionInt(0,false)
+x6
+} else {
+val x7 = x4
+val x8 = new OptionInt(x7,true)
+x8
+}
+x10
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapConditional extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x5: Boolean = true
+var x6: Int = 0
+var x7: Boolean = true
+var x8: Int = 0
+var x9: StringReader = null
+val x3 = x1 <= 3
+val x16 = if (x3) {
+x7 = false
+x8 = x1
+val x2 = new StringReader(x0,0)
+x9 = x2
+()
+} else {
+val x4 = new StringReader(x0,1)
+x9 = x4
+()
+}
+val x17 = x7
+val x26 = if (x17) {
+val x18 = x9
+()
+} else {
+val x20 = x8
+val x22 = x9
+x5 = false
+val x21 = x20 * 2
+x6 = x21
+()
+}
+val x27 = x5
+val x32 = if (x27) {
+val x28 = new OptionInt(0,false)
+x28
+} else {
+val x29 = x6
+val x30 = new OptionInt(x29,true)
+x30
+}
+x32
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+OptionInt(6,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapConditional2 extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x5: Boolean = true
+var x6: Int = 0
+var x7: Boolean = true
+var x8: Int = 0
+var x9: StringReader = null
+val x3 = x1 <= 3
+val x18 = if (x3) {
+x7 = false
+x8 = x1
+val x2 = new StringReader(x0,0)
+x9 = x2
+()
+} else {
+x7 = false
+x8 = x1
+val x4 = new StringReader(x0,1)
+x9 = x4
+()
+}
+val x19 = x7
+val x28 = if (x19) {
+val x20 = x9
+()
+} else {
+val x22 = x8
+val x24 = x9
+x5 = false
+val x23 = x22 * 3
+x6 = x23
+()
+}
+val x29 = x5
+val x34 = if (x29) {
+val x30 = new OptionInt(0,false)
+x30
+} else {
+val x31 = x6
+val x32 = new OptionInt(x31,true)
+x32
+}
+x34
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(15,true)
+OptionInt(9,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class mapNestedConditional extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x6: Boolean = true
+var x7: Int = 0
+var x8: Boolean = true
+var x9: Int = 0
+var x10: StringReader = null
+val x3 = x1 <= 3
+val x23 = if (x3) {
+val x4 = x1 >= 1
+val x17 = if (x4) {
+x8 = false
+x9 = x1
+val x2 = new StringReader(x0,0)
+x10 = x2
+()
+} else {
+val x2 = new StringReader(x0,0)
+x10 = x2
+()
+}
+x17
+} else {
+x8 = false
+val x5 = x1 * 2
+x9 = x5
+val x2 = new StringReader(x0,0)
+x10 = x2
+()
+}
+val x24 = x8
+val x33 = if (x24) {
+val x25 = x10
+()
+} else {
+val x27 = x9
+val x29 = x10
+x6 = false
+val x28 = x27 * 3
+x7 = x28
+()
+}
+val x34 = x6
+val x39 = if (x34) {
+val x35 = new OptionInt(0,false)
+x35
+} else {
+val x36 = x7
+val x37 = new OptionInt(x36,true)
+x37
+}
+x39
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(30,true)
+OptionInt(9,true)

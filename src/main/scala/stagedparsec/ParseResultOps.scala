@@ -18,13 +18,9 @@ trait ParseResultOps
     with BooleanOps { self: ReaderOps =>
 
   /**
-   * A mini implementation of a parseresult
+   * creating a type for use in generating structs
    */
-  abstract class ParseResult[+T: Manifest] {
-    def isEmpty: Rep[Boolean]
-    def next: Rep[Input]
-    def res: Rep[T]
-  }
+  abstract class ParseResult[+T: Manifest]
 
   def Success[T: Manifest](res: Rep[T], next: Rep[Input]): Rep[ParseResult[T]]
   def Failure[T: Manifest](next: Rep[Input]): Rep[ParseResult[T]]
