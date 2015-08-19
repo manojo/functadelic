@@ -55,7 +55,7 @@ trait ParseResultCPSProg
   }
 
   /**
-   * should generate code where the notion of option
+   * should generate code where the notion of parseresult
    * has disappeard
    */
   def mapSuccess(in: Rep[Array[Char]], i: Rep[Int]): Rep[Option[Int]] = {
@@ -64,7 +64,7 @@ trait ParseResultCPSProg
   }
 
   /**
-   * should generate code where the notion of option
+   * should generate code where the notion of parseresult
    * has disappeard
    */
   def mapFailure(in: Rep[Array[Char]], i: Rep[Int]): Rep[Option[Int]] = {
@@ -93,6 +93,63 @@ trait ParseResultCPSProg
       Success(i * unit(2), tmp)
     )
     s.map(_ * unit(3)).toOption
+  }
+
+  /**
+   * should generate code where only the nested parseresult is created
+   */
+  def flatMapSome(in: Rep[Array[Char]], i: Rep[Int]): Rep[Option[Int]] = {
+    Success(i, StringReader(in)) flatMapWithNext { (x, rdr) =>
+      Success(x * unit(2), rdr)
+    } toOption
+  }
+
+  /**
+   * should generate code where just a failure is created
+   */
+  def flatMapNone(in: Rep[Array[Char]], i: Rep[Int]): Rep[Option[Int]] = {
+    Failure[Int](StringReader(in)) flatMapWithNext { (x, rdr) =>
+      Success(x * unit(2), rdr)
+    } toOption
+  }
+
+  def flatMapConditional(in: Rep[Array[Char]], i: Rep[Int]): Rep[Option[Int]] = {
+    val tmp = StringReader(in)
+    val s: ParseResultCPS[Int] = conditional(i <= unit(3), Success(i, tmp), Failure(tmp))
+    s flatMapWithNext { (x, rdr) =>
+      conditional(x >= unit(1), Success(x * unit(5), rdr), Success(x * unit(10), rdr.rest))
+    } toOption
+  }
+
+  /**
+   * resembles code from a sequencing parser combinator
+   */
+  def flatMapTilde(in: Rep[Array[Char]], idx: Rep[Int]): Rep[Option[Char]] = {
+    val tmp = StringReader(in, idx)
+
+    val h: ParseResultCPS[Char] = conditional(
+      tmp.atEnd,
+      Failure(tmp),
+      conditional(
+        tmp.first == unit('h'),
+        Success(tmp.first, tmp.rest),
+        Failure(tmp)
+      )
+    )
+
+    val he: ParseResultCPS[Char] = h flatMapWithNext { (c, rdr) =>
+      conditional(
+        rdr.atEnd,
+        Failure(rdr),
+        conditional(
+          rdr.first == unit('e'),
+          Success(rdr.first, rdr.rest),
+          Failure(tmp)
+        )
+      )
+    }
+
+    he.toOption
   }
 
   /**
@@ -128,27 +185,6 @@ trait ParseResultCPSProg
   }
 */
 /*
-  def flatMapSome(in: Rep[Int]): Rep[Option[Int]] = {
-    val s = Some(in)
-    s.flatMap(x => Some(x * unit(2))).toOption
-  }
-
-  def flatMapNone(in: Rep[Int]): Rep[Option[Int]] = {
-    val s = None[Int]
-    s.flatMap(x => Some(x * unit(2))).toOption
-  }
-
-  def flatMapConditional(in: Rep[Int]): Rep[Option[Int]] = {
-    val s = conditional(in <= unit(3), Some(in), None[Int])
-    s flatMap { x =>
-      conditional(
-        x >= unit(1),
-        Some(x * unit(5)),
-        Some(x * unit(10))
-      )
-    } toOption
-  }
-
   def filtersome(in: Rep[Int]): Rep[Option[Int]] = {
     val s: Rep[Option[Int]] = mkSome(in)
     s.filter(x => x == unit(3)).toOption
@@ -238,30 +274,36 @@ class ParseResultCPSSuite extends FileDiffSuite {
         scala.Console.println(testcMapNestedConditional("h".toArray, 3))
         codegen.reset
 
-/*
-        codegen.emitSource(flatMapSome _, "flatMapSome", new java.io.PrintWriter(System.out))
+        codegen.emitSource2(flatMapSome _, "flatMapSome", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcFlatMapSome = compile(flatMapSome)
-        scala.Console.println(testcFlatMapSome(5))
+        val testcFlatMapSome = compile2(flatMapSome)
+        scala.Console.println(testcFlatMapSome("h".toArray, 5))
         codegen.reset
 
-        codegen.emitSource(flatMapNone _, "flatMapNone", new java.io.PrintWriter(System.out))
+        codegen.emitSource2(flatMapNone _, "flatMapNone", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcFlatMapNone = compile(flatMapNone)
-        scala.Console.println(testcFlatMapNone(5))
+        val testcFlatMapNone = compile2(flatMapNone)
+        scala.Console.println(testcFlatMapNone("h".toArray, 5))
         codegen.reset
 
-        codegen.emitSource(flatMapConditional _, "flatMapConditional", new java.io.PrintWriter(System.out))
+        codegen.emitSource2(flatMapConditional _, "flatMapConditional", new java.io.PrintWriter(System.out))
         codegen.reset
 
-        val testcFlatMapConditional = compile(flatMapConditional)
-        scala.Console.println(testcFlatMapConditional(5))
-        scala.Console.println(testcFlatMapConditional(3))
-        scala.Console.println(testcFlatMapConditional(0))
+        val testcFlatMapConditional = compile2(flatMapConditional)
+        scala.Console.println(testcFlatMapConditional("hello".toArray, 5))
+        scala.Console.println(testcFlatMapConditional("hello".toArray, 3))
+        scala.Console.println(testcFlatMapConditional("hello".toArray, 0))
         codegen.reset
-*/
+
+        codegen.emitSource2(flatMapTilde _, "flatMapTilde", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcFlatMapTilde = compile2(flatMapTilde)
+        scala.Console.println(testcFlatMapTilde("hello".toArray, 2))
+        scala.Console.println(testcFlatMapTilde("hello".toArray, 0))
+        codegen.reset
 
       }
     }

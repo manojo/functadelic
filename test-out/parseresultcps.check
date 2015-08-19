@@ -295,3 +295,194 @@ x39
 compilation: ok
 OptionInt(30,true)
 OptionInt(9,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapSome extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x3: Boolean = true
+var x4: Int = 0
+x3 = false
+val x5 = x1 * 2
+x4 = x5
+val x8 = x3
+val x13 = if (x8) {
+val x9 = new OptionInt(0,false)
+x9
+} else {
+val x10 = x4
+val x11 = new OptionInt(x10,true)
+x11
+}
+x13
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(10,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapNone extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x3: Boolean = true
+var x4: Int = 0
+val x5 = x3
+val x10 = if (x5) {
+val x6 = new OptionInt(0,false)
+x6
+} else {
+val x7 = x4
+val x8 = new OptionInt(x7,true)
+x8
+}
+x10
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapConditional extends ((Array[Char], Int)=>(OptionInt)) {
+def apply(x0:Array[Char], x1:Int): OptionInt = {
+var x4: Boolean = true
+var x5: Int = 0
+var x6: Boolean = true
+var x7: Int = 0
+var x8: StringReader = null
+val x3 = x1 <= 3
+val x15 = if (x3) {
+x6 = false
+x7 = x1
+val x2 = new StringReader(x0,0)
+x8 = x2
+()
+} else {
+val x2 = new StringReader(x0,0)
+x8 = x2
+()
+}
+val x16 = x6
+val x36 = if (x16) {
+val x17 = x8
+()
+} else {
+val x19 = x7
+val x20 = x8
+val x21 = x19 >= 1
+val x34 = if (x21) {
+x4 = false
+val x22 = x19 * 5
+x5 = x22
+()
+} else {
+x4 = false
+val x23 = x19 * 10
+x5 = x23
+()
+}
+x34
+}
+val x37 = x4
+val x42 = if (x37) {
+val x38 = new OptionInt(0,false)
+x38
+} else {
+val x39 = x5
+val x40 = new OptionInt(x39,true)
+x40
+}
+x42
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionInt(0,false)
+OptionInt(15,true)
+OptionInt(0,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class flatMapTilde extends ((Array[Char], Int)=>(OptionChar)) {
+def apply(x0:Array[Char], x1:Int): OptionChar = {
+var x9: Boolean = true
+var x10: Char = ' '
+var x11: Boolean = true
+var x12: Char = ' '
+var x13: StringReader = null
+val x3 = x0.length
+val x4 = x1 >= x3
+val x24 = if (x4) {
+val x2 = new StringReader(x0,x1)
+x13 = x2
+()
+} else {
+val x5 = x0(x1)
+val x6 = x5 == 'h'
+val x22 = if (x6) {
+x11 = false
+x12 = x5
+val x7 = x1 + 1
+val x8 = new StringReader(x0,x7)
+x13 = x8
+()
+} else {
+val x2 = new StringReader(x0,x1)
+x13 = x2
+()
+}
+x22
+}
+val x25 = x11
+val x45 = if (x25) {
+val x26 = x13
+()
+} else {
+val x28 = x12
+val x29 = x13
+val x30 = x29.offset
+val x31 = x29.input
+val x32 = x31.length
+val x33 = x30 >= x32
+val x43 = if (x33) {
+()
+} else {
+val x34 = x31(x30)
+val x35 = x34 == 'e'
+val x41 = if (x35) {
+x9 = false
+x10 = x34
+()
+} else {
+()
+}
+x41
+}
+x43
+}
+val x46 = x9
+val x51 = if (x46) {
+val x47 = new OptionChar(' ',false)
+x47
+} else {
+val x48 = x10
+val x49 = new OptionChar(x48,true)
+x49
+}
+x51
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionChar( ,false)
+OptionChar(e,true)

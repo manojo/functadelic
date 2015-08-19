@@ -79,6 +79,17 @@ trait OptionCPS
      * a Some. Otherwise it does not really matter, because no computation is performed
      * in the None case anyway. While codegen may be suboptimal for the latter case,
      * it's a tradeoff worth taking.
+     *
+     * Or is it? Maybe it's a better idea to impose only monadic style
+     * composition for Option, and special case the append/orElse function for
+     * join points?
+     * Well, here's a counterexample:
+     * Some(x) flatMap { x => (if (cond(x)) Some(y) else Some(z)).bigcomputation }
+     * with such code, we still need the conditional notation. I guess tradeoff is
+     * where things stand at the moment.
+     * Unless we want to analyse the body of each conditional expression, etc. etc.
+     * Also, at the moment, I (manojo) don't know the performance implications for
+     * either code style.
      */
 
     override def map[U: Manifest](f: Rep[T] => Rep[U]) = new OptionCPS[U] {

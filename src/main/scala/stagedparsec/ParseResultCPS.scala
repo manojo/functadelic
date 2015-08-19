@@ -83,6 +83,7 @@ trait ParseResultCPS
       )
 
     }
+
     def toOption: Rep[Option[T]] = {
       var isEmpty = unit(true); var value = ZeroVal[T]
       self.apply(
@@ -109,6 +110,7 @@ trait ParseResultCPS
       success: (Rep[T], Rep[Input]) => Rep[X],
       failure: Rep[Input] => Rep[X]
     ): Rep[X] = if (cond) t(success, failure) else e(success, failure)
+
 
     override def map[U: Manifest](f: Rep[T] => Rep[U]) = new ParseResultCPS[U] {
       def apply[X: Manifest](
@@ -145,6 +147,7 @@ trait ParseResultCPS
       }
     }
   }
+
 
   /**
    * Companion object
