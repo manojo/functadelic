@@ -486,3 +486,77 @@ x51
 compilation: ok
 OptionChar( ,false)
 OptionChar(e,true)
+/*****************************************
+  Emitting Generated Code                  
+*******************************************/
+class orElseAlternation extends ((Array[Char])=>(OptionChar)) {
+def apply(x0:Array[Char]): OptionChar = {
+var x8: Boolean = true
+var x9: Char = ' '
+var x10: Boolean = true
+var x11: Char = ' '
+var x12: StringReader = null
+val x2 = x0.length
+val x3 = 0 >= x2
+val x23 = if (x3) {
+val x1 = new StringReader(x0,0)
+x12 = x1
+()
+} else {
+val x4 = x0(0)
+val x5 = x4 == 'a'
+val x21 = if (x5) {
+x10 = false
+x11 = x4
+val x6 = new StringReader(x0,1)
+x12 = x6
+()
+} else {
+val x1 = new StringReader(x0,0)
+x12 = x1
+()
+}
+x21
+}
+val x24 = x10
+val x37 = if (x24) {
+val x30 = if (x3) {
+()
+} else {
+val x4 = x0(0)
+val x7 = x4 == 'b'
+val x28 = if (x7) {
+x8 = false
+x9 = x4
+()
+} else {
+()
+}
+x28
+}
+x30
+} else {
+val x32 = x11
+val x33 = x12
+x8 = false
+x9 = x32
+()
+}
+val x38 = x8
+val x43 = if (x38) {
+val x39 = new OptionChar(' ',false)
+x39
+} else {
+val x40 = x9
+val x41 = new OptionChar(x40,true)
+x41
+}
+x43
+}
+}
+/*****************************************
+  End of Generated Code                  
+*******************************************/
+compilation: ok
+OptionChar(a,true)
+OptionChar(b,true)

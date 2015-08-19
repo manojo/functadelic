@@ -81,7 +81,6 @@ trait ParseResultCPS
           failure
         )
       )
-
     }
 
     def toOption: Rep[Option[T]] = {
@@ -144,6 +143,23 @@ trait ParseResultCPS
         )
 
         if (isEmpty) failure(rdr) else f(value, rdr).apply(success, failure)
+      }
+    }
+
+    override def orElse(that: ParseResultCPS[T]) = new ParseResultCPS[T] {
+      def apply[X: Manifest](
+        success: (Rep[T], Rep[Input]) => Rep[X],
+        failure: Rep[Input] => Rep[X]
+      ): Rep[X] = {
+        var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+
+        self.apply(
+          (x, next) => { isEmpty = unit(false); value = x; rdr = next },
+          next => rdr = next
+        )
+
+        if (isEmpty) that.apply(success, failure) else success(value, rdr)
+
       }
     }
   }

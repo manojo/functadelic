@@ -155,8 +155,10 @@ trait ParseResultCPSProg
   /**
    * code similar to an alternating combinator in parser combinators,
    * but manually inlined
+   * IMPORTANT: the code for `second` should only be generated once,
+   * i.e. there should be a join point after `first`
    */
-/*  def nestedConditional2(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+  def orElseAlternation(in: Rep[Array[Char]]): Rep[Option[Char]] = {
     val tmp = StringReader(in)
     val first: ParseResultCPS[Char] = conditional(
       tmp.atEnd,
@@ -168,22 +170,19 @@ trait ParseResultCPSProg
       )
     )
 
-    val second: ParseResultCPS[Char] = first.flatMapWithNext(
-      (t, nxt) => Success(t, nxt),
-      nxt => conditional(
-        nxt.atEnd,
-        Failure(nxt),
-        conditional(
-          nxt.first == unit('b'),
-          Success(nxt.first, nxt.rest),
-          Failure(nxt)
-        )
+    val second: ParseResultCPS[Char] = conditional(
+      tmp.atEnd,
+      Failure(tmp),
+      conditional(
+        tmp.first == unit('b'),
+        Success(tmp.first, tmp.rest),
+        Failure(tmp)
       )
     )
 
-    second.toOption
+    (first orElse second) toOption
   }
-*/
+
 /*
   def filtersome(in: Rep[Int]): Rep[Option[Int]] = {
     val s: Rep[Option[Int]] = mkSome(in)
@@ -303,6 +302,14 @@ class ParseResultCPSSuite extends FileDiffSuite {
         val testcFlatMapTilde = compile2(flatMapTilde)
         scala.Console.println(testcFlatMapTilde("hello".toArray, 2))
         scala.Console.println(testcFlatMapTilde("hello".toArray, 0))
+        codegen.reset
+
+        codegen.emitSource(orElseAlternation _, "orElseAlternation", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcOrElseAlternation = compile(orElseAlternation)
+        scala.Console.println(testcOrElseAlternation("a".toArray))
+        scala.Console.println(testcOrElseAlternation("b".toArray))
         codegen.reset
 
       }
