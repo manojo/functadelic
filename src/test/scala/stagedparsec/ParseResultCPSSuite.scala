@@ -183,6 +183,48 @@ trait ParseResultCPSProg
     (first orElse second) toOption
   }
 
+  /**
+   * code similar to an alternating combinator in parser combinators,
+   * followed by another parser, but manually inlined
+   * IMPORTANT: the code for `second` should only be generated once,
+   * i.e. there should be a join point after `first`
+   * The code in the `flatMapWithNext` call should also be generated only once
+   */
+  def orElseSeq(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+    val tmp = StringReader(in)
+    val first: ParseResultCPS[Char] = conditional(
+      tmp.atEnd,
+      Failure(tmp),
+      conditional(
+        tmp.first == unit('a'),
+        Success(tmp.first, tmp.rest),
+        Failure(tmp)
+      )
+    )
+
+    val second: ParseResultCPS[Char] = conditional(
+      tmp.atEnd,
+      Failure(tmp),
+      conditional(
+        tmp.first == unit('b'),
+        Success(tmp.first, tmp.rest),
+        Failure(tmp)
+      )
+    )
+
+    (first orElse second) flatMapWithNext { (_, rdr) =>
+      conditional[Char](
+        rdr.atEnd,
+        Failure(rdr),
+        conditional(
+          rdr.first == unit('c'),
+          Success(rdr.first, rdr.rest),
+          Failure(rdr)
+        )
+      )
+    } toOption
+  }
+
 /*
   def filtersome(in: Rep[Int]): Rep[Option[Int]] = {
     val s: Rep[Option[Int]] = mkSome(in)
@@ -308,6 +350,16 @@ class ParseResultCPSSuite extends FileDiffSuite {
         val testcOrElseAlternation = compile(orElseAlternation)
         scala.Console.println(testcOrElseAlternation("a".toArray))
         scala.Console.println(testcOrElseAlternation("b".toArray))
+        codegen.reset
+
+        codegen.emitSource(orElseSeq _, "orElseSeq", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcOrElseSeq = compile(orElseSeq)
+        scala.Console.println(testcOrElseSeq("ac".toArray))
+        scala.Console.println(testcOrElseSeq("bc".toArray))
+        scala.Console.println(testcOrElseSeq("ab".toArray))
+        scala.Console.println(testcOrElseSeq("c".toArray))
         codegen.reset
 
       }

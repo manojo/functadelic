@@ -146,6 +146,7 @@ trait ParseResultCPS
       }
     }
 
+/*
     override def orElse(that: ParseResultCPS[T]) = new ParseResultCPS[T] {
       def apply[X: Manifest](
         success: (Rep[T], Rep[Input]) => Rep[X],
@@ -161,6 +162,18 @@ trait ParseResultCPS
         if (isEmpty) that.apply(success, failure) else success(value, rdr)
 
       }
+    }
+*/
+
+    override def orElse(that: ParseResultCPS[T]): ParseResultCPS[T] = {
+      var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+
+      self.apply(
+        (x, next) => { isEmpty = unit(false); value = x; rdr = next },
+        next => rdr = next
+      )
+
+      conditional(isEmpty, that, ParseResultCPS.Success(value, rdr))
     }
   }
 
