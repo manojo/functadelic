@@ -13,17 +13,35 @@ trait CharParsers
     with CharOps
     with StringReaderOps {
 
+  import ParseResultCPS._
+
+  /**
+   * Some primitive parsers
+   */
+
   /**
    * The elementary parser. Accepts a character if it passes
    * the given predicate
+   * NOTE: we should technically be able to write
+   * !in.atEnd && p(in.first)
+   * Because we are using a staged struct representation though,
+   * litereally writing that would generate code from computing
+   * in.first *before* evaluating the atEnd part, and this can
+   * cause issues (IndexOutOfBounds etc.)
    */
-  def acceptIf(p: Rep[Elem] => Rep[Boolean]) = Parser[Char] { in =>
-    if (in.atEnd) Failure[Char](in)
-    else if (p(in.first)) Success(in.first, in.rest)
-    else Failure[Char](in)
+  def acceptIf(p: Rep[Elem] => Rep[Boolean]) = Parser[Elem] { in =>
+    conditional(
+      in.atEnd,
+      Failure[Elem](in),
+      conditional(
+        p(in.first),
+        Success(in.first, in.rest),
+        Failure[Elem](in)
+      )
+    )
   }
 
-  def accept(e: Rep[Elem]): Parser[Char] = acceptIf(_ == e)
+  def accept(e: Rep[Elem]): Parser[Elem] = acceptIf(_ == e)
 
   /**
    * elementary recognisers. Parse a character, simply return
@@ -32,9 +50,15 @@ trait CharParsers
   def acceptIdx(e: Rep[Elem]): Parser[Int] = acceptIfIdx(_ == e)
 
   def acceptIfIdx(p: Rep[Elem] => Rep[Boolean]) = Parser[Int] { in =>
-    if (in.atEnd) Failure[Int](in)
-    else if (p(in.first)) Success(in.offset, in.rest)
-    else Failure[Int](in)
+    conditional(
+      in.atEnd,
+      Failure[Int](in),
+      conditional(
+        p(in.first),
+        Success(in.offset, in.rest),
+        Failure[Int](in)
+      )
+    )
   }
 
   def isLetter(c: Rep[Char]): Rep[Boolean] =

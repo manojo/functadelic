@@ -33,3 +33,7 @@ Here are some basic LMS conventions I use when writing LMS code:
     use one, create an `Opt` trait for your `Ops` which mixes the relevant
     `Opt` traits. `Fat` optimizations should not be mixed in with the classical
     `Opt` traits, but used independently.
+  * If I use a certain feature (ex Option) in my current trait, I mix it in
+    explicitly, even if some other trait I'm using has it already. Serves for
+    documentation purposes. Of course, for really trivial stuff it's not necessary
+    to do so.

@@ -8,25 +8,26 @@ import lms.util._
  * An implementation of staged parser combinators
  * based on a previous implementation in
  * https://github.com/manojo/experiments/
+ *
+ * And now it changes! We use CPS encodings of a ParseResult now
  */
 
 trait StagedParsers
-    extends ParseResultOps
+    extends ParseResultCPS
     with OptionOps
     with ReaderOps
     with MyTupleOps
     with IfThenElse {
 
-  abstract class Parser[+T: Manifest]
-      extends (Rep[Input] => Rep[ParseResult[T]]) {
+  /** We make a parser invariant at the moment*/
+  abstract class Parser[T: Manifest]
+      extends (Rep[Input] => ParseResultCPS[T]) {
 
     /**
      * The flatMap operation
      */
     private def flatMap[U: Manifest](f: Rep[T] => Parser[U]) = Parser[U] { input =>
-      val tmp = this(input)
-      if (tmp.isEmpty) Failure[U](input)
-      else f(tmp.get).apply(tmp.next)
+      this(input) flatMapWithNext { (res, rdr) => f(res)(rdr) }
     }
 
     def >>[U: Manifest](f: Rep[T] => Parser[U]) = flatMap(f)
@@ -59,13 +60,11 @@ trait StagedParsers
 
     /**
      * alternation, aka the beast
+     * Note: actually, it's not much of a beast nomore!
      */
-    def or [U >: T: Manifest](that: Parser[U]) = Parser[U] { input =>
-      val tmp = this(input)
-      if (tmp.isEmpty) that(input)
-      else tmp
+    def | (that: Parser[T]) = Parser[T] { input =>
+      this(input) orElse that(input)
     }
-
   }
 
   /**
@@ -76,30 +75,28 @@ trait StagedParsers
     cond: Rep[Boolean],
     thenp: => Parser[A],
     elsep: => Parser[A]
-  ): Parser[A] = Parser[A] { input => if (cond) thenp(input) else elsep(input) }
+  ): Parser[A] = Parser[A] { input => conditional(cond, thenp(input), elsep(input)) }
 
   /**
    * companion object for apply function
    */
   object Parser {
-    def apply[T: Manifest](f: Rep[Input] => Rep[ParseResult[T]]) = new Parser[T] {
+    def apply[T: Manifest](f: Rep[Input] => ParseResultCPS[T]) = new Parser[T] {
       def apply(in: Rep[Input]) = f(in)
     }
 
     /**
      * run a parser, and return an `Option`
      */
-    def phrase[T: Manifest](p: => Parser[T], in: Rep[Input]): Rep[Option[T]] = {
-      val presult = p(in)
-      val res = if (presult.isEmpty) none[T]() else Some(presult.get)
-      res
-    }
+    def phrase[T: Manifest](p: => Parser[T], in: Rep[Input]): Rep[Option[T]] =
+      p(in).toOption
   }
 }
 
+
 trait StagedParsersExp
     extends StagedParsers
-    with ParseResultOpsExp
+    with ParseResultCPSExp
     with OptionOpsExp
     with MyTupleOpsExp
     with IfThenElseExp
@@ -116,7 +113,7 @@ trait StagedParsersExpOpt
     with EqualExpOpt
 
 trait ScalaGenStagedParsers
-    extends ScalaGenParseResultOps
+    extends ScalaGenParseResultCPS
     with ScalaGenOptionOps
     with ScalaGenMyTupleOps
     with ScalaGenIfThenElse

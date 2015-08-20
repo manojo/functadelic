@@ -103,7 +103,15 @@ trait CharParsersProg extends CharParsers with Equal {
    * a basic or parser: a | b
    */
   def orParser(in: Rep[Array[Char]]): Rep[Option[Char]] = {
-    val parser = accept(unit('a')) or accept(unit('b'))
+    val parser = accept(unit('a')) | accept(unit('b'))
+    phrase(parser, StringReader(in))
+  }
+
+  /**
+   * (a | b) ~> c
+   */
+  def orSeq(in: Rep[Array[Char]]): Rep[Option[Char]] = {
+    val parser = (accept(unit('a')) | accept(unit('b'))) ~> accept(unit('c'))
     phrase(parser, StringReader(in))
   }
 
@@ -180,16 +188,18 @@ class CharParsersSuite extends FileDiffSuite {
        * Note: We are also using our own version of IfThenElseGenFat
        * to generate variables instead of tuples and boundary ends
        * of conditional expressions.
+       * Note Update: Now we just use our own CPS encoding for ParseResult
+       *
        */
       new CharParsersProg
           with CharParsersExp
           with IfThenElseExpOpt
-          with StructFatExpOptCommon
+          with MyStructExpOptCommon
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenCharParsers
-            with ScalaGenFatStruct
-            with MyScalaGenIfThenElseFat {
+            with ScalaGenStruct
+            with ScalaGenIfThenElse {
           val IR: self.type = self
         }
 
@@ -268,6 +278,26 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcFlatMapParser("cb".toArray))
         scala.Console.println(testcFlatMapParser("cd".toArray))
         codegen.reset
+
+        codegen.emitSource(orParser _, "orParser", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcOrParser = compile(orParser)
+        scala.Console.println(testcOrParser("a".toArray))
+        scala.Console.println(testcOrParser("b".toArray))
+        scala.Console.println(testcOrParser("c".toArray))
+        codegen.reset
+
+        codegen.emitSource(orSeq _, "orSeq", new java.io.PrintWriter(System.out))
+        codegen.reset
+
+        val testcOrSeq = compile(orSeq)
+        scala.Console.println(testcOrSeq("ac".toArray))
+        scala.Console.println(testcOrSeq("bc".toArray))
+        scala.Console.println(testcOrSeq("c".toArray))
+        scala.Console.println(testcOrSeq("ba".toArray))
+        codegen.reset
+
 
 /*
         codegen.emitSource(test9 _, "test9", new java.io.PrintWriter(System.out))
@@ -348,6 +378,7 @@ class CharParsersSuite extends FileDiffSuite {
     }
   }
 
+/*
   def testOrParsers = {
     withOutFile(prefix + "or-parser") {
       /**
@@ -390,4 +421,5 @@ class CharParsersSuite extends FileDiffSuite {
       assertFileEqualsCheck(prefix + "or-parser")
     }
   }
+  */
 }
