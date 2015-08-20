@@ -203,22 +203,20 @@ class ParseResultCPSSuite extends FileDiffSuite {
   def testParseResultCPS = {
     withOutFile(prefix + "parseresultcps") {
       new ParseResultCPSProg
+          with ParseResultCPSExpOpt
           with OrderingOpsExpOpt
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
-          with OptionOpsExp
           with StringReaderOpsExpOpt
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenBase
-          with ScalaGenIfThenElse
-          with ScalaGenBooleanOps
+          with ScalaGenParseResultCPS
           with ScalaGenOrderingOps
           with ScalaGenEqual
           with ScalaGenVariables
           with ScalaGenPrimitiveOps
           with ScalaGenNumericOps
-          with ScalaGenOptionOps
           with ScalaGenStringReaderOps { val IR: self.type = self }
 
         codegen.emitSource2(singleConditional _, "singleConditional", new java.io.PrintWriter(System.out))

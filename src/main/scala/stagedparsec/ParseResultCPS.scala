@@ -193,3 +193,23 @@ trait ParseResultCPS
     elsep: => ParseResultCPS[T]
   ): ParseResultCPS[T] = ParseResultCPSCond(cond, thenp, elsep)
 }
+
+trait ParseResultCPSExp
+  extends ParseResultCPS
+  with IfThenElseExp
+  with BooleanOpsExp
+  with OptionOpsExp { self: ReaderOps => }
+
+trait ParseResultCPSExpOpt
+  extends ParseResultCPSExp
+  with IfThenElseExpOpt
+  with BooleanOpsExpOpt
+  with OptionOpsExpOpt { self: ReaderOps => }
+
+trait ScalaGenParseResultCPS
+    extends ScalaGenBase
+    with ScalaGenIfThenElse
+    with ScalaGenBooleanOps
+    with ScalaGenOptionOps {
+  val IR: ParseResultCPSExp
+}
