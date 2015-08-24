@@ -4,8 +4,6 @@ import lms._
 import scala.lms.common._
 import scala.lms.internal.GenericCodegen
 
-import scala.language.implicitConversions
-
 /**
  * A trait that specializes readers
  * to use a struct-like representation

@@ -1,7 +1,6 @@
 package stagedparsec
 
 import scala.lms.common._
-import scala.language.implicitConversions
 
 /**
  * an implementation of `Reader` as staged struct

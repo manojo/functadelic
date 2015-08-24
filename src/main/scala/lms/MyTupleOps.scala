@@ -11,7 +11,6 @@ import java.io.PrintWriter
  */
 
 trait MyTupleOps extends Base {
-  import scala.language.implicitConversions
   implicit def make_tuple2[A: Typ, B: Typ](t: (Rep[A], Rep[B]))(implicit pos: SourceContext): Rep[(A, B)]
   implicit def make_tuple3[A: Typ, B: Typ, C: Typ](t: (Rep[A], Rep[B], Rep[C]))(implicit pos: SourceContext): Rep[(A, B, C)]
   implicit def make_tuple4[A: Typ, B: Typ, C: Typ, D: Typ](t: (Rep[A], Rep[B], Rep[C], Rep[D]))(implicit pos: SourceContext): Rep[(A, B, C, D)]
@@ -46,7 +45,6 @@ trait MyTupleOps extends Base {
 }
 
 trait MyTupleOpsExp extends MyTupleOps with StructExpOpt {
-  import scala.language.implicitConversions
   implicit def make_tuple2[A: Typ, B: Typ](t: (Exp[A], Exp[B]))(implicit pos: SourceContext): Exp[(A, B)] = struct(classTag[(A, B)], "_1" -> t._1, "_2" -> t._2)
   implicit def make_tuple3[A: Typ, B: Typ, C: Typ](t: (Exp[A], Exp[B], Exp[C]))(implicit pos: SourceContext): Exp[(A, B, C)] = struct(classTag[(A, B, C)], "_1" -> t._1, "_2" -> t._2, "_3" -> t._3)
   implicit def make_tuple4[A: Typ, B: Typ, C: Typ, D: Typ](t: (Exp[A], Exp[B], Exp[C], Exp[D]))(implicit pos: SourceContext): Exp[(A, B, C, D)] = struct(classTag[(A, B, C, D)], "_1" -> t._1, "_2" -> t._2, "_3" -> t._3, "_4" -> t._4)

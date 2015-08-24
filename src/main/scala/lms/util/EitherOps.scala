@@ -19,8 +19,6 @@ trait EitherOps
     with Equal
     with ZeroVal {
 
-  import scala.language.implicitConversions
-
   /**
    * implicits for creating Type Manifests
    * new boilerplate after the Manifest -> Typ change
@@ -66,8 +64,6 @@ trait EitherOpsExp
     with CastingOpsExp
     with EqualExp
     with ZeroValExp {
-
-  import scala.language.implicitConversions
 
   /**
    * implicits for creating Type Manifests

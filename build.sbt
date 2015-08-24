@@ -19,7 +19,9 @@ scalacOptions ++= Seq(
   "-P:continuations:enable",
   //"-optimize",
   "-deprecation",
-  "-feature"
+  "-feature",
+  "-language:higherKinds",
+  "-language:implicitConversions"
   //"-Yinline-warnings"
 )
 

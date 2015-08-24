@@ -8,7 +8,8 @@ import scala.tools.nsc.util._
 import scala.tools.nsc.reporters._
 import scala.tools.nsc.io._
 
-import scala.tools.nsc.interpreter.AbstractFileClassLoader
+import scala.reflect.internal.util.AbstractFileClassLoader
+//import scala.tools.nsc.interpreter.AbstractFileClassLoader
 
 trait MyScalaCompile extends ScalaCompile {
   override val codegen: ScalaCodegen { val IR: MyScalaCompile.this.type }

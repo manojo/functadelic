@@ -5,7 +5,6 @@ import lms._
 import scala.lms.common._
 import scala.lms.internal.GenericCodegen
 import scala.reflect.SourceContext
-import scala.language.implicitConversions
 
 import java.io.PrintWriter
 
@@ -25,7 +24,6 @@ trait EitherCPSOps
     with BooleanOps
     with LiftVariables
     with ZeroVal {
-  import scala.language.implicitConversions
 
   /**
    * A CPS encoding of Either: Either is a construct that takes a value

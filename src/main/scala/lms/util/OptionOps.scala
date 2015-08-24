@@ -18,7 +18,6 @@ trait OptionOps
     with BooleanOps
     with Equal
     with ZeroVal {
-  import scala.language.implicitConversions
 
   /**
    * implicits for creating Type Manifests
@@ -64,8 +63,6 @@ trait OptionOpsExp
     with EqualExp
     with CastingOpsExp
     with ZeroValExp {
-
-  import scala.language.implicitConversions
 
   /**
    * implicits for creating Type Manifests
