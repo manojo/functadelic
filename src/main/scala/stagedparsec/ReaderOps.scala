@@ -1,6 +1,6 @@
 package stagedparsec
 
-import scala.virtualization.lms.common._
+import scala.lms.common._
 import scala.language.implicitConversions
 
 /**
@@ -24,8 +24,10 @@ trait ReaderOps extends Base {
   type Elem
   type Input <: Reader[Elem]
 
-  //need manifests for later
-  implicit val mInput: Manifest[Input]
+  /**
+   * Typs
+   */
+  implicit def reader_typ: Typ[Input]
 
   /**
    * It would be ideal to give a specification of the operations
@@ -41,5 +43,4 @@ trait ReaderOps extends Base {
    *    * def atEnd: Rep[Boolean]
    *    * def offset: Rep[Int]
    */
-
 }

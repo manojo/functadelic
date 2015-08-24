@@ -1,8 +1,8 @@
 package lms.util
 
-import scala.virtualization.lms.common._
+import scala.lms.common._
 import scala.reflect.SourceContext
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.internal.GenericCodegen
 import lms._
 
 import java.io.PrintWriter
@@ -150,6 +150,8 @@ class OptionCPSSuite extends FileDiffSuite {
           with OrderingOpsExpOpt
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
+          /** this trait should be mixed in higher up */ with ArrayOpsExp
+          /** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenBase

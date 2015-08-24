@@ -2,8 +2,8 @@ package lms.util
 
 import lms._
 
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.common._
+import scala.lms.internal.GenericCodegen
 import scala.reflect.SourceContext
 import scala.language.implicitConversions
 
@@ -23,7 +23,8 @@ trait EitherCPSOps
     extends Base
     with IfThenElse
     with BooleanOps
-    with LiftVariables {
+    with LiftVariables
+    with ZeroVal {
   import scala.language.implicitConversions
 
   /**
@@ -32,14 +33,14 @@ trait EitherCPSOps
    * This implementation is not directly used here, but is wrapped inside
    * and `EitherWrapper`, so that it's accessible in the `Exp` world.
    */
-  abstract class EitherCPS[A: Manifest, B: Manifest] { self =>
+  abstract class EitherCPS[A: Typ, B: Typ] { self =>
 
-    def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X]
+    def apply[X: Typ](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X]
 
-    def map[C: Manifest, D: Manifest](lmap: Rep[A] => Rep[C], rmap: Rep[B] => Rep[D])
+    def map[C: Typ, D: Typ](lmap: Rep[A] => Rep[C], rmap: Rep[B] => Rep[D])
       = new EitherCPS[C, D] {
 
-        def apply[X: Manifest](lf: Rep[C] => Rep[X], rf: Rep[D] => Rep[X]) = self.apply(
+        def apply[X: Typ](lf: Rep[C] => Rep[X], rf: Rep[D] => Rep[X]) = self.apply(
           a => lf(lmap(a)),
           b => rf(rmap(b))
         )
@@ -51,18 +52,18 @@ trait EitherCPSOps
    */
   object EitherCPS {
 
-    def LeftCPS[A: Manifest, B: Manifest](a: Rep[A]) = new EitherCPS[A, B] {
-      def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
+    def LeftCPS[A: Typ, B: Typ](a: Rep[A]) = new EitherCPS[A, B] {
+      def apply[X: Typ](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
         lf(a)
     }
 
-    def RightCPS[A: Manifest, B: Manifest](b: Rep[B]) = new EitherCPS[A, B] {
-      def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
+    def RightCPS[A: Typ, B: Typ](b: Rep[B]) = new EitherCPS[A, B] {
+      def apply[X: Typ](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) =
         rf(b)
     }
 
 
-    def conditional[A: Manifest, B: Manifest](
+    def conditional[A: Typ, B: Typ](
       cond: Rep[Boolean],
       thenp: => EitherCPS[A, B],
       elsep: => EitherCPS[A, B]
@@ -70,11 +71,11 @@ trait EitherCPSOps
                rightValue: Option[Var[B]]): EitherCPS[A, B] = {
 
       new EitherCPS[A, B] {
-        def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) = {
+        def apply[X: Typ](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]) = {
 
           import lms.ZeroVal
 
-          var l = ZeroVal[A]; var r = ZeroVal[B]
+          var l = zeroVal[A]; var r = zeroVal[B]
 
           var isLeft = true
           val lCont = (a: Rep[A]) => {
@@ -114,42 +115,42 @@ trait EitherCPSOps
   /**
    * Pimping my ride, so I can write DSL style code at the interface
    */
-  implicit class EitherCPSCls[A: Manifest, B: Manifest](e: Rep[EitherCPS[A, B]]) {
-    def map[C: Manifest, D: Manifest](
+  implicit class EitherCPSCls[A: Typ, B: Typ](e: Rep[EitherCPS[A, B]]) {
+    def map[C: Typ, D: Typ](
       lmap: Rep[A] => Rep[C],
       rmap: Rep[B] => Rep[D]
     ): Rep[EitherCPS[C, D]] = eitherCPS_map(e, lmap, rmap)
 
-    def apply[X: Manifest](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X] =
+    def apply[X: Typ](lf: Rep[A] => Rep[X], rf: Rep[B] => Rep[X]): Rep[X] =
       either_apply(e, lf, rf)
   }
 
   /**
    * interface-level functions
    */
-  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherCPS[A, B]]
-  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherCPS[A, B]]
+  def mkLeft[A: Typ, B: Typ](a: Rep[A]): Rep[EitherCPS[A, B]]
+  def mkRight[A: Typ, B: Typ](b: Rep[B]): Rep[EitherCPS[A, B]]
 
-  def eitherCPS_map[A: Manifest, B: Manifest, C: Manifest, D: Manifest](
+  def eitherCPS_map[A: Typ, B: Typ, C: Typ, D: Typ](
     e: Rep[EitherCPS[A, B]],
     lmap: Rep[A] => Rep[C],
     rmap: Rep[B] => Rep[D]
   ): Rep[EitherCPS[C, D]]
 
-  def either_apply[A: Manifest, B: Manifest, X: Manifest](
+  def either_apply[A: Typ, B: Typ, X: Typ](
     e: Rep[EitherCPS[A, B]],
     lf: Rep[A] => Rep[X],
     rf: Rep[B] => Rep[X]
   ): Rep[X]
 
-  def either_conditional[A: Manifest, B: Manifest](
+  def either_conditional[A: Typ, B: Typ](
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
   )(implicit leftValue: Option[Var[A]],
              rightValue: Option[Var[B]]): Rep[EitherCPS[A, B]]
 
-  def __ifThenElse[A: Manifest, B: Manifest](
+  def __ifThenElse[A: Typ, B: Typ](
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]
@@ -162,19 +163,31 @@ trait EitherCPSOpsExp
     with BaseExp
     with IfThenElseExp
     with BooleanOpsExp
-    with EqualExp {
+    with EqualExp
+    with ZeroValExp
+    /** this trait should be mixed in higher up */ with PrimitiveOpsExp {
 
   import EitherCPS._
+
+  /**
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
+   */
+  implicit def eithercps_typ[A: Typ, B: Typ]: Typ[EitherCPS[A, B]] = {
+    implicit val ManifestTyp(mA) = typ[A]
+    implicit val ManifestTyp(mB) = typ[B]
+    manifestTyp
+  }
 
   /**
    * The wrapper acts as a Rep[EitherCPS[A, B]]
    */
   case class EitherWrapper[A, B](e: EitherCPS[A, B]) extends Def[EitherCPS[A, B]]
 
-  def mkLeft[A: Manifest, B: Manifest](a: Rep[A]): Rep[EitherCPS[A, B]] =
+  def mkLeft[A: Typ, B: Typ](a: Rep[A]): Rep[EitherCPS[A, B]] =
     EitherWrapper(LeftCPS[A, B](a))
 
-  def mkRight[A: Manifest, B: Manifest](b: Rep[B]): Rep[EitherCPS[A, B]] =
+  def mkRight[A: Typ, B: Typ](b: Rep[B]): Rep[EitherCPS[A, B]] =
     EitherWrapper(RightCPS[A, B](b))
 
   /**
@@ -183,7 +196,7 @@ trait EitherCPSOpsExp
    * if that happens, we are probably doing something wrong-ish, so it's kind
    * of a sanity check
    */
-  def eitherCPS_map[A: Manifest, B: Manifest, C: Manifest, D: Manifest](
+  def eitherCPS_map[A: Typ, B: Typ, C: Typ, D: Typ](
     e: Rep[EitherCPS[A, B]],
     lmap: Rep[A] => Rep[C],
     rmap: Rep[B] => Rep[D]
@@ -191,7 +204,7 @@ trait EitherCPSOpsExp
     case Def(EitherWrapper(sth)) => EitherWrapper(sth map (lmap, rmap))
   }
 
-  def either_apply[A: Manifest, B: Manifest, X: Manifest](
+  def either_apply[A: Typ, B: Typ, X: Typ](
     e: Rep[EitherCPS[A, B]],
     lf: Rep[A] => Rep[X],
     rf: Rep[B] => Rep[X]
@@ -207,7 +220,7 @@ trait EitherCPSOpsExp
    * evaluating `thenp` and `elsep` here, and they are simple expressions
    * If they are blocks, the pattern match will fail.
    */
-  def either_conditional[A: Manifest, B: Manifest](
+  def either_conditional[A: Typ, B: Typ](
     cond: Rep[Boolean],
     thenp: => Rep[EitherCPS[A, B]],
     elsep: => Rep[EitherCPS[A, B]]

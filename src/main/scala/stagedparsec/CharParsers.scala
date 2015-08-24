@@ -1,6 +1,6 @@
 package stagedparsec
 
-import scala.virtualization.lms.common._
+import scala.lms.common._
 import lms._
 import lms.util._
 

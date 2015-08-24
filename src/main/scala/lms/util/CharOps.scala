@@ -1,7 +1,7 @@
 package lms.util
 
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.util.OverloadHack
+import scala.lms.common._
+import scala.lms.util.OverloadHack
 
 import java.io.PrintWriter
 import scala.reflect.SourceContext

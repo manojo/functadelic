@@ -1,6 +1,6 @@
 package lms
 
-import scala.virtualization.lms.internal._
+import scala.lms.internal._
 import java.io._
 
 import scala.tools.nsc._
@@ -38,7 +38,7 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   override def compile[A, R](f: Exp[A] => Exp[R])
-                       (implicit mA: Manifest[A], mR: Manifest[R]): A => R = {
+                       (implicit mA: Typ[A], mR: Typ[R]): A => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource(f, className, new PrintWriter(source))
@@ -51,7 +51,7 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   def compile2[A, B, R](f: (Exp[A], Exp[B]) => Exp[R])
-                       (implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
+                       (implicit mA: Typ[A], mB: Typ[B], mR: Typ[R]): (A, B) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource2(f, className, new PrintWriter(source))
@@ -64,7 +64,7 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   def compile2s[A, B, R](f: (Exp[A], Exp[B]) => Exp[R], source: StringWriter)
-                        (implicit mA: Manifest[A], mB: Manifest[B], mR: Manifest[R]): (A, B) => R = {
+                        (implicit mA: Typ[A], mB: Typ[B], mR: Typ[R]): (A, B) => R = {
 
     val className = freshClass
     //val source = new StringWriter()
@@ -73,10 +73,10 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   def compile3[A, B, C, R](f: (Exp[A], Exp[B], Exp[C]) => Exp[R])
-                          (implicit mA: Manifest[A],
-                           mB: Manifest[B],
-                           mC: Manifest[C],
-                           mR: Manifest[R]): (A, B, C) => R = {
+                          (implicit mA: Typ[A],
+                           mB: Typ[B],
+                           mC: Typ[C],
+                           mR: Typ[R]): (A, B, C) => R = {
 
     val className = freshClass
     val source = new StringWriter()
@@ -85,11 +85,11 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   def compile4[A, B, C, D, R](f: (Exp[A], Exp[B], Exp[C], Exp[D]) => Exp[R])
-                             (implicit mA: Manifest[A],
-                              mB: Manifest[B],
-                              mC: Manifest[C],
-                              mD: Manifest[D],
-                              mR: Manifest[R]): (A, B, C, D) => R = {
+                             (implicit mA: Typ[A],
+                              mB: Typ[B],
+                              mC: Typ[C],
+                              mD: Typ[D],
+                              mR: Typ[R]): (A, B, C, D) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource4(f, className, new PrintWriter(source))
@@ -97,12 +97,12 @@ trait MyScalaCompile extends ScalaCompile {
   }
 
   def compile5[A, B, C, D, E, R](f: (Exp[A], Exp[B], Exp[C], Exp[D], Exp[E]) => Exp[R])
-                                (implicit mA: Manifest[A],
-                                 mB: Manifest[B],
-                                 mC: Manifest[C],
-                                 mD: Manifest[D],
-                                 mE: Manifest[E],
-                                 mR: Manifest[R]): (A, B, C, D, E) => R = {
+                                (implicit mA: Typ[A],
+                                 mB: Typ[B],
+                                 mC: Typ[C],
+                                 mD: Typ[D],
+                                 mE: Typ[E],
+                                 mR: Typ[R]): (A, B, C, D, E) => R = {
     val className = freshClass
     val source = new StringWriter()
     val staticData = codegen.emitSource5(f, className, new PrintWriter(source))

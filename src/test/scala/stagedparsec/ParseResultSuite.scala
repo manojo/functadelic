@@ -2,8 +2,8 @@ package stagedparsec
 
 import lms._
 import lms.util._
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.Effects
+import scala.lms.common._
+import scala.lms.internal.Effects
 
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -90,13 +90,14 @@ class ParseResultSuite extends FileDiffSuite {
           with StringReaderOpsExp
           with OptionOpsExp
           with StructFatExpOptCommon
+          /** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenParseResultOps
             with ScalaGenStringReaderOps
             with ScalaGenOptionOps
             with ScalaGenFatStruct
-            with MyScalaGenIfThenElseFat {
+            with ScalaGenIfThenElseFat {
           val IR: self.type = self
         }
 

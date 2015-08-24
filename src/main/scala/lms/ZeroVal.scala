@@ -1,5 +1,8 @@
 package lms
 
+import scala.lms.common._
+import scala.lms.internal._
+
 /**
  * @author Sandro Stucki
  *
@@ -9,7 +12,7 @@ package lms
  * "zero" value for a given type `T` like so:
  *
  * {{{
- *   val zero = ZeroVal[T]
+ *   val zero = zeroVal[T]
  * }}}
  *
  * The return value can be used e.g. to initialize variables.  This is
@@ -17,8 +20,16 @@ package lms
  * way, e.g. when initializing variables or fields of structs.  The
  * special treatment of value types ensures the correct behavior
  * e.g. when generating a string literal from a constant symbol.
+ *
+ * Update: implementation changed after the `Manifest` -> `Typ` migration
+ * As `Typ` is defined in `Expressions`, `ZeroVal` needs to be part of the cake
  */
-object ZeroVal {
+
+trait ZeroVal extends Base {
+  def zeroVal[A: Typ]: A
+}
+
+trait ZeroValExp extends ZeroVal with Expressions {
 
   val BooleanC = classOf[Boolean]
   val ByteC = classOf[Byte]
@@ -30,8 +41,8 @@ object ZeroVal {
   val FloatC = classOf[Float]
   val UnitC = classOf[Unit]
 
-  def apply[A: Manifest]: A = {
-    val z: Any = implicitly[Manifest[A]].runtimeClass match {
+  def zeroVal[A: Typ]: A = {
+    val z: Any = typ[A].runtimeClass match {
       case ByteC    => 0.toByte
       case CharC    => 0.toChar
       case IntC     => 0

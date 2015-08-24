@@ -4,10 +4,12 @@ scalaVersion := "2.11.2"
 
 scalaOrganization := "org.scala-lang.virtualized"
 
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 libraryDependencies ++= Seq(
-  "EPFL" %% "lms" % "0.3-SNAPSHOT",
   //"org.scala-lang" % "scala-actors" % "2.10.0", // for ScalaTest
   //scalaTest
+  "org.scala-lang.lms" %% "lms-core" % "1.0.0-SNAPSHOT",
   "org.scalatest" % "scalatest_2.11" % "2.2.2",
   "org.scala-lang.plugins" % "scala-continuations-library_2.11" % "1.0.2"
 )

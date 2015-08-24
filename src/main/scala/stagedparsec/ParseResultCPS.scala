@@ -3,8 +3,8 @@ package stagedparsec
 import lms._
 import lms.util._
 
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.common._
+import scala.lms.internal.GenericCodegen
 import scala.reflect.SourceContext
 
 import java.io.PrintWriter
@@ -19,7 +19,8 @@ trait ParseResultCPS
     with IfThenElse
     with BooleanOps
     with LiftVariables
-    with OptionOps { self: ReaderOps =>
+    with OptionOps
+    with ZeroVal { self: ReaderOps =>
 
   /**
    * CPS encoding for ParseResult
@@ -28,9 +29,9 @@ trait ParseResultCPS
    *  2. a next reader for a Failure
    * For now, the Reader remains a struct
    */
-  abstract class ParseResultCPS[T: Manifest] { self =>
+  abstract class ParseResultCPS[T: Typ] { self =>
 
-    def apply[X: Manifest](
+    def apply[X: Typ](
       success: (Rep[T], Rep[Input]) => Rep[X],
       failure: Rep[Input] => Rep[X]
     ): Rep[X]
@@ -38,8 +39,8 @@ trait ParseResultCPS
     /**
      * Usual suspect 1
      */
-    def map[U: Manifest](f: Rep[T] => Rep[U]) = new ParseResultCPS[U] {
-      def apply[X: Manifest](
+    def map[U: Typ](f: Rep[T] => Rep[U]) = new ParseResultCPS[U] {
+      def apply[X: Typ](
         success: (Rep[U], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = self.apply(
@@ -53,10 +54,10 @@ trait ParseResultCPS
      * resembles its namesake from the standard parser combinator library
      * @see https://github.com/scala/scala-parser-combinators/blob/master/src/main/scala/scala/util/parsing/combinator/Parsers.scala#L112
      */
-    def flatMapWithNext[U: Manifest](f: (Rep[T], Rep[Input]) => ParseResultCPS[U])
+    def flatMapWithNext[U: Typ](f: (Rep[T], Rep[Input]) => ParseResultCPS[U])
         = new ParseResultCPS[U] {
 
-      def apply[X: Manifest](
+      def apply[X: Typ](
         success: (Rep[U], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = self.apply(
@@ -71,7 +72,7 @@ trait ParseResultCPS
      * @see https://github.com/scala/scala-parser-combinators/blob/master/src/main/scala/scala/util/parsing/combinator/Parsers.scala#L116
      */
     def orElse(that: ParseResultCPS[T]) = new ParseResultCPS[T] {
-      def apply[X: Manifest](
+      def apply[X: Typ](
         success: (Rep[T], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = self.apply(
@@ -84,7 +85,7 @@ trait ParseResultCPS
     }
 
     def toOption: Rep[Option[T]] = {
-      var isEmpty = unit(true); var value = ZeroVal[T]
+      var isEmpty = unit(true); var value = zeroVal[T]
       self.apply(
         (t, _) => { isEmpty = unit(false); value = t },
         _ => unit(())
@@ -96,7 +97,7 @@ trait ParseResultCPS
   /**
    * A conditional variant of ParseResult
    */
-  case class ParseResultCPSCond[T: Manifest](
+  case class ParseResultCPSCond[T: Typ](
     cond: Rep[Boolean],
     t: ParseResultCPS[T],
     e: ParseResultCPS[T]
@@ -105,20 +106,20 @@ trait ParseResultCPS
     /**
      * naive apply function
      */
-    def apply[X: Manifest](
+    def apply[X: Typ](
       success: (Rep[T], Rep[Input]) => Rep[X],
       failure: Rep[Input] => Rep[X]
     ): Rep[X] = if (cond) t(success, failure) else e(success, failure)
 
 
-    override def map[U: Manifest](f: Rep[T] => Rep[U]) = new ParseResultCPS[U] {
-      def apply[X: Manifest](
+    override def map[U: Typ](f: Rep[T] => Rep[U]) = new ParseResultCPS[U] {
+      def apply[X: Typ](
         success: (Rep[U], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = {
-        var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+        var isEmpty = unit(true); var value = zeroVal[T]; var rdr = zeroVal[Input]
 
-        self.apply(
+        self.apply[Unit](
           (x, next) => { isEmpty = unit(false); value = x; rdr = next },
           next => rdr = next
         )
@@ -127,17 +128,17 @@ trait ParseResultCPS
       }
     }
 
-    override def flatMapWithNext[U: Manifest](f: (Rep[T], Rep[Input]) => ParseResultCPS[U])
+    override def flatMapWithNext[U: Typ](f: (Rep[T], Rep[Input]) => ParseResultCPS[U])
         = new ParseResultCPS[U] {
 
-      def apply[X: Manifest](
+      def apply[X: Typ](
         success: (Rep[U], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = {
 
-        var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+        var isEmpty = unit(true); var value = zeroVal[T]; var rdr = zeroVal[Input]
 
-        self.apply(
+        self.apply[Unit](
           (x, next) => { isEmpty = unit(false); value = x; rdr = next },
           next => rdr = next
         )
@@ -148,11 +149,11 @@ trait ParseResultCPS
 
 /*
     override def orElse(that: ParseResultCPS[T]) = new ParseResultCPS[T] {
-      def apply[X: Manifest](
+      def apply[X: Typ](
         success: (Rep[T], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
       ): Rep[X] = {
-        var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+        var isEmpty = unit(true); var value = zeroVal[T]; var rdr = zeroVal[Input]
 
         self.apply(
           (x, next) => { isEmpty = unit(false); value = x; rdr = next },
@@ -166,9 +167,9 @@ trait ParseResultCPS
 */
 
     override def orElse(that: ParseResultCPS[T]): ParseResultCPS[T] = {
-      var isEmpty = unit(true); var value = ZeroVal[T]; var rdr = ZeroVal[Input]
+      var isEmpty = unit(true); var value = zeroVal[T]; var rdr = zeroVal[Input]
 
-      self.apply(
+      self.apply[Unit](
         (x, next) => { isEmpty = unit(false); value = x; rdr = next },
         next => rdr = next
       )
@@ -182,15 +183,15 @@ trait ParseResultCPS
    * Companion object
    */
   object ParseResultCPS {
-    def Success[T: Manifest](t: Rep[T], next: Rep[Input]) = new ParseResultCPS[T] {
-      def apply[X: Manifest](
+    def Success[T: Typ](t: Rep[T], next: Rep[Input]) = new ParseResultCPS[T] {
+      def apply[X: Typ](
         success: (Rep[T], Rep[Input]) => Rep[X],
         failure: (Rep[Input]) => Rep[X]
       ): Rep[X] = success(t, next)
     }
 
-    def Failure[T: Manifest](next: Rep[Input]) = new ParseResultCPS[T] {
-      def apply[X: Manifest](
+    def Failure[T: Typ](next: Rep[Input]) = new ParseResultCPS[T] {
+      def apply[X: Typ](
         success: (Rep[T], Rep[Input]) => Rep[X],
         failure: (Rep[Input]) => Rep[X]
       ): Rep[X] = failure(next)
@@ -200,7 +201,7 @@ trait ParseResultCPS
   /**
    * Conditional expression
    */
-  def conditional[T: Manifest](
+  def conditional[T: Typ](
     cond: Rep[Boolean],
     thenp: => ParseResultCPS[T],
     elsep: => ParseResultCPS[T]
@@ -211,7 +212,8 @@ trait ParseResultCPSExp
   extends ParseResultCPS
   with IfThenElseExp
   with BooleanOpsExp
-  with OptionOpsExp { self: ReaderOps => }
+  with OptionOpsExp
+  with ZeroValExp { self: ReaderOps => }
 
 trait ParseResultCPSExpOpt
   extends ParseResultCPSExp

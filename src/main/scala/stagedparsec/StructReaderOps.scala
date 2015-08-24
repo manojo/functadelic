@@ -1,8 +1,8 @@
 package stagedparsec
 
 import lms._
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.common._
+import scala.lms.internal.GenericCodegen
 
 import scala.language.implicitConversions
 
@@ -40,6 +40,12 @@ trait StringReaderOps
 
   type Elem = Char
   type Input = StringReader
+
+  /**
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
+   */
+  //override implicit def reader_typ: Typ[StringReader]
 
   /**
    * Pimp my Library pattern, adding operations specific
@@ -81,18 +87,20 @@ trait StringReaderOpsExp
     with BooleanOpsExp {
 
   /**
-   * declaring mInput as implicit creates an NPE
-   * because it is somehow not initialized before
-   * accessed
+   * implicits for creating Type Manifests
+   * new boilerplate after the Manifest -> Typ change
    */
-  val mInput: Manifest[Input] = manifest[StringReader]
+  implicit def reader_typ: Typ[StringReader] = {
+    implicit val ManifestTyp(mT) = typ[Char]
+    manifestTyp
+  }
 
   /**
    * creating a string reader as a struct
    */
   def StringReader(input: Rep[Array[Char]], offset: Rep[Int] = unit(0)) = {
 
-    struct(classTag[StringReader](mInput),
+    struct(classTag[StringReader],
       "input" -> input,
       "offset" -> offset
     )
@@ -107,8 +115,9 @@ trait StringReaderOpsExp
 
 trait ReaderGenBase extends GenericCodegen with BaseGenStruct {
   val IR: StringReaderOpsExp
+  import IR._
 
-  override def remap[A](m: Manifest[A]) = {
+  override def remap[A](m: Typ[A]) = {
     m.erasure.getSimpleName match {
       case "StringReader" => IR.structName(m)
       case _ => super.remap(m)

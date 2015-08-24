@@ -1,8 +1,8 @@
 package stagedparsec
 
-import scala.virtualization.lms.common._
+import scala.lms.common._
 import scala.reflect.SourceContext
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.internal.GenericCodegen
 import lms._
 import lms.util._
 
@@ -250,6 +250,8 @@ class ParseResultCPSSuite extends FileDiffSuite {
           with PrimitiveOpsExpOpt
           with NumericOpsExpOpt
           with StringReaderOpsExpOpt
+          /** this trait should be mixed in higher up */ with ArrayOpsExp
+          /** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenBase

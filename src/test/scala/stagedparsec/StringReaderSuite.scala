@@ -1,8 +1,8 @@
 package stagedparsec
 
 import lms._
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.Effects
+import scala.lms.common._
+import scala.lms.internal.Effects
 
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -44,6 +44,7 @@ class StringReaderSuite extends FileDiffSuite {
       new StringReaderProg
         with StringReaderOpsExpOpt
         with MiscOpsExp
+        /** this trait should be mixed in higher up */ with SeqOpsExp
         with MyScalaCompile { self =>
 
         val codegen = new ScalaGenStringReaderOps with ScalaGenMiscOps { val IR: self.type = self }

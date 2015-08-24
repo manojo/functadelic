@@ -1,8 +1,8 @@
 package stagedparsec
 
 import lms._
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.Effects
+import scala.lms.common._
+import scala.lms.internal.Effects
 
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -194,7 +194,9 @@ class CharParsersSuite extends FileDiffSuite {
       new CharParsersProg
           with CharParsersExp
           with IfThenElseExpOpt
-          with MyStructExpOptCommon
+          with StructExpOptCommon
+          /** this trait should be mixed in higher up */ with ArrayOpsExp
+          /** this trait should be mixed in higher up */ with SeqOpsExp
           with MyScalaCompile { self =>
 
         val codegen = new ScalaGenCharParsers

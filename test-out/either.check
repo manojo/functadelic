@@ -3,10 +3,9 @@
 *******************************************/
 class eithermapleft extends ((Int)=>(EitherIntInt)) {
 def apply(x0:Int): EitherIntInt = {
-val x1 = null.asInstanceOf[Int]
-val x3 = x0 * 2
-val x4 = new EitherIntInt(x3,x1,true)
-x4
+val x2 = x0 * 2
+val x3 = new EitherIntInt(x2,0,true)
+x3
 }
 }
 /*****************************************
@@ -19,10 +18,9 @@ EitherIntInt(6,0,true)
 *******************************************/
 class eithermapright extends ((Int)=>(EitherIntInt)) {
 def apply(x0:Int): EitherIntInt = {
-val x1 = null.asInstanceOf[Int]
-val x3 = x0 * 3
-val x4 = new EitherIntInt(x1,x3,false)
-x4
+val x2 = x0 * 3
+val x3 = new EitherIntInt(0,x2,false)
+x3
 }
 }
 /*****************************************

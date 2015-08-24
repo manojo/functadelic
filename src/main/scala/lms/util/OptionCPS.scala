@@ -2,8 +2,8 @@ package lms.util
 
 import lms._
 
-import scala.virtualization.lms.common._
-import scala.virtualization.lms.internal.GenericCodegen
+import scala.lms.common._
+import scala.lms.internal.GenericCodegen
 import scala.reflect.SourceContext
 
 import java.io.PrintWriter
@@ -17,28 +17,29 @@ trait OptionCPS
     with IfThenElse
     with BooleanOps
     with LiftVariables
-    with OptionOps {
+    with OptionOps
+    with ZeroVal {
 
   /**
    * CPS encoding for Option
    * isDefined does not make sense for this encoding
    */
-  abstract class OptionCPS[T: Manifest] { self =>
+  abstract class OptionCPS[T: Typ] { self =>
 
-    def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X]
+    def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X]
 
-    def map[U: Manifest](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) =
+    def map[U: Typ](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) =
         self.apply(none, (t: Rep[T]) => some(f(t)))
     }
 
-    def flatMap[U: Manifest](f: Rep[T] => OptionCPS[U]) = new OptionCPS[U] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) =
+    def flatMap[U: Typ](f: Rep[T] => OptionCPS[U]) = new OptionCPS[U] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) =
         self.apply(none, (t: Rep[T]) => f(t).apply(none, some))
     }
 
     def filter(p: Rep[T] => Rep[Boolean]) = new OptionCPS[T] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) =
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) =
         self.apply(none, (t: Rep[T]) => if (p(t)) some(t) else none(()))
     }
 
@@ -46,7 +47,7 @@ trait OptionCPS
      * helper method that introduces vars and eventually yields a Rep[Option]
      */
     def toOption: Rep[Option[T]] = {
-      var isDefined = unit(false); var value = ZeroVal[T]
+      var isDefined = unit(false); var value = zeroVal[T]
       self.apply(
         (_: Rep[Unit]) => unit(()),
         x => { isDefined = unit(true); value = x }
@@ -59,7 +60,7 @@ trait OptionCPS
   /**
    * A node acting as a join point for OptionCPS
    */
-  case class OptionCPSCond[T: Manifest](
+  case class OptionCPSCond[T: Typ](
     cond: Rep[Boolean],
     t: OptionCPS[T],
     e: OptionCPS[T]
@@ -68,7 +69,7 @@ trait OptionCPS
     /**
      * naive apply function
      */
-    def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
+    def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
       if (cond) t(none, some) else e(none, some)
 
     /**
@@ -92,9 +93,9 @@ trait OptionCPS
      * either code style.
      */
 
-    override def map[U: Manifest](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
-        var isDefined = unit(false); var value = ZeroVal[T]
+    override def map[U: Typ](f: Rep[T] => Rep[U]) = new OptionCPS[U] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
+        var isDefined = unit(false); var value = zeroVal[T]
 
         self.apply(
           (_: Rep[Unit]) => unit(()),
@@ -104,9 +105,9 @@ trait OptionCPS
       }
     }
 
-    override def flatMap[U: Manifest](f: Rep[T] => OptionCPS[U]) = new OptionCPS[U] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
-        var isDefined = unit(false); var value = ZeroVal[T]
+    override def flatMap[U: Typ](f: Rep[T] => OptionCPS[U]) = new OptionCPS[U] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[U] => Rep[X]) = {
+        var isDefined = unit(false); var value = zeroVal[T]
 
         self.apply(
           (_: Rep[Unit]) => unit(()),
@@ -117,8 +118,8 @@ trait OptionCPS
     }
 
     override def filter(p: Rep[T] => Rep[Boolean]) = new OptionCPS[T] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) = {
-        var isDefined = unit(false); var value = ZeroVal[T]
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]) = {
+        var isDefined = unit(false); var value = zeroVal[T]
 
         self.apply(
           (_: Rep[Unit]) => unit(()),
@@ -134,13 +135,13 @@ trait OptionCPS
    * Companion object
    */
   object OptionCPS {
-    def Some[T: Manifest](t: Rep[T]) = new OptionCPS[T] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
+    def Some[T: Typ](t: Rep[T]) = new OptionCPS[T] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
         some(t)
     }
 
-    def None[T: Manifest] = new OptionCPS[T] {
-      def apply[X: Manifest](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
+    def None[T: Typ] = new OptionCPS[T] {
+      def apply[X: Typ](none: Rep[Unit] => Rep[X], some: Rep[T] => Rep[X]): Rep[X] =
         none(())
     }
 
@@ -149,7 +150,7 @@ trait OptionCPS
      * needs a different name than __ifThenElse because the latter requires
      * Rep `then` and `else` parameters
      */
-    def conditional[T: Manifest](
+    def conditional[T: Typ](
       cond: Rep[Boolean],
       thenp: => OptionCPS[T],
       elsep: => OptionCPS[T]

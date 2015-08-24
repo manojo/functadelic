@@ -1,13 +1,13 @@
 package lms
 
-import scala.virtualization.lms.common._
+import scala.lms.common._
 
-import scala.virtualization.lms.util.OverloadHack
-import scala.virtualization.lms.internal.{ GenericNestedCodegen, GenericFatCodegen }
-import scala.reflect.{ SourceContext, RefinedManifest }
+import scala.lms.util.OverloadHack
+import scala.lms.internal.{ GenericNestedCodegen, GenericFatCodegen }
+import scala.reflect.SourceContext
 
 import java.io.PrintWriter
-
+/*
 /**
  * Extra optimisations for IfThenElse. Based on code at https://github.com/manojo/experiments
  */
@@ -22,7 +22,7 @@ trait MyIfThenElseExpOpt
    */
   val map = new scala.collection.mutable.HashMap[Rep[Boolean], Boolean]
 
-  override def __ifThenElse[T: Manifest](cond: Rep[Boolean], thenp: => Rep[T], elsep: => Rep[T])
+  override def __ifThenElse[T: Typ](cond: Rep[Boolean], thenp: => Rep[T], elsep: => Rep[T])
                                         (implicit pos: SourceContext) = cond match {
     case Const(true) => thenp
     case Const(false) => elsep
@@ -52,7 +52,7 @@ trait MyIfThenElseExpOpt
       }
   }
 }
-
+*/
 
 /**
  * An extension to ScalaGenIfThenElseFat that generates
@@ -60,7 +60,7 @@ trait MyIfThenElseExpOpt
  * @author @sstucki
  * source: https://github.com/sstucki/virtualization-lms-core/blob/develop/src/common/IfThenElse.scala
  */
-trait MyScalaGenIfThenElseFat extends ScalaGenIfThenElseFat {
+/*trait MyScalaGenIfThenElseFat extends ScalaGenIfThenElseFat {
 
   import IR._
 
@@ -117,8 +117,8 @@ trait MyScalaGenIfThenElseFat extends ScalaGenIfThenElseFat {
    */
 
   override def emitForwardDef(sym: Sym[Any]): Unit = {
-    import lms.ZeroVal
-    def quotedZero[A: Manifest]: String = quote(Const(ZeroVal[A]))
+    def quotedZero[A: Typ]: String = quote(Const(ZeroVal[A]))
     stream.println("var " + quote(sym) + ": " + remap(sym.tp) + " = " + quotedZero(sym.tp))
   }
 }
+*/
