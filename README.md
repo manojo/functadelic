@@ -1,6 +1,8 @@
 functadelic
 ===========
 
+[![Build Status](https://travis-ci.org/manojo/functadelic.svg?branch=master)](https://travis-ci.org/manojo/functadelic)
+
 This repo contains code that I write/experiment with. The code is mostly
 tied to blogposts written [here](http://manojo.github.io).
 
