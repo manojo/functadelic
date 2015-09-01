@@ -40,12 +40,6 @@ trait StringReaderOps
   type Input = StringReader
 
   /**
-   * implicits for creating Type Manifests
-   * new boilerplate after the Manifest -> Typ change
-   */
-  //override implicit def reader_typ: Typ[StringReader]
-
-  /**
    * Pimp my Library pattern, adding operations specific
    * to StringReader: these operate on inputs which are Array[Char]
    */
