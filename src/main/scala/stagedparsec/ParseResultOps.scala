@@ -21,7 +21,7 @@ trait ParseResultOps
   /**
    * creating a type for use in generating structs
    */
-  abstract class ParseResult[+T: Typ]
+  abstract class ParseResult[T: Typ]
 
   /**
    * implicits for creating Type Manifests

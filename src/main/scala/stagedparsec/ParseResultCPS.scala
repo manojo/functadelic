@@ -71,7 +71,7 @@ trait ParseResultCPS
      * I (manojo) think `orElse` is a better name
      * @see https://github.com/scala/scala-parser-combinators/blob/master/src/main/scala/scala/util/parsing/combinator/Parsers.scala#L116
      */
-    def orElse(that: ParseResultCPS[T]) = new ParseResultCPS[T] {
+    def orElse(that: => ParseResultCPS[T]) = new ParseResultCPS[T] {
       def apply[X: Typ](
         success: (Rep[T], Rep[Input]) => Rep[X],
         failure: Rep[Input] => Rep[X]
@@ -166,7 +166,7 @@ trait ParseResultCPS
     }
 */
 
-    override def orElse(that: ParseResultCPS[T]): ParseResultCPS[T] = {
+    override def orElse(that: => ParseResultCPS[T]): ParseResultCPS[T] = {
       var isEmpty = unit(true); var value = zeroVal[T]; var rdr = zeroVal[Input]
 
       self.apply[Unit](

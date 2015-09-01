@@ -13,8 +13,6 @@ trait CharParsers
     with CharOps
     with StringReaderOps {
 
-  import ParseResultCPS._
-
   /**
    * Some primitive parsers
    */
@@ -25,18 +23,18 @@ trait CharParsers
    * NOTE: we should technically be able to write
    * !in.atEnd && p(in.first)
    * Because we are using a staged struct representation though,
-   * litereally writing that would generate code from computing
+   * literally writing that would generate code from computing
    * in.first *before* evaluating the atEnd part, and this can
    * cause issues (IndexOutOfBounds etc.)
    */
   def acceptIf(p: Rep[Elem] => Rep[Boolean]) = Parser[Elem] { in =>
     conditional(
       in.atEnd,
-      Failure[Elem](in),
+      ParseResultCPS.Failure[Elem](in),
       conditional(
         p(in.first),
-        Success(in.first, in.rest),
-        Failure[Elem](in)
+        ParseResultCPS.Success(in.first, in.rest),
+        ParseResultCPS.Failure[Elem](in)
       )
     )
   }
@@ -52,11 +50,11 @@ trait CharParsers
   def acceptIfIdx(p: Rep[Elem] => Rep[Boolean]) = Parser[Int] { in =>
     conditional(
       in.atEnd,
-      Failure[Int](in),
+      ParseResultCPS.Failure[Int](in),
       conditional(
         p(in.first),
-        Success(in.offset, in.rest),
-        Failure[Int](in)
+        ParseResultCPS.Success(in.offset, in.rest),
+        ParseResultCPS.Failure[Int](in)
       )
     )
   }

@@ -17,7 +17,8 @@ trait StagedParsers
     with OptionOps
     with ReaderOps
     with TupleOps
-    with IfThenElse {
+    with IfThenElse
+    with ParseResultOps {
 
   /** We make a parser invariant at the moment*/
   abstract class Parser[T: Typ]
@@ -35,7 +36,7 @@ trait StagedParsers
     /**
      * The concat operation
      */
-    def ~[U: Typ](that: Parser[U]): Parser[(T, U)] =
+    def ~[U: Typ](that: => Parser[U]): Parser[(T, U)] =
       for (l <- this; r <- that) yield make_tuple2(l, r)
 
     /**
@@ -62,8 +63,23 @@ trait StagedParsers
      * alternation, aka the beast
      * Note: actually, it's not much of a beast nomore!
      */
-    def | (that: Parser[T]) = Parser[T] { input =>
+    def | (that: => Parser[T]) = Parser[T] { input =>
       this(input) orElse that(input)
+    }
+
+    /**
+     * creates an explicit Rep[ParseResult] from running the parser
+     * This function is useful for creating join points at function boundaries,
+     * and typically handy for recurive parsers.
+     */
+    def toParseResult: Rep[Input] => Rep[ParseResult[T]] = (in: Rep[Input]) => {
+      var isEmpty = unit(true); var tmpRes = unit(zeroVal[T]); var nxt = in
+      this(in).apply(
+        (t, next) => { isEmpty = unit(false); tmpRes = t; nxt = next },
+        (next) => { nxt = next }
+      )
+
+      if (isEmpty) Failure[T](nxt) else Success(tmpRes, nxt)
     }
   }
 
@@ -90,9 +106,19 @@ trait StagedParsers
      */
     def phrase[T: Typ](p: => Parser[T], in: Rep[Input]): Rep[Option[T]] =
       p(in).toOption
-  }
-}
 
+  }
+
+  /**
+   * a combinator for creating a recursive parser
+   * Why do we need an explicit one? Because our parsers are code generators.
+   * And the code that needs to be generated changes based on where
+   * it is supposed to be generated. In order to not use an explicit recursion
+   * combinator we'd have to inspect the parser structure using reflection
+   * otherwise. The combinator is a reasonable tradeoff for the effort.
+   */
+   def rec[T: Typ](p: Parser[T]): Parser[T]
+}
 
 trait StagedParsersExp
     extends StagedParsers
@@ -102,14 +128,63 @@ trait StagedParsersExp
     with IfThenElseExp
     with BooleanOpsExp
     with EqualExp
+    with ParseResultOpsExp
+    with FunctionsExp {
+
+  /** A dictionary to see which parsers already have corresponding symbols */
+  val store = new scala.collection.mutable.HashMap[Parser[_], Sym[_]]
+
+  /**
+   * for recursion of parsers, we can alas not implement it using
+   * just DSL code, we need to get hands dirty with the internals
+   * of our tree/graph representation.
+   * We also can't simply re-use recursive functions as implemented in LMS
+   *
+   * Inspired from
+   * https://github.com/manojo/experiments/blob/simple/src/main/scala/lms/parsing/TopDownParsers.scala
+   */
+  def rec[T: Typ](p: Parser[T]) = Parser[T] { in =>
+
+    import Parser._
+
+    //println("the hashcode is: " + p.hashCode)
+
+    val myFun: Rep[Input => ParseResult[T]] = store.get(p) match {
+
+      case Some(f) =>
+        scala.Console.println("we have a function call")
+        val realf = f.asInstanceOf[Exp[Input => ParseResult[T]]]
+        realf
+
+      case None =>
+        scala.Console.println("first time we see this guy, creating a new symbol")
+
+        val funSym = fresh[Input => ParseResult[T]]
+
+        store += (p -> funSym)
+        val f = p.toParseResult
+        val g = createDefinition(funSym, doLambdaDef(f))
+        store -= p
+
+        funSym
+    }
+
+    val res: Rep[ParseResult[T]] = myFun(in)
+    conditional(res.isEmpty,
+      ParseResultCPS.Failure(res.next),
+      ParseResultCPS.Success(res.get, res.next)
+    )
+
+  }
+}
 
 trait StagedParsersExpOpt
     extends StagedParsersExp
-    with ParseResultOpsExpOpt
     with OptionOpsExpOpt
     with IfThenElseExpOpt
     with BooleanOpsExpOpt
     with EqualExpOpt
+    with ParseResultOpsExpOpt
 
 trait ScalaGenStagedParsers
     extends ScalaGenParseResultCPS
@@ -117,6 +192,8 @@ trait ScalaGenStagedParsers
     with ScalaGenTupleOps
     with ScalaGenIfThenElse
     with ScalaGenBooleanOps
-    with ScalaGenEqual {
+    with ScalaGenEqual
+    with ScalaGenParseResultOps
+    with ScalaGenFunctions {
   val IR: StagedParsersExp
 }

@@ -176,6 +176,7 @@ trait CharParsersProg extends CharParsers with Equal {
   */
 }
 
+
 class CharParsersSuite extends FileDiffSuite {
 
   val prefix = "test-out/"
@@ -300,7 +301,6 @@ class CharParsersSuite extends FileDiffSuite {
         scala.Console.println(testcOrSeq("ba".toArray))
         codegen.reset
 
-
 /*
         codegen.emitSource(test9 _, "test9", new java.io.PrintWriter(System.out))
         codegen.reset
@@ -379,49 +379,4 @@ class CharParsersSuite extends FileDiffSuite {
       assertFileEqualsCheck(prefix + "char-parser")
     }
   }
-
-/*
-  def testOrParsers = {
-    withOutFile(prefix + "or-parser") {
-      /**
-       * Attention: Need to mix in Fat versions of Struct as well as IfthenElse
-       * for optimisations on FatIfs and so on.
-       * Note: We are also using our own version of IfThenElseGenFat
-       * to generate variables instead of tuples and boundary ends
-       * of conditional expressions.
-       */
-      new CharParsersProg
-          with CharParsersExp
-          with IfThenElseExp
-          with StructFatExpOptCommon
-          with MyScalaCompile { self =>
-
-        val codegen = new ScalaGenCharParsers
-            with ScalaGenFatStruct
-            with MyScalaGenIfThenElseFat {
-          val IR: self.type = self
-        }
-
-        codegen.emitSource(acceptIf _, "acceptIf", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testcAcceptIf = compile(acceptIf)
-        scala.Console.println(testcAcceptIf("hello".toArray))
-        scala.Console.println(testcAcceptIf("ello".toArray))
-        codegen.reset
-
-        codegen.emitSource(orParser _, "orParser", new java.io.PrintWriter(System.out))
-        codegen.reset
-
-        val testcOrParser = compile(orParser)
-        scala.Console.println(testcOrParser("a".toArray))
-        scala.Console.println(testcOrParser("b".toArray))
-        scala.Console.println(testcOrParser("c".toArray))
-        codegen.reset
-
-      }
-      assertFileEqualsCheck(prefix + "or-parser")
-    }
-  }
-  */
 }
