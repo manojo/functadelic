@@ -9,7 +9,9 @@ import lms.util._
  * based on a previous implementation in
  * https://github.com/manojo/experiments/
  *
- * And now it changes! We use CPS encodings of a ParseResult now
+ * And now it changes! We use CPS encodings of a ParseResult now.
+ * @see http://manojo.github.io/2015/09/02/staged-parser-combinators/ for more
+ * information.
  */
 
 trait StagedParsers

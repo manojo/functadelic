@@ -6,6 +6,9 @@ import scala.lms.common._
  * an implementation of `Reader` as staged struct
  * based on a previous implementation in
  * https://github.com/manojo/experiments/
+ *
+ * @see http://manojo.github.io/2015/09/02/staged-parser-combinators/ for more
+ * information.
  */
 
 

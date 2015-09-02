@@ -7,6 +7,9 @@ import lms.util._
 /**
  * This trait contains basic parsers for characters
  * as input elements
+ *
+ * @see http://manojo.github.io/2015/09/02/staged-parser-combinators/ for more
+ * information.
  */
 trait CharParsers
     extends StagedParsers

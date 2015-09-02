@@ -7,6 +7,9 @@ import scala.lms.internal.GenericCodegen
 /**
  * A trait that specializes readers
  * to use a struct-like representation
+ *
+ * @see http://manojo.github.io/2015/09/02/staged-parser-combinators/ for more
+ * information.
  */
 trait StructReaderOps extends ReaderOps {
   abstract class ReaderType[+T]

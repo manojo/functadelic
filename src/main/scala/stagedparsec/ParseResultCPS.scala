@@ -11,8 +11,9 @@ import java.io.PrintWriter
 
 
 /**
- * A struct representation for Parse Results
- * Inspired from TupleOps on delite-develop branch
+ * A CPS encoding for Parse Results
+ * @see http://manojo.github.io/2015/09/02/staged-parser-combinators/ for more
+ * information.
  */
 trait ParseResultCPS
     extends Base
