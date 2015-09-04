@@ -144,12 +144,13 @@ trait StagedParsersExp
    *
    * Inspired from
    * https://github.com/manojo/experiments/blob/simple/src/main/scala/lms/parsing/TopDownParsers.scala
+   *
+   * @see http://manojo.github.io/2015/09/04/staged-parser-combinators-recursion/
+   * for more info
    */
   def rec[T: Typ](p: Parser[T]) = Parser[T] { in =>
 
     import Parser._
-
-    //println("the hashcode is: " + p.hashCode)
 
     val myFun: Rep[Input => ParseResult[T]] = store.get(p) match {
 
