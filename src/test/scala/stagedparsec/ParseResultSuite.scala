@@ -2,6 +2,8 @@ package stagedparsec
 
 import lms._
 import lms.util._
+import lms.testutil.FileDiffSpec
+
 import scala.lms.common._
 import scala.lms.internal.Effects
 
@@ -72,11 +74,11 @@ trait ParseResultProg
 */
 }
 
-class ParseResultSuite extends FileDiffSuite {
+class ParseResultSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testParseResults = {
+  def `ParseResult generates code with no diff` = {
     withOutFile(prefix + "parse-result") {
       /**
        * Attention: Need to mix in Fat versions of Struct as well as IfthenElse

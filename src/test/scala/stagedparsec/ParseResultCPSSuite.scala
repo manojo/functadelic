@@ -3,8 +3,10 @@ package stagedparsec
 import scala.lms.common._
 import scala.reflect.SourceContext
 import scala.lms.internal.GenericCodegen
+
 import lms._
 import lms.util._
+import lms.testutil.FileDiffSpec
 
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -238,11 +240,11 @@ trait ParseResultCPSProg
 */
 }
 
-class ParseResultCPSSuite extends FileDiffSuite {
+class ParseResultCPSSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testParseResultCPS = {
+  def `ParseResultCPS generates code with no diff` = {
     withOutFile(prefix + "parseresultcps") {
       new ParseResultCPSProg
           with ParseResultCPSExpOpt

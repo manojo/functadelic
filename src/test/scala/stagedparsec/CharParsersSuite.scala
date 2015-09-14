@@ -1,6 +1,8 @@
 package stagedparsec
 
 import lms._
+import lms.testutil.FileDiffSpec
+
 import scala.lms.common._
 import scala.lms.internal.Effects
 
@@ -177,11 +179,11 @@ trait CharParsersProg extends CharParsers with Equal {
 }
 
 
-class CharParsersSuite extends FileDiffSuite {
+class CharParsersSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testCharParsers = {
+  def `elementary char parsers generate code with no diff` = {
     withOutFile(prefix + "char-parser") {
       /**
        * Attention: Need to mix in Fat versions of Struct as well as IfthenElse

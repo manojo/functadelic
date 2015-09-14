@@ -1,6 +1,8 @@
 package stagedparsec
 
 import lms._
+import lms.testutil.FileDiffSpec
+
 import scala.lms.common._
 import scala.lms.internal.Effects
 
@@ -35,11 +37,11 @@ trait StringReaderProg extends StringReaderOps with MiscOps {
   }
 }
 
-class StringReaderSuite extends FileDiffSuite {
+class StringReaderSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testStringReader = {
+  def `StringReader generate code with no diff` = {
     withOutFile(prefix + "stringreader") {
       new StringReaderProg
         with StringReaderOpsExpOpt

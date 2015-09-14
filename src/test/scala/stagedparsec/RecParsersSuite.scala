@@ -1,6 +1,8 @@
 package stagedparsec
 
 import lms._
+import lms.testutil.FileDiffSpec
+
 import scala.lms.common._
 import scala.lms.internal.Effects
 
@@ -52,11 +54,11 @@ trait RecParsersProg
 }
 
 
-class RecParsersSuite extends FileDiffSuite {
+class RecParsersSuite extends FileDiffSpec {
 
   val prefix = "test-out/"
 
-  def testRecParsers = {
+  def `recursive parsers generate code with no diff` = {
     withOutFile(prefix + "rec-parser") {
       new RecParsersProg
           with CharParsersExp
