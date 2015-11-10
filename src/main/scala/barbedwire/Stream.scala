@@ -144,6 +144,24 @@ trait Streams {
     }
 
     /**
+     * returns the first `n` elements as a Stream
+     */
+    def take(n: Int) = new Stream[A] {
+
+      type S = (self.S, Int)
+      def seed = (self.seed, n)
+
+      def stepper(s: S) = s match {
+        case (s1, i) if i <= 0 => Done()
+        case (s1, i) => self.stepper(s1) match {
+          case Done() => Done()
+          case Skip(rest) => Skip((rest, i))
+          case Yield(elem, rest) => Yield(elem, (rest, i - 1))
+        }
+      }
+    }
+
+    /**
      * unfolding the contents of a stream into a list
      */
     def unStream: List[A] = {
@@ -154,6 +172,12 @@ trait Streams {
         case Skip(s2) => unfold(s2)
       }
       unfold(seed)
+    }
+
+    def remainingStream(remainingSeed: S): Stream[A] = new Stream[A] {
+      type S = self.S
+      def seed = remainingSeed
+      def stepper(s: S) = self.stepper(s)
     }
 
   }
@@ -183,4 +207,5 @@ trait Streams {
       if (n <= b) Yield(n, n + 1)
       else Done()
   }
+
 }

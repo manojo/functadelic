@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang.lms" %% "lms-core" % "1.0.0-SNAPSHOT",
   "org.scala-lang.plugins" % "scala-continuations-library_2.11" % "1.0.2",
   "com.github.manojo" % "lms-utils_2.11" % "0.1-SNAPSHOT",
-  "com.github.manojo" % "lms-testutils_2.11" % "0.1-SNAPSHOT" % "test"
+  "com.github.manojo" % "lms-testutils_2.11" % "0.1-SNAPSHOT" % "test",
+  "com.github.manojo" % "staged-fold-fusion_2.11" % "0.1-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(

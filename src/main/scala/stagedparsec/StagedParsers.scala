@@ -3,6 +3,7 @@ package stagedparsec
 import scala.lms.common._
 import lms._
 import lms.util._
+import barbedwire.FoldLefts
 
 /**
  * An implementation of staged parser combinators
@@ -119,7 +120,16 @@ trait StagedParsers
    * combinator we'd have to inspect the parser structure using reflection
    * otherwise. The combinator is a reasonable tradeoff for the effort.
    */
-   def rec[T: Typ](p: Parser[T]): Parser[T]
+  def rec[T: Typ](p: Parser[T]): Parser[T]
+
+  /**
+   * The basic repetition combinator.
+   * In a staged setting, instead of a list, we produce a CPSList,
+   * also known as a FoldLeft
+   */
+  //def rep[T: Typ](p: Parser[T]): Parser[FoldLeft[T]] = Parser { in => new FoldLeft[T] {
+  //  def apply[S: Typ](z: Rep[S], comb: Comb[T, S]): Rep[S] = z
+  //}}
 }
 
 trait StagedParsersExp

@@ -1,5 +1,7 @@
 package barbedwire
 
+import scala.annotation.tailrec
+
 /**
  * Buildable, which is `build` in
  * "a shortcut to deforestation"
@@ -115,6 +117,51 @@ trait Folds {
     if (a > b) builder.z
     else builder.cons(a, from(a + 1, b)(builder))
 
+  def leftRunningSum(ls: List[Int]): List[Int] = ls match {
+    case Nil => Nil
+    case x :: Nil => ls
+    case x :: y :: ys => x :: leftRunningSum((x + y) :: ys)
+  }
+
+  def leftRunningSum2(ls: List[Int]): List[Int] = {
+
+    @tailrec def rec(tmpList: List[Int], acc: List[Int]): List[Int] = tmpList match {
+      case Nil => acc.reverse
+      case x :: xs => acc match {
+        case Nil => rec(xs, x :: Nil)
+        case y :: _ => rec(xs, (x + y) :: acc)
+      }
+    }
+    rec(ls, Nil)
+  }
+
+  def leftRunningSum3(ls: List[Int]): List[Int] = (ls.foldLeft(List[Int]()) { case (acc, x) =>
+    (if (acc.isEmpty) x else x + acc.head) :: acc
+  }).reverse
+
+  def leftRunningSum4(ls: List[Int]): List[Int] = (ls.foldRight(List[Int]()) { case (x, acc) =>
+    x ::  (if (acc.isEmpty) acc else acc map { _ + x })
+  })
+
+  def leftRunningSum2Map(ls: List[Int], f: Int => Int): List[Int] = {
+    @tailrec def rec(tmpList: List[Int], acc: List[Int], curSum: Int): List[Int] = tmpList match {
+      case Nil => (f(curSum) :: acc).reverse
+      case x :: xs => rec(xs, f(curSum) :: acc, x + curSum)
+    }
+
+    if (ls.isEmpty) Nil else rec(ls.tail, Nil, ls.head)
+  }
+
+  def leftRunningSum5(ls: List[Int]): List[Int] = ls match {
+    case Nil => Nil
+    case x :: xs => {
+      val (finalList, lastSum) = xs.foldLeft(List[Int](), x) { case ((acc, curSum), y) =>
+        (curSum :: acc, y + curSum)
+      }
+      (lastSum :: finalList).reverse
+    }
+  }
+
 }
 
 trait Bla {
@@ -184,5 +231,32 @@ object HelloFolds extends Folds {
 
       loop(xs, ys, 0)
     }
+
+    println("===== Left Running Sum ====")
+    println(leftRunningSum(List(1, 1, 1, 1, 1)))
+    println(leftRunningSum(Nil))
+    println(leftRunningSum(List(1)))
+
+    println(leftRunningSum2(List(1, 1, 1, 1, 1)))
+    println(leftRunningSum2(Nil))
+    println(leftRunningSum2(List(1)))
+
+    println(leftRunningSum3(List(1, 1, 1, 1, 1)))
+    println(leftRunningSum3(Nil))
+    println(leftRunningSum3(List(1)))
+
+    println(leftRunningSum4(List(1, 1, 1, 1, 1)))
+    println(leftRunningSum4(Nil))
+    println(leftRunningSum4(List(1)))
+
+    println(leftRunningSum2Map(List(1, 1, 1, 1, 1), x => x * 2))
+    println(leftRunningSum2Map(Nil, x => x * 2))
+    println(leftRunningSum2Map(List(1), x => x * 2))
+
+    println(leftRunningSum5(List(1, 1, 1, 1, 1)))
+    println(leftRunningSum5(Nil))
+    println(leftRunningSum5(List(1)))
+
   }
+
 }
