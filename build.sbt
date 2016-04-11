@@ -11,7 +11,10 @@ libraryDependencies ++= Seq(
   "org.scala-lang.plugins" % "scala-continuations-library_2.11" % "1.0.2",
   "com.github.manojo" % "lms-utils_2.11" % "0.1-SNAPSHOT",
   "com.github.manojo" % "lms-testutils_2.11" % "0.1-SNAPSHOT" % "test",
-  "com.github.manojo" % "staged-fold-fusion_2.11" % "0.1-SNAPSHOT"
+  "com.github.manojo" % "staged-fold-fusion_2.11" % "0.1-SNAPSHOT",
+  "com.propensive" %% "rapture" % "2.0.0-M3" exclude ("com.propensive","rapture-json-lift_2.11"),
+  "com.chuusai" %% "shapeless" % "2.2.5",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
 )
 
 scalacOptions ++= Seq(

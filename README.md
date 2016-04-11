@@ -3,12 +3,12 @@ functadelic
 
 [![Build Status](https://travis-ci.org/manojo/functadelic.svg?branch=master)](https://travis-ci.org/manojo/functadelic)
 
-This repo contains code that I write/experiment with. The code is mostly
-tied to blogposts written [here](http://manojo.github.io).
+This repo is a hub for projects related to multi-staged programming in Scala. It
+uses [Lightweight Modular Staging](http://scala-lms.github.io). The main project
+is on staged parser combinators. Please find documentation for this project
+[here](https://manojo.github.io/2015/09/02/staged-parser-combinators/).
 
-Some of this code uses [LMS](http://scala-lms.github.io), or Lightweight
-Modular Staging. If you want to check out the code, and have it run,
-please follow these steps (UPDATE: the steps have changed, and are easier) :
+To run the code, please follow these steps:
 
   1. Clone this here repo in a separate folder: `git clone git@github.com:manojo/functadelic.git`.
   2. Profit:
